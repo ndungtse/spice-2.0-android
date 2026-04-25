@@ -1,10 +1,8 @@
 package org.medtroniclabs.uhis.ui.dashboard.ncd
 
-import android.content.pm.ActivityInfo
 import android.os.Bundle
 import dagger.hilt.android.AndroidEntryPoint
 import org.medtroniclabs.uhis.R
-import org.medtroniclabs.uhis.appextensions.isTablet
 import org.medtroniclabs.uhis.databinding.ActivityNcdDashboardVeiwBinding
 import org.medtroniclabs.uhis.ui.BaseActivity
 
@@ -14,11 +12,6 @@ class NCDDashboardViewActivity : BaseActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        requestedOrientation = if (isTablet()) {
-            ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
-        } else {
-            ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
-        }
         binding = ActivityNcdDashboardVeiwBinding.inflate(layoutInflater)
         setMainContentView(
             binding.root,
@@ -28,6 +21,8 @@ class NCDDashboardViewActivity : BaseActivity() {
         )
         loadDashboardFragment()
     }
+
+    override fun consumeImeInsets() = true
 
     private fun loadDashboardFragment() {
         replaceFragmentInId<DashboardFragment>(

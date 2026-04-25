@@ -104,17 +104,17 @@
                 {
                     "id": "nid",
                     "name": "National ID",
-                    "cultureValue": "জাতীয় পরিচয়পত্র (NID) (≥১৮ বছর)"
+                    "cultureValue": "জাতীয় পরিচয় পত্র (NID)"
                 },
                 {
                     "id": "brn",
                     "name": "BRN",
-                    "cultureValue": "জন্ম নিবন্ধন আইডি (Birth Reg ID) (<১৮ বছর)"
+                    "cultureValue": "জন্ম নিবন্ধন নম্বর (BRN)"
                 },
                 {
                     "id": "na",
                     "name": "Not Available",
-                    "cultureValue": "প্রযোজ্য নয়"
+                    "cultureValue": "সাথে নেই"
                 }
             ],
             "title": "ID Type",
@@ -242,7 +242,7 @@
         },
         {
             "errorMessage": "Please select a valid option",
-            "cultureErrorMessage": "অনুগ্রহ করে একটি সঠিক অপশন নির্বাচন করুন",
+            "cultureErrorMessage": "অনুগ্রহ করে বৈধ নির্বাচন করুন",
             "family": "bioData",
             "fieldName": "Gender",
             "id": "gender",
@@ -276,7 +276,7 @@
         },
         {
             "errorMessage": "Please select a valid option",
-            "cultureErrorMessage": "অনুগ্রহ করে একটি সঠিক অপশন নির্বাচন করুন",
+            "cultureErrorMessage": "অনুগ্রহ করে বৈধ নির্বাচন করুন",
             "family": "bioData",
             "fieldName": "Marital Status",
             "id": "maritalStatus",
@@ -313,7 +313,7 @@
         },
         {
             "errorMessage": "Please select a valid option",
-            "cultureErrorMessage": "অনুগ্রহ করে একটি সঠিক অপশন নির্বাচন করুন",
+            "cultureErrorMessage": "অনুগ্রহ করে বৈধ নির্বাচন করুন",
             "family": "bioData",
             "fieldName": "Disability",
             "id": "disability",
@@ -336,7 +336,7 @@
                 }
             ],
             "title": "Disability",
-            "titleCulture": "সদস্যের কি কোনো বিশেষ শারীরিক সীমাবদ্ধতা রয়েছে?",
+            "titleCulture": "এই সদস্যের কি কোনো প্রতিবন্ধকতা রয়েছে?",
             "viewType": "SingleSelectionView",
             "visibility": "visible",
             "isInfo": "visible",

@@ -10,4 +10,4 @@
     android:textAlignment="inherit"
     android:background="@drawable/edittext_background"
     android:textColor="@color/secondary_black"
-    app:drawableEndCompat="@drawable/ic_arrow_down" />
+    app:drawableEndCompat="@drawable/ic_spinner_arrow_down" />

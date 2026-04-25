@@ -14,7 +14,6 @@ import org.medtroniclabs.uhis.app.analytics.model.UserDetail
 import org.medtroniclabs.uhis.app.analytics.utils.AnalyticsDefinedParams
 import org.medtroniclabs.uhis.app.analytics.utils.AnalyticsDefinedParams.HouseholdCreation
 import org.medtroniclabs.uhis.app.analytics.utils.AnalyticsDefinedParams.HouseholdEdit
-import org.medtroniclabs.uhis.appextensions.visible
 import org.medtroniclabs.uhis.common.CommonUtils
 import org.medtroniclabs.uhis.common.DefinedParams
 import org.medtroniclabs.uhis.common.DefinedParams.HOUSEHOLD_REGISTRATION
@@ -24,12 +23,14 @@ import org.medtroniclabs.uhis.common.SecuredPreference
 import org.medtroniclabs.uhis.data.model.RecommendedDosageListModel
 import org.medtroniclabs.uhis.databinding.FragmentHouseHoldRegistrationBinding
 import org.medtroniclabs.uhis.db.entity.HouseholdEntity
+import org.medtroniclabs.uhis.db.entity.SubVillageEntity
 import org.medtroniclabs.uhis.formgeneration.FormGenerator
 import org.medtroniclabs.uhis.formgeneration.listener.FormEventListener
 import org.medtroniclabs.uhis.formgeneration.model.FormLayout
 import org.medtroniclabs.uhis.formgeneration.model.FormResponse
 import org.medtroniclabs.uhis.mappingkey.HouseHoldRegistration
 import org.medtroniclabs.uhis.mappingkey.HouseHoldRegistration.NO_OF_PEOPLE
+import org.medtroniclabs.uhis.mappingkey.HouseHoldRegistration.SUB_VILLAGE_ID
 import org.medtroniclabs.uhis.mappingkey.HouseHoldRegistration.TOTAL_MEMBERS
 import org.medtroniclabs.uhis.mappingkey.HouseHoldRegistration.VILLAGE_ID
 import org.medtroniclabs.uhis.network.resource.ResourceState
@@ -45,6 +46,7 @@ class HouseHoldRegistrationFragment : BaseFragment(), View.OnClickListener, Form
     private var onDismissListener: OnDialogDismissListener? = null
     private val householdRegistrationViewModel: HouseRegistrationViewModel by activityViewModels()
     private var pendingSubVillageId: Long? = null
+    private var lastSubVillageList: List<SubVillageEntity> = emptyList()
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -129,11 +131,6 @@ class HouseHoldRegistrationFragment : BaseFragment(), View.OnClickListener, Form
                                 }
                             }
                         }
-
-                        // Show village/union field if we have more than 1
-                        if (data.response is List<*> && data.response.size > 1) {
-                            formGenerator.getViewByTag(HouseHoldRegistration.VILLAGE_ID + formGenerator.rootSuffix)?.visible()
-                        }
                     }
                 }
                 else -> {
@@ -181,14 +178,23 @@ class HouseHoldRegistrationFragment : BaseFragment(), View.OnClickListener, Form
             when (resourceState.state) {
                 ResourceState.SUCCESS -> {
                     resourceState.data?.let { data ->
+                        lastSubVillageList =
+                            (data.response as? List<*>)
+                                ?.filterIsInstance<SubVillageEntity>()
+                                .orEmpty()
                         formGenerator.spinnerDataInjection(data, getResultSpinnerMapList(data))
 
                         // Auto-select if single sub village
                         if (data.response is List<*> && data.response.size == 1) {
-                            val singleItem = data.response[0]
-                            if (singleItem is Map<*, *>) {
-                                val id = singleItem[DefinedParams.ID]
-                                formGenerator.getViewByTag(HouseHoldRegistration.SUB_VILLAGE_ID)?.let { view ->
+                            val only = data.response[0]
+                            val id: Any? =
+                                when (only) {
+                                    is SubVillageEntity -> only.id
+                                    is Map<*, *> -> only[DefinedParams.ID]
+                                    else -> null
+                                }
+                            if (id != null) {
+                                formGenerator.getViewByTag(SUB_VILLAGE_ID)?.let { view ->
                                     formGenerator.setValueForView(id, view)
                                 }
                             }
@@ -442,12 +448,20 @@ class HouseHoldRegistrationFragment : BaseFragment(), View.OnClickListener, Form
     }
 
     override fun onRenderingComplete() {
+        // SS list is tied to logged-in Kormi user, not Union — same as [ExternalMemberRegistrationFragment]
+        householdRegistrationViewModel.loadShasthyaShebikaDataCacheByType(
+            HouseHoldRegistration.SHASTHYA_SHEBIKA_ID,
+            "",
+        )
     }
 
     override fun onUpdateInstruction(
         id: String,
         selectedId: Any?,
     ) {
+        if (id == SUB_VILLAGE_ID) {
+            applyVillageIdFromSubVillageSelection(selectedId)
+        }
     }
 
     override fun onInformationHandling(
@@ -472,6 +486,18 @@ class HouseHoldRegistrationFragment : BaseFragment(), View.OnClickListener, Form
         /*
        Never used
          */
+    }
+
+    /**
+     * [village_id] (Union) stays hidden; when user picks a sub-village, set the parent [VillageEntity] id.
+     */
+    private fun applyVillageIdFromSubVillageSelection(selectedId: Any?) {
+        val subVillageId = CommonUtils.getLongOrNull(selectedId) ?: return
+        if (subVillageId == 0L) return
+        val parentVillageId = lastSubVillageList.find { it.id == subVillageId }?.villageId ?: return
+        formGenerator.getViewByTag(VILLAGE_ID)?.let { view ->
+            formGenerator.setValueForView(parentVillageId, view)
+        }
     }
 
     fun getHouseHoldEnteredInputs(): Boolean = formGenerator.getResultMap().isNotEmpty()

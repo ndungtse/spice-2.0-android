@@ -2239,6 +2239,7 @@ object CommonUtils {
         fakeNavBar: View? = null,
         isLightStatusBar: Boolean = true,
         isLightNavigationBar: Boolean = true,
+        imeInset: ImeInset? = null,
     ) {
         val window = activity.window
         val decorView = window.decorView
@@ -2284,7 +2285,11 @@ object CommonUtils {
 
             // 2. Nav Bar logic:
             fakeNavBar?.updateLayoutParams {
-                height = systemBars.bottom
+                height = if (isImeVisible && imeInset?.consumeImeInsets() == true) {
+                    0
+                } else {
+                    systemBars.bottom
+                }
             }
 
             // 3. Landscape Safety: Apply horizontal padding to the root container
@@ -2293,7 +2298,11 @@ object CommonUtils {
                 systemBars.left + displayCutout.left,
                 0,
                 systemBars.right + displayCutout.right,
-                0,
+                if (isImeVisible && imeInset?.consumeImeInsets() == true) {
+                    ime.bottom
+                } else {
+                    0
+                },
             )
 
             insets
@@ -2320,4 +2329,14 @@ object CommonUtils {
             formLayout.title
         }
     }
+}
+
+/**
+ * Interface for IME inset handling
+ */
+interface ImeInset {
+    /**
+     * Method returns whether to consume ime insets or not.
+     */
+    fun consumeImeInsets(): Boolean
 }

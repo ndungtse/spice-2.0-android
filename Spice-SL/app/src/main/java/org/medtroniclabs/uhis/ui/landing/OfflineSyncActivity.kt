@@ -19,13 +19,13 @@ import org.medtroniclabs.uhis.common.SecuredPreference
 import org.medtroniclabs.uhis.data.offlinesync.utils.OfflineConstant.KEY_REQUESTS_ID
 import org.medtroniclabs.uhis.databinding.FragmentOfflineSyncBinding
 import org.medtroniclabs.uhis.offlinesync.GetSyncStatusWorker
-import org.medtroniclabs.uhis.ui.SpiceRootActivity
+import org.medtroniclabs.uhis.ui.BaseActivity
 import org.medtroniclabs.uhis.ui.landing.adapter.OfflineSyncEntitiesAdapter
 import org.medtroniclabs.uhis.ui.landing.viewmodel.OfflineSyncViewModel
 import java.util.concurrent.TimeUnit
 
 @AndroidEntryPoint
-class OfflineSyncActivity : SpiceRootActivity() {
+class OfflineSyncActivity : BaseActivity() {
     private val viewModel: OfflineSyncViewModel by viewModels()
     private lateinit var binding: FragmentOfflineSyncBinding
     private lateinit var unSyncedCountAdapter: OfflineSyncEntitiesAdapter

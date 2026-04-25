@@ -12,10 +12,13 @@ import android.graphics.drawable.GradientDrawable
 import android.text.Editable
 import android.text.InputFilter
 import android.text.InputType
+import android.text.SpannableString
+import android.text.Spanned
 import android.text.TextPaint
 import android.text.TextWatcher
 import android.text.method.LinkMovementMethod
 import android.text.style.ClickableSpan
+import android.text.style.RelativeSizeSpan
 import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
@@ -47,6 +50,7 @@ import org.medtroniclabs.uhis.R
 import org.medtroniclabs.uhis.appextensions.gone
 import org.medtroniclabs.uhis.appextensions.invisible
 import org.medtroniclabs.uhis.appextensions.visible
+import org.medtroniclabs.uhis.common.AgeOrDobDisplay
 import org.medtroniclabs.uhis.common.CommonUtils
 import org.medtroniclabs.uhis.common.CommonUtils.displayAge
 import org.medtroniclabs.uhis.common.CommonUtils.getMaxDateLimit
@@ -140,7 +144,6 @@ import org.medtroniclabs.uhis.formgeneration.utility.DigitsInputFilter
 import org.medtroniclabs.uhis.formgeneration.utility.FormFieldValidator
 import org.medtroniclabs.uhis.formgeneration.utility.PersonNameFilter
 import org.medtroniclabs.uhis.mappingkey.CommunityDetails
-import org.medtroniclabs.uhis.mappingkey.CommunityDetails.SelectedNetwork
 import org.medtroniclabs.uhis.mappingkey.MemberRegistration
 import org.medtroniclabs.uhis.mappingkey.MemberRegistration.DATE_OF_BIRTH
 import org.medtroniclabs.uhis.mappingkey.MemberRegistration.PHONE_NUMBER
@@ -152,9 +155,9 @@ import org.medtroniclabs.uhis.mappingkey.Screening.Minute
 import org.medtroniclabs.uhis.ui.assessment.AssessmentDefinedParams
 import org.medtroniclabs.uhis.ui.assessment.AssessmentDefinedParams.MUAC
 import org.medtroniclabs.uhis.ui.assessment.AssessmentDefinedParams.muacCode
-import org.medtroniclabs.uhis.ui.assessment.rmnch.RMNCH.PREGNANCY_MAX_AGE
-import org.medtroniclabs.uhis.ui.assessment.rmnch.RMNCH.PREGNANCY_MIN_AGE
+import java.time.LocalDate
 import java.time.OffsetDateTime
+import java.time.Period
 import java.time.format.DateTimeFormatter
 import java.util.Calendar
 import java.util.Date
@@ -2202,6 +2205,24 @@ class FormGenerator(
         }
     }
 
+    /**
+     * Smaller hint for AgeOrDob [AppCompatEditText] only; entered age keeps [Form_Input_Style] size.
+     */
+    private fun ageOrDobSmallHintText(
+        stringId: Int,
+        relativeScale: Float = 0.75f,
+    ): CharSequence {
+        val text = context.getString(stringId)
+        return SpannableString(text).apply {
+            setSpan(
+                RelativeSizeSpan(relativeScale),
+                0,
+                text.length,
+                Spanned.SPAN_EXCLUSIVE_EXCLUSIVE,
+            )
+        }
+    }
+
     private fun createAgeOrDobView(formLayout: FormLayout) {
         val binding = AgeOrDobLayoutBinding.inflate(LayoutInflater.from(context))
         var ageListener: TextWatcher?
@@ -2217,6 +2238,7 @@ class FormGenerator(
             // Configure Age EditText
             binding.etAge.inputType = InputType.TYPE_CLASS_NUMBER
             binding.etAge.filters = arrayOf(InputFilter.LengthFilter(3))
+            binding.etAge.hint = ageOrDobSmallHintText(R.string.age)
 
             // Always set up listeners - they will be disabled in edit mode when value is set
             ageListener = binding.etAge.addTextChangedListener { editable ->
@@ -2224,7 +2246,14 @@ class FormGenerator(
                 if (binding.etAge.isEnabled) {
                     val ageText = editable?.toString()?.trim() ?: ""
                     if (ageText.isEmpty()) {
-                        clearAgeOrDobFields(id, binding.etAge, binding.etDob, binding.ivClearDob, binding.dobInputHolder)
+                        clearAgeOrDobFields(
+                            id,
+                            binding.etAge,
+                            binding.tvAgeUnit,
+                            binding.etDob,
+                            binding.ivClearDob,
+                            binding.dobInputHolder,
+                        )
                     } else {
                         val age = ageText.toIntOrNull()
                         if (age != null) {
@@ -2232,7 +2261,7 @@ class FormGenerator(
                             if (age > maxAge) {
                                 showError(id, "Age cannot exceed $maxAge years")
                             } else {
-                                fillDOBFromAge(age, id, binding.etDob)
+                                fillDOBFromAge(age, id, binding.etDob, binding.tvAgeUnit)
                             }
                         }
                     }
@@ -2262,7 +2291,14 @@ class FormGenerator(
                             val stringDate = String.format(Locale.getDefault(), "%02d-%02d-%d", dayOfMonth, month, year)
                             val parsedDate = DateUtils.getDatePatternDDMMYYYY().parse(stringDate)
                             parsedDate?.let {
-                                fillAgeFromDOB(it, id, binding.etAge, binding.etDob, ageListener)
+                                fillAgeFromDOB(
+                                    it,
+                                    id,
+                                    binding.etAge,
+                                    binding.tvAgeUnit,
+                                    binding.etDob,
+                                    ageListener,
+                                )
                                 callback?.invoke(resultHashMap, id)
                             }
                         }
@@ -2280,6 +2316,7 @@ class FormGenerator(
             binding.etAge.isEnabled = true
             binding.etAge.isFocusable = true
             binding.etAge.alpha = 1.0f
+            binding.tvAgeUnit.alpha = 1.0f
             binding.dobInputHolder.isEnabled = true
             binding.dobInputHolder.isClickable = true
             binding.dobInputHolder.isFocusable = true
@@ -2297,6 +2334,7 @@ class FormGenerator(
             if (binding.etDob.text.isNullOrBlank()) {
                 binding.etAge.isEnabled = true
                 binding.etAge.alpha = 1.0f
+                binding.tvAgeUnit.alpha = 1.0f
                 binding.dobInputHolder.isEnabled = true
                 binding.dobInputHolder.alpha = 1.0f
             }
@@ -2307,6 +2345,7 @@ class FormGenerator(
         age: Int,
         id: String,
         etDob: AppCompatTextView,
+        tvAgeUnit: TextView,
     ) {
         try {
             val dobInUTC = DateUtils.calculateDOBFromAge(age)
@@ -2319,6 +2358,11 @@ class FormGenerator(
             val dobFormatted = localDate.format(outputFormatter)
 
             etDob.text = dobFormatted
+            tvAgeUnit.text = if (age == 1) {
+                context.getString(R.string.year)
+            } else {
+                context.getString(R.string.years)
+            }
             addOrUpdateDOB(dobInUTC, id)
             // Keep DOB field enabled (no longer disabling after age input)
             // Clear icon remains hidden
@@ -2333,6 +2377,7 @@ class FormGenerator(
         dob: Date,
         id: String,
         etAge: AppCompatEditText,
+        tvAgeUnit: TextView,
         etDob: AppCompatTextView,
         ageListener: TextWatcher?,
     ) {
@@ -2349,14 +2394,17 @@ class FormGenerator(
             )
             addOrUpdateDOB(dobInUTC, id)
 
-            // Calculate age
-            var age = CommonUtils.getAgeInYearsByDOB(dobFormatted)
-            // If age is less than 1 year, show 1
-            if (age < 1) {
-                age = 1
-            }
+            val display =
+                DateUtils.getAgeOrDobDisplayFromDdMmYyyy(dobFormatted) ?: run {
+                    showError(id, "Error calculating age")
+                    return
+                }
+            val birthDate = LocalDate.parse(
+                dobFormatted,
+                DateTimeFormatter.ofPattern(DATE_ddMMyyyy).withLocale(Locale.ENGLISH),
+            )
             val maxAge = serverData?.find { it.id == id }?.maxValue?.toInt() ?: 120
-            if (age > maxAge) {
+            if (Period.between(birthDate, LocalDate.now()).years > maxAge) {
                 showError(id, "Age cannot exceed $maxAge years")
                 return
             }
@@ -2365,7 +2413,8 @@ class FormGenerator(
                 etAge.removeTextChangedListener(ageListener)
             }
             // Keep age field enabled (no longer disabling after DOB input)
-            etAge.setText(age.toString())
+            etAge.setText(display.value.toString())
+            applyAgeOrDobUnitToView(tvAgeUnit, display)
             // Add listener once data is set
             ageListener?.let {
                 etAge.addTextChangedListener(ageListener)
@@ -2376,6 +2425,34 @@ class FormGenerator(
         } catch (_: Exception) {
             showError(id, "Error calculating age")
         }
+    }
+
+    private fun applyAgeOrDobUnitToView(
+        tvAgeUnit: TextView,
+        display: AgeOrDobDisplay,
+    ) {
+        val v = display.value
+        tvAgeUnit.text =
+            when (display.unit) {
+                AgeOrDobDisplay.AgeOrDobUnit.DAY ->
+                    if (v == 1) {
+                        context.getString(R.string.day)
+                    } else {
+                        context.getString(R.string.days)
+                    }
+                AgeOrDobDisplay.AgeOrDobUnit.MONTH ->
+                    if (v == 1) {
+                        context.getString(R.string.month)
+                    } else {
+                        context.getString(R.string.months)
+                    }
+                AgeOrDobDisplay.AgeOrDobUnit.YEAR ->
+                    if (v == 1) {
+                        context.getString(R.string.year)
+                    } else {
+                        context.getString(R.string.years)
+                    }
+            }
     }
 
     private fun handleAgeOrDobEditMode(
@@ -2398,6 +2475,7 @@ class FormGenerator(
 
             // Find child views using findViewById (they have resource IDs)
             val etAge = rootView.findViewById<AppCompatEditText>(R.id.etAge) ?: return
+            val tvAgeUnit = rootView.findViewById<TextView>(R.id.tvAgeUnit) ?: return
             val ivClearDob = rootView.findViewById<View>(R.id.ivClearDob) ?: return
             val dobInputHolder = rootView.findViewById<View>(R.id.dobInputHolder) ?: return
 
@@ -2408,14 +2486,24 @@ class FormGenerator(
             // DOB value is already in dd/MM/yyyy format from setValueForView
             val dobFormatted = dobValue
 
-            // Auto-calculate age from DOB
-            var age = CommonUtils.getAgeInYearsByDOB(dobFormatted)
-            // If age is less than 1 year, show 1
-            if (age < 1) {
-                age = 1
+            val display = DateUtils.getAgeOrDobDisplayFromDdMmYyyy(dobFormatted)
+            if (display != null) {
+                etAge.setText(display.value.toString())
+                applyAgeOrDobUnitToView(tvAgeUnit, display)
+            } else {
+                var age = CommonUtils.getAgeInYearsByDOB(dobFormatted)
+                if (age < 1) {
+                    age = 1
+                }
+                etAge.setText(age.toString())
+                tvAgeUnit.text = if (age == 1) {
+                    context.getString(R.string.year)
+                } else {
+                    context.getString(R.string.years)
+                }
             }
-            etAge.setText(age.toString())
             etAge.alpha = 0.6f
+            tvAgeUnit.alpha = 0.6f
 
             // Disable DOB field in edit mode
             dobInputHolder.isEnabled = false
@@ -2459,14 +2547,18 @@ class FormGenerator(
     private fun clearAgeOrDobFields(
         id: String,
         etAge: AppCompatEditText,
+        tvAgeUnit: TextView,
         etDob: AppCompatTextView,
         ivClearDob: View,
         dobInputHolder: View,
     ) {
         etAge.text?.clear()
+        etAge.hint = ageOrDobSmallHintText(R.string.age)
         etDob.text = ""
+        tvAgeUnit.text = context.getString(R.string.years)
         etAge.isEnabled = true
         etAge.alpha = 1.0f
+        tvAgeUnit.alpha = 1.0f
         dobInputHolder.isEnabled = true
         dobInputHolder.alpha = 1.0f
         ivClearDob.visibility = View.GONE
@@ -3434,14 +3526,18 @@ class FormGenerator(
         rootView?.let {
             val etAge = it.findViewWithTag<AppCompatEditText>(model.id + "_age")
             val etDob = it.findViewWithTag<AppCompatTextView>(model.id)
+            val tvAgeUnit = it.findViewById<TextView>(R.id.tvAgeUnit)
             val ivClearDob = it.findViewById<View>(R.id.ivClearDob)
             val dobInputHolder = it.findViewById<View>(R.id.dobInputHolder)
 
             etAge?.let { ageView ->
                 ageView.text?.clear()
+                ageView.hint = ageOrDobSmallHintText(R.string.age)
                 ageView.isEnabled = true
                 ageView.alpha = 1.0f
             }
+            tvAgeUnit?.text = context.getString(R.string.years)
+            tvAgeUnit?.alpha = 1.0f
             etDob?.text = ""
             ivClearDob?.visibility = View.GONE
             dobInputHolder?.let { holder ->
@@ -4027,32 +4123,16 @@ class FormGenerator(
         }
         getViewByTag(id)?.let { view ->
             if (view is AppCompatTextView) {
-                val checkBoxText = if (id.contains("complication", true)) {
-                    getString(R.string.complications_selected)
-                } else if (id.contains("conditions", true)) {
-                    getString(R.string.conditions_selected)
-                } else if (id.contains("signs", true) || id.contains("illness", true)) {
-                    if (translate && !formLayout.hintCulture.isNullOrBlank()) {
-                        "${formLayout.hintCulture} ${getString(R.string.selected_signs)}"
-                    } else if (!formLayout.hint.isNullOrBlank()) {
-                        "${formLayout.hint} ${getString(R.string.selected_signs)}"
-                    } else {
-                        getString(R.string.symptoms_selected)
-                    }
+                if (resultMap.isEmpty()) {
+                    view.text = ""
                 } else {
-                    if (translate && !formLayout.hintCulture.isNullOrBlank()) {
-                        "${formLayout.hintCulture} ${getString((R.string.selected))}"
-                    } else if (!formLayout.hint.isNullOrBlank()) {
-                        "${formLayout.hint} ${getString((R.string.selected))}"
-                    } else {
-                        getString(R.string.symptoms_selected)
+                    view.text = resultMap.joinToString {
+                        if (translate && it[DefinedParams.CULTURE_VALUE]?.toString().orEmpty().isNotBlank()) {
+                            it[DefinedParams.CULTURE_VALUE].toString()
+                        } else {
+                            it[DefinedParams.NAME].toString()
+                        }
                     }
-                }
-                val dialogCheckBoxText = setCheckBoxDialogText(resultHashMap, id, checkBoxText)
-                if (dialogCheckBoxText.first == 0) {
-                    view.text = dialogCheckBoxText.second
-                } else {
-                    view.text = getString(R.string.checkbox_selected_text, dialogCheckBoxText.first, dialogCheckBoxText.second)
                 }
             }
         }
@@ -4085,66 +4165,6 @@ class FormGenerator(
             callback?.invoke(resultHashMap, id)
         }
     }
-
-    private fun setCheckBoxDialogText(
-        resultHashMap: HashMap<String, Any>,
-        id: String,
-        checkBoxText: String,
-    ): Pair<Int, String> {
-        var text = ""
-        var count = 0
-        if (id.equals(getString(R.string.market_days_key), true)) {
-            val mapList = resultHashMap[id]
-            if (mapList is ArrayList<*>) {
-                text = if (mapList.size == 1) {
-                    getString(R.string.market_day_selected, mapList.size)
-                } else {
-                    getString(R.string.market_days_selected, mapList.size)
-                }
-            }
-        } else if (id.equals(SelectedNetwork, true)) {
-            val mapList = resultHashMap[id]
-            if (mapList is ArrayList<*>) {
-                text = if (mapList.size == 1) {
-                    getString(R.string.network_selected, mapList.size)
-                } else {
-                    getString(R.string.networks_selected, mapList.size)
-                }
-            }
-        } else {
-            if (resultHashMap.containsKey(id)) {
-                val mapList = resultHashMap[id]
-                if (mapList is java.util.ArrayList<*>) {
-                    text = if (mapList.size == 1) {
-                        val singleSelectionText = getSingleSelectedDialogText(mapList, checkBoxText)
-                        count = singleSelectionText.first
-                        singleSelectionText.second
-                    } else if (mapList.size > 1) {
-                        if (isContainsOther(mapList)) {
-                            count = mapList.size - 1
-                            "${getString(R.string.and)} ${getString(R.string.other)} $checkBoxText"
-                        } else {
-                            count = mapList.size
-                            checkBoxText
-                        }
-                    } else {
-                        ""
-                    }
-                }
-            }
-        }
-        return count to text
-    }
-
-    private fun getSingleSelectedDialogText(
-        mapList: ArrayList<*>,
-        checkBoxText: String,
-    ): Pair<Int, String> =
-        if (isContainsOther(mapList)) {
-            0 to "${getString(R.string.other)} $checkBoxText"
-        } else {
-            1 to checkBoxText
-        }
 
     private fun isContainsOther(mapList: ArrayList<*>): Boolean {
         var status = false
@@ -4278,70 +4298,6 @@ class FormGenerator(
                 }
             }
         }
-    }
-
-    fun handlePregnancyCardBasedOnAge() {
-        val dateOfBirthView =
-            getViewByTag(DATE_OF_BIRTH) as? AppCompatTextView ?: return
-        val dateOfBirth = dateOfBirthView.text?.toString()?.trim() ?: return
-
-        if (DateUtils.calculateAge(
-                dateOfBirth,
-                DATE_ddMMyyyy,
-            ) !in PREGNANCY_MIN_AGE..PREGNANCY_MAX_AGE
-        ) {
-            handleAgeBelowThreshold()
-        } else {
-            handleAgeAboveThreshold()
-        }
-    }
-
-    fun handlePregnancyCardBasedOnAgeAndWeeks() {
-        val dateOfBirthView =
-            getViewByTag(DATE_OF_BIRTH) as? AppCompatTextView ?: return
-        val dateOfBirth = dateOfBirthView.text?.toString()?.trim()
-        if (!dateOfBirth.isNullOrEmpty()) {
-            val ageAndWeek = DateUtils.getV2YearMonthAndWeek(dateOfBirth, DATE_ddMMyyyy)
-            val ageYears = ageAndWeek.years
-            val ageMonths = ageAndWeek.months
-            val ageWeeks = ageAndWeek.weeks
-            val ageDays = ageAndWeek.days
-
-            if ((ageYears !in PREGNANCY_MIN_AGE..PREGNANCY_MAX_AGE) || (ageYears == PREGNANCY_MAX_AGE && (ageMonths + ageWeeks + ageDays) != 0)) {
-                handleAgeBelowThreshold()
-            } else {
-                handleAgeAboveThreshold()
-            }
-        } else {
-            handleAgeBelowThreshold()
-        }
-    }
-
-    private fun handleAgeBelowThreshold() {
-//        if (isResultAvailable(gender, female)) {
-//            val isPregnantRootView =
-//                getViewByTag(MemberRegistration.isPregnant + rootSuffix) as? ViewGroup
-//                    ?: return
-//            removeIfContains(MemberRegistration.isPregnant)
-//            (getViewByTag(MemberRegistration.isPregnant) as? ViewGroup)?.forEach { view ->
-//                if (view is TextView) {
-//                    view.isSelected = false
-//                }
-//            }
-//            if (isPregnantRootView.isVisible()) {
-//            }
-//        }
-    }
-
-    private fun handleAgeAboveThreshold() {
-//        if (isResultAvailable(gender, female)) {
-//            val isPregnantRootView =
-//                getViewByTag(MemberRegistration.isPregnant + rootSuffix) as? ViewGroup
-//                    ?: return
-//            if (isPregnantRootView.isGone()) {
-//                isPregnantRootView.visible()
-//            }
-//        }
     }
 
     private fun checkOnlyAlphabets(
@@ -4858,6 +4814,55 @@ class FormGenerator(
             (getViewByTag(id + titleSuffix) as? TextView)?.markMandatory()
         } else {
             (getViewByTag(id + titleSuffix) as? TextView)?.markNonMandatory()
+        }
+    }
+
+    /**
+     * Updates the national ID field **title** and [EditText] hint to match the selected
+     * [MemberRegistration.ID_TYPE] option ([DefinedParams.NAME] and [DefinedParams.CULTURE_VALUE]).
+     * Falls back to the static `national_id` [FormLayout] when ID type is empty or [DefinedParams.NA].
+     * Does not mutate [FormLayout.titleCulture] on the model.
+     */
+    fun updateNationalIdLabelForIdType(
+        selectedIdType: String?,
+        translate: Boolean,
+    ) {
+        val idTypeLayout = getFormLayout(MemberRegistration.ID_TYPE) ?: return
+        val nationalIdLayout = getFormLayout(MemberRegistration.NATIONAL_ID) ?: return
+        val titleView = getViewByTag(MemberRegistration.NATIONAL_ID + titleSuffix) as? TextView
+        val nationalIdInput = getViewByTag(MemberRegistration.NATIONAL_ID) as? EditText
+
+        val options = idTypeLayout.optionsList
+        val option =
+            if (!selectedIdType.isNullOrBlank() && selectedIdType != DefinedParams.NA) {
+                options?.firstOrNull { (it[DefinedParams.ID] as? String) == selectedIdType }
+            } else {
+                null
+            }
+
+        val title: CharSequence =
+            if (option != null) {
+                val name =
+                    (option[DefinedParams.NAME] as? String)?.takeIf { it.isNotEmpty() }
+                        ?: nationalIdLayout.title
+                val cultureValue =
+                    (option[DefinedParams.CULTURE_VALUE] as? String)?.takeIf { it.isNotEmpty() }
+                        ?: nationalIdLayout.titleCulture
+                updateTitle(name, translate, cultureValue, null)
+            } else {
+                updateTitle(
+                    nationalIdLayout.title,
+                    translate,
+                    nationalIdLayout.titleCulture,
+                    null,
+                )
+            }
+        titleView?.text = title
+        nationalIdInput?.hint = title
+        if (nationalIdLayout.isMandatory) {
+            titleView?.markMandatory()
+        } else {
+            titleView?.markNonMandatory()
         }
     }
 }

@@ -18,10 +18,12 @@
             "isMandatory": true,
             "isEnabled": true,
             "title": "Any complication during all previous pregnancies",
-            "titleCulture": "গর্ভবতী মা কি নিচের কোনো সমস্যায় ভুগছে?",
+            "titleCulture": "পূর্বে গর্ভধারনের সময় কোনো সমস্যা হয়েছিলো কি?",
             "errorMessage": "Please select a valid option",
+            "cultureErrorMessage": "অনুগ্রহ করে বৈধ নির্বাচন করুন",
             "visibility": "visible",
             "hint": "Complications",
+            "hintCulture": "জটিলতা",
             "optionsList":
             [
                 {
@@ -64,7 +66,7 @@
                     "id": 6,
                     "value": "preterm_birth",
                     "name": "Preterm birth",
-                    "cultureValue": "নির্ধারিত সময়ের আগেই প্রসব হয়েছে"
+                    "cultureValue": "সময়ের আগে প্রসাব"
                 },
                 {
                     "id": 7,
@@ -92,14 +94,15 @@
             "id": "pregnantWomanExistingIllness",
             "orderId": 1,
             "hint": "Illness",
-            "hintCulture": "অসুখ",
+            "hintCulture": "রোগ",
             "isSummary": false,
             "viewType": "DialogCheckbox",
             "isMandatory": true,
             "isEnabled": true,
             "title": "Pregnant woman has any existing illness",
-            "titleCulture": "গর্ভবতী মায়ের আগে থেকে কোনো অসুখ আছে কি?",
+            "titleCulture": "গর্ভবতী মায়ের আগে থেকে কোন অসুখ আছে কি?",
             "errorMessage": "Please select a valid option",
+            "cultureErrorMessage": "অনুগ্রহ করে বৈধ নির্বাচন করুন",
             "visibility": "visible",
             "optionsList":
             [
@@ -165,8 +168,9 @@
             "isMandatory": true,
             "isEnabled": true,
             "title": "Pregnant woman on treatment for any existing illness",
-            "titleCulture": "গর্ভবতী মা কোনো আগের অসুখের জন্য চিকিৎসা নিচ্ছেন কি?",
+            "titleCulture": "গর্ভবতী মা আগের কোন রোগের চিকিৎসা নিচ্ছেন",
             "errorMessage": "Please select a valid option",
+            "cultureErrorMessage": "অনুগ্রহ করে বৈধ নির্বাচন করুন",
             "visibility": "gone",
             "optionsList": [
                 {
@@ -193,6 +197,7 @@
             "title": "Height",
             "titleCulture": "উচ্চতা",
             "errorMessage": "Please enter a valid height",
+            "cultureErrorMessage": "অনুগ্রহ করে উচ্চতার বৈধ মান লিখুন",
             "visibility": "visible",
             "maxLength": 5,
             "minValue": 50,
@@ -216,6 +221,7 @@
             "title": "Weight",
             "titleCulture": "ওজন",
             "errorMessage": "Please enter a valid weight",
+            "cultureErrorMessage": "অনুগ্রহ করে ওজনের বৈধ মান লিখুন",
             "visibility": "visible",
             "maxLength": 5,
             "minValue": 10,
@@ -262,6 +268,7 @@
             "title": "Systolic",
             "titleCulture": "সিস্টোলিক",
             "errorMessage": "Please enter a valid systolic value",
+            "cultureErrorMessage": "অনুগ্রহ করে রক্তচাপের বৈধ সিস্টোলিক মান লিখুন",
             "visibility": "visible",
             "maxLength": 3,
             "minValue": 50,
@@ -285,6 +292,7 @@
             "title": "Diastolic",
             "titleCulture": "ডায়াস্টোলিক",
             "errorMessage": "Please enter a valid diastolic value",
+            "cultureErrorMessage": "অনুগ্রহ করে রক্তচাপের বৈধ ডায়াস্টোলিক মান লিখুন",
             "visibility": "visible",
             "maxLength": 3,
             "minValue": 20,
@@ -304,6 +312,7 @@
             "title": "Edema (To check on face / hands /feet)",
             "titleCulture": "ইডিমা",
             "errorMessage": "Please select a valid option",
+            "cultureErrorMessage": "অনুগ্রহ করে বৈধ নির্বাচন করুন",
             "visibility": "visible",
             "optionsList":
             [
@@ -337,6 +346,7 @@
             "title": "Temperature",
             "titleCulture": "তাপমাত্রা",
             "errorMessage": "Please enter a valid temperature",
+            "cultureErrorMessage": "অনুগ্রহ করে বৈধ তাপমাত্রার মান লিখুন",
             "visibility": "visible",
             "maxLength": 5,
             "minValue": 86,
@@ -360,6 +370,7 @@
             "title": "Pulse",
             "titleCulture": "নাড়ির গতি(প্রতি মিনিটে )",
             "errorMessage": "Please enter a valid pulse",
+            "cultureErrorMessage": "অনুগ্রহ করে নাড়ির গতির বৈধ মান লিখুন",
             "visibility": "visible",
             "maxLength": 5,
             "minValue": 30,
@@ -383,6 +394,7 @@
             "title": "Fundal Height",
             "titleCulture": "জরায়ুর উচচতা (সেমি)",
             "errorMessage": "Please enter a valid fundal height",
+            "cultureErrorMessage": "অনুগ্রহ করে জরায়ুর উচ্চতার বৈধ মান লিখুন",
             "visibility": "visible",
             "maxLength": 3,
             "minValue": 0,
@@ -393,7 +405,7 @@
             "familyOrder": 1,
             "id": "pointOfCareInvestigations",
             "title": "Point-of-Care Investigations",
-            "titleCulture": "পয়েন্ট-অফ-কেয়ার পরীক্ষা",
+            "titleCulture": "প্যাথলজিক্যাল পরীক্ষা",
             "viewType": "CardView"
         },
         {
@@ -412,6 +424,7 @@
             "title": "Hemoglobin (Hb)",
             "titleCulture": "হিমোগ্লোবিন(gm/dl) - রক্ত পরীক্ষা",
             "errorMessage": "Please enter a valid hemoglobin value",
+            "cultureErrorMessage": "অনুগ্রহ করে হিমোগ্লোবিন পরীক্ষার বৈধ মান লিখুন",
             "visibility": "visible",
             "maxLength": 5,
             "minValue": 0,
@@ -428,8 +441,9 @@
             "isMandatory": true,
             "isEnabled": true,
             "title": "Blood Sugar",
-            "titleCulture": "রক্ত পরীক্ষায় গ্লুকোজ আছে কিনা",
+            "titleCulture": "রক্তে গ্লুকোজ পরীক্ষার ধরন",
             "errorMessage": "Please select a valid option",
+            "cultureErrorMessage": "অনুগ্রহ করে বৈধ নির্বাচন করুন",
             "visibility": "visible",
             "optionsList":
             [
@@ -503,6 +517,7 @@
             "title": "Urinary Albumin",
             "titleCulture": "প্রস্রাব পরীক্ষায় অ্যালবুমিন আছে কিনা",
             "errorMessage": "Please select a valid option",
+            "cultureErrorMessage": "অনুগ্রহ করে বৈধ নির্বাচন করুন",
             "visibility": "visible",
             "optionsList":
             [
@@ -530,11 +545,12 @@
             "orderId": 6,
             "isSummary": false,
             "viewType": "SingleSelectionView",
-            "isMandatory": true,
+            "isMandatory": false,
             "isEnabled": true,
             "title": "Urinary Sugar",
             "titleCulture": "প্রস্রাব পরীক্ষায় গ্লুকোজ আছে কিনা",
             "errorMessage": "Please select a valid option",
+            "cultureErrorMessage": "অনুগ্রহ করে বৈধ নির্বাচন করুন",
             "visibility": "visible",
             "optionsList":
             [
@@ -567,6 +583,7 @@
             "title": "Urinary Bilirubin",
             "titleCulture": "প্রস্রাব পরীক্ষায় বিলিরুবিন আছে কি না",
             "errorMessage": "Please select a valid option",
+            "cultureErrorMessage": "অনুগ্রহ করে বৈধ নির্বাচন করুন",
             "visibility": "visible",
             "optionsList":
             [
@@ -606,6 +623,7 @@
             "title": "TT/TD completed",
             "titleCulture": "আপনার কি টিটি টিকা ডোজ সম্পূর্ণ করা আছে?",
             "errorMessage": "Please select a valid option",
+            "cultureErrorMessage": "অনুগ্রহ করে বৈধ নির্বাচন করুন",
             "visibility": "visible",
             "optionsList":
             [
@@ -650,6 +668,7 @@
             "hint": "Total Consumed last month",
             "hintCulture": "গতমাসে মোট খাওয়া হয়েছে",
             "errorMessage": "Please enter a valid number",
+            "cultureErrorMessage": "অনুগ্রহ করে একটি বৈধ মান লিখুন",
             "visibility": "visible",
             "maxLength": 2,
             "maxValue": "31"
@@ -665,10 +684,11 @@
             "isMandatory": true,
             "isEnabled": true,
             "title": "Provided during this visit",
-            "titleCulture": "এই ভিজিটের সময় প্রদানকৃত –",
+            "titleCulture": "এই ভিজিটে ব্র্যাক হতে প্রদানকৃত আয়রন বড়ির সংখ্যা",
             "hint": "Enter number of tablets",
             "hintCulture": "এই ভিজিটের সময় প্রদানকৃত",
             "errorMessage": "Please enter a valid number",
+            "cultureErrorMessage": "অনুগ্রহ করে একটি বৈধ মান লিখুন",
             "visibility": "visible",
             "maxLength": 3
         },
@@ -701,6 +721,7 @@
             "hint": "Total Consumed last month",
             "hintCulture": "গতমাসে মোট খাওয়া হয়েছে",
             "errorMessage": "Please enter a valid number",
+            "cultureErrorMessage": "অনুগ্রহ করে একটি বৈধ মান লিখুন",
             "visibility": "visible",
             "maxLength": 2,
             "maxValue": "31"
@@ -718,6 +739,7 @@
             "title": "Provided during this visit",
             "titleCulture": "এই ভিজিটের সময় প্রদানকৃত –",
             "errorMessage": "Please enter a valid number",
+            "cultureErrorMessage": "অনুগ্রহ করে একটি বৈধ মান লিখুন",
             "visibility": "visible",
             "maxLength": 3
         },
@@ -746,8 +768,9 @@
             "isMandatory": true,
             "isEnabled": true,
             "title": "How many calcium tablets taken last month?",
-            "titleCulture": "গতমাসে কয়টি ক্যালসিয়াম বড়ি খেয়েছেন?",
+            "titleCulture": "এই ভিজিটে ব্র্যাক প্রদানকৃত ক্যালসিয়াম বড়ির সংখ্যা",
             "errorMessage": "Please enter a valid number",
+            "cultureErrorMessage": "অনুগ্রহ করে একটি বৈধ মান লিখুন",
             "visibility": "visible",
             "maxLength": 2,
             "maxValue": "31"
@@ -765,6 +788,7 @@
             "title": "Provided during this visit",
             "titleCulture": "এই ভিজিটের সময় প্রদান করা হয়েছে –",
             "errorMessage": "Please enter a valid number",
+            "cultureErrorMessage": "অনুগ্রহ করে একটি বৈধ মান লিখুন",
             "visibility": "visible",
             "maxLength": 3
         },
@@ -786,8 +810,9 @@
             "isMandatory": true,
             "isEnabled": true,
             "title": "No.of ANC visits conducted with other providers",
-            "titleCulture": "অন্য সেবাদাতাদের সঙ্গে কতবার ANC (গর্ভকালীন স্বাস্থ্যপরিচর্যা) ভিজিট করা হয়েছে?",
+            "titleCulture": "অন্য সেবাকেন্দ্র/সেবাদাতার কাছ থেকে কতবার এএনসি সেবা নিয়েছেন?",
             "errorMessage": "Please enter a valid number",
+            "cultureErrorMessage": "অনুগ্রহ করে একটি বৈধ মান লিখুন",
             "visibility": "visible",
             "maxLength": 2,
             "minValue": 0
@@ -804,6 +829,7 @@
             "title": "PW received atleast one ANC from a medical doctor",
             "titleCulture": "গর্ভবতী মা কমপক্ষে একবার কোনো চিকিৎসক থেকে ANC পেয়েছেন কি না?",
             "errorMessage": "Please select a valid option",
+            "cultureErrorMessage": "অনুগ্রহ করে বৈধ নির্বাচন করুন",
             "visibility": "visible",
             "optionsList":
             [
@@ -833,6 +859,7 @@
             "title": "Ultrasound",
             "titleCulture": "আল্ট্রাসাউন্ড করা হয়েছে কি?",
             "errorMessage": "Please select a valid option",
+            "cultureErrorMessage": "অনুগ্রহ করে বৈধ নির্বাচন করুন",
             "visibility": "visible",
             "optionsList":
             [
@@ -860,28 +887,29 @@
             "title": "Has the PW identified a health facility for institutional delivery?",
             "titleCulture": "গর্ভবতী মা কি প্রসবের জন্য কোনো স্বাস্থ্যকেন্দ্র ঠিক করেছেন?",
             "errorMessage": "Please select a valid option",
+            "cultureErrorMessage": "অনুগ্রহ করে বৈধ নির্বাচন করুন",
             "visibility": "visible",
             "optionsList":
             [
                 {
                     "id": "uhfwc",
-                    "name": "UHFWC (Union health and family welfare center)",
-                    "cultureValue": "ইউনিয়ন স্বাস্থ্য ও পরিবারকল্যাণ কেন্দ্র (UHFWC)"
+                    "name": "UH&FWC (Union health and family welfare center)",
+                    "cultureValue": "ইউনিয়ন স্বাস্থ্য ও পরিবার কল্যাণ কেন্দ্র"
                 },
                 {
                     "id": "mcwc",
                     "name": "MCWC (Mother and Child Welfare Center)",
-                    "cultureValue": "মা ও শিশু কল্যাণ কেন্দ্র (MCWC)"
+                    "cultureValue": "মা ও শিশু কল্যাণ কেন্দ্র"
                 },
                 {
                     "id": "uhc",
                     "name": "UHC (Upazila Health complex)",
-                    "cultureValue": "উপজেলা স্বাস্থ্য কমপ্লেক্স (UHC)"
+                    "cultureValue": "উপজেলা স্বাস্থ্য কমপ্লেক্স"
                 },
                 {
                     "id": "districtHospital",
                     "name": "District Hospital",
-                    "cultureValue": "জেলা সদর হাসপাতাল"
+                    "cultureValue": "জেলা হাসপাতাল"
                 },
                 {
                     "id": "medicalCollegeHospital",
@@ -931,6 +959,7 @@
             "title": "Has the PW experienced any of the following",
             "titleCulture": "গর্ভবতী মা কি নিচের কোনো সমস্যায় ভুগছে?",
             "errorMessage": "Please select a valid option",
+            "cultureErrorMessage": "অনুগ্রহ করে বৈধ নির্বাচন করুন",
             "visibility": "visible",
             "optionsList":
             [
@@ -1000,6 +1029,7 @@
             "title": "Has the PW experienced any of the following",
             "titleCulture": "গর্ভবতী মা কি নিচের কোনো সমস্যায় ভুগছে?",
             "errorMessage": "Please select a valid option",
+            "cultureErrorMessage": "অনুগ্রহ করে বৈধ নির্বাচন করুন",
             "visibility": "visible",
             "optionsList":
             [
@@ -1075,6 +1105,7 @@
             "title": "Has the PW experienced any of the following",
             "titleCulture": "গর্ভবতী মা কি নিচের কোনো সমস্যায় ভুগছে?",
             "errorMessage": "Please select a valid option",
+            "cultureErrorMessage": "অনুগ্রহ করে বৈধ নির্বাচন করুন",
             "visibility": "visible",
             "optionsList":
             [
@@ -1211,7 +1242,7 @@
                 {
                     "id": "moderateAnemia",
                     "name": "In moderate anemia, eat more iron-rich foods such as meat, liver, eggs, green leafy vegetables, lentils, green plantain, and jaggery. Do not discard the water used for cooking rice or vegetables. Take vitamin C–rich foods (like lemon or amla) to improve iron absorption. Consult a doctor to adjust your iron tablet dose.",
-                    "cultureValue": "আপনার মাঝারি রক্তস্বল্পতা রয়েছে মাংস, কলিজা, ডিম, সবুজ শাকসবজি, ডাল, কাঁচাকলা ও গুড় বেশি করে খাবেন। ভাত বা সবজি রান্নার পানি ফেলে দেবেন না। আয়রন ট্যাবলেটের মাত্রা ঠিক করতে ডাক্তারের পরামর্শ নিন।"
+                    "cultureValue": "আপনার মাঝারি রক্তস্বল্পতা রয়েছে মাংস, কলিজা, ডিম, সবুজ শাকসবজি, ডাল, কাঁচাকলা জাতীয় খাবার বেশি করে খাবেন।  ভাত বা সবজি রান্নার পানি ফেলে দেবেন না। লেবু বা আমলকির মতো ভিটামিন C যুক্ত খাবার খান, এতে আয়রন ভালো কাজ করে। আয়রন ট্যাবলেটের মাত্রা ঠিক করতে ডাক্তারের পরামর্শ নিন।"
                 },
                 {
                     "id": "severeAnemia",
@@ -1259,7 +1290,7 @@
             "isMandatory": false,
             "isEnabled": true,
             "title": "Danger Signs During Pregnancy",
-            "titleCulture": "গর্ভকালীন সময়ে যত্ন",
+            "titleCulture": "গর্ভকালীন সময়ে বিপদচিহ্ন",
             "instructions":
             [
                 "Provide counseling and guidance to pregnant women during antenatal visits using the SK job aid."
@@ -1324,18 +1355,19 @@
             "title": "Referral Facility",
             "titleCulture": "রেফারেল স্বাস্থ্যসেবা কেন্দ্র",
             "errorMessage": "Please select a valid option",
+            "cultureErrorMessage": "অনুগ্রহ করে বৈধ নির্বাচন করুন",
             "visibility": "visible",
             "optionsList":
             [
                 {
                     "id": "uhfwc",
-                    "name": "UHFWC (Union health and family welfare center)",
+                    "name": "UH&FWC (Union health and family welfare center)",
                     "cultureValue": "ইউনিয়ন স্বাস্থ্য ও পরিবার কল্যাণ কেন্দ্র"
                 },
                 {
                     "id": "mcwc",
                     "name": "MCWC (Mother and Child Welfare Center)",
-                    "cultureValue": "মাতৃ ও শিশু কল্যাণ কেন্দ্র"
+                    "cultureValue": "মা ও শিশু কল্যাণ কেন্দ্র"
                 },
                 {
                     "id": "uhc",
@@ -1345,7 +1377,7 @@
                 {
                     "id": "districtHospital",
                     "name": "District Hospital",
-                    "cultureValue": "জেলা সদর হাসপাতাল"
+                    "cultureValue": "জেলা হাসপাতাল"
                 },
                 {
                     "id": "medicalCollegeHospital",

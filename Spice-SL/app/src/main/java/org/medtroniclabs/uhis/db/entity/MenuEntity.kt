@@ -13,7 +13,7 @@ data class MenuEntity(
     val roleName: String? = null,
     val name: String,
     val displayOrder: Int,
-    val subModule: String? = null,
+    var subModule: String? = null,
     @ColumnInfo(name = "culture_value")
     val displayValue: String? = null,
 ) {

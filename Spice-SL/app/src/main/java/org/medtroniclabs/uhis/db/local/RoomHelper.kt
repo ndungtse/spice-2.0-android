@@ -76,6 +76,7 @@ import org.medtroniclabs.uhis.db.response.MemberAssessmentHistoryResponse
 import org.medtroniclabs.uhis.model.MemberDobGenderModel
 import org.medtroniclabs.uhis.model.assessment.AssessmentDetails
 import org.medtroniclabs.uhis.model.assessment.AssessmentMemberDetails
+import org.medtroniclabs.uhis.model.services.ServiceMemberCounts
 import org.medtroniclabs.uhis.model.services.ServiceStaticFilter
 import org.medtroniclabs.uhis.ui.assessment.AssessmentNCDEntity
 
@@ -878,6 +879,17 @@ interface RoomHelper {
         staticFilter: ServiceStaticFilter,
     ): LiveData<List<HouseholdMemberWithTb>>
 
+    /**
+     * Returns aggregated counts for all service static filters in one pass.
+     *
+     * Dynamic filters are identical to [getServiceMembers] so list and counters stay aligned.
+     */
+    suspend fun getAllServiceMemberCounts(
+        searchInput: String = "",
+        filterBySs: List<Long> = emptyList(),
+        filterBySubVillages: List<Long> = emptyList(),
+    ): ServiceMemberCounts
+
     suspend fun getMemberAssessmentHistory(
         memberFhirId: String?,
         memberId: Long?,
@@ -901,4 +913,12 @@ interface RoomHelper {
     suspend fun insertMemberAssessmentHistory(assessmentHistory: MemberAssessmentHistoryEntity): Long
 
     suspend fun updateMemberAssessmentHistory(assessmentHistory: MemberAssessmentHistoryEntity)
+
+    /** [Pair.first] = service type ([MemberAssessmentHistoryEntity.serviceProvided]); [Pair.second] = visit date. */
+    suspend fun getLastServiceHistoryTypeAndVisitDate(memberLocalId: Long): Pair<String?, String?>?
+
+    suspend fun decrementAssessmentHistoryVisitDate(
+        memberId: Long,
+        noOfDays: Int,
+    )
 }

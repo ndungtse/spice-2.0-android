@@ -47,33 +47,9 @@ interface PregnancyDetailDao {
     suspend fun insertOrUpdateFromBE(entity: PregnancyDetail): Long {
         val hhmLocalId = getHHMLocalID(entity.householdMemberId!!)
         val neonateLocalId = entity.neonatePatientId?.let { getHHMLocalIDByPatientId(it) }
-        val existingEntity = getPregnancyDetailByPatientId(hhmLocalId)
-        val ancVisitNo = existingEntity?.ancVisitNo
-        val pncVisitNo = existingEntity?.pncVisitNo
-        val childHoodNo = existingEntity?.childVisitNo
-        val entityToInsert = existingEntity?.let { entity.copy(id = it.id) } ?: entity
-        entityToInsert.householdMemberLocalId = hhmLocalId
-        entityToInsert.neonateHouseholdMemberLocalId = neonateLocalId
-
-        entityToInsert.ancVisitNo?.let { newVisitNo ->
-            if (ancVisitNo != null && newVisitNo < ancVisitNo) {
-                entityToInsert.ancVisitNo = ancVisitNo
-            }
-        }
-
-        entityToInsert.pncVisitNo?.let { newVisitNo ->
-            if (pncVisitNo != null && newVisitNo < pncVisitNo) {
-                entityToInsert.pncVisitNo = pncVisitNo
-            }
-        }
-
-        entityToInsert.childVisitNo?.let { newVisitNo ->
-            if (childHoodNo != null && newVisitNo < childHoodNo) {
-                entityToInsert.childVisitNo = childHoodNo
-            }
-        }
-
-        return savePregnancyDetail(entityToInsert)
+        entity.householdMemberLocalId = hhmLocalId
+        entity.neonateHouseholdMemberLocalId = neonateLocalId
+        return savePregnancyDetail(entity)
     }
 
     @Query("DELETE from PregnancyDetail")

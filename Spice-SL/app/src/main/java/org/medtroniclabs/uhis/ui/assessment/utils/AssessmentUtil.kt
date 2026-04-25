@@ -8,6 +8,7 @@ import org.medtroniclabs.uhis.common.DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ
 import org.medtroniclabs.uhis.common.DateUtils.DATE_ddMMyyyy
 import org.medtroniclabs.uhis.formgeneration.model.BPModel
 import org.medtroniclabs.uhis.ui.MenuConstants
+import org.medtroniclabs.uhis.ui.assessment.AssessmentDefinedParams
 import org.medtroniclabs.uhis.ui.assessment.AssessmentDefinedParams.AVG_BLOOD_PRESSURE
 import org.medtroniclabs.uhis.ui.assessment.AssessmentDefinedParams.AVG_DIASTOLIC
 import org.medtroniclabs.uhis.ui.assessment.AssessmentDefinedParams.AVG_SYSTOLIC
@@ -125,16 +126,19 @@ object AssessmentUtil {
      *
      * e.g, pwProfile -> Pregnant Women Registration
      */
-    fun mapServiceToServiceName(service: String): String =
+    fun mapServiceToServiceName(
+        service: String,
+        context: Context,
+    ): String =
         when (service.lowercase()) {
-            MenuConstants.PREGNANT_WOMEN_PROFILE.lowercase() -> "Pregnant Women Registration"
-            MenuConstants.FP_MENU_ID.lowercase() -> "Family Planning"
-            MenuConstants.EYE_CARE_MENU_ID.lowercase() -> "Eye Care"
-            MenuConstants.CATARACT_MENU_ID.lowercase() -> "Cataract"
-            MenuConstants.PREGNANCY_OUTCOME.lowercase() -> "Pregnancy Outcome"
-            RMNCH.ANC.lowercase() -> "ANC"
-            RMNCH.PNC_MOTHER_MENU.lowercase() -> "PNC"
-            RMNCH.CHILD_MENU.lowercase() -> "Child Health"
+            MenuConstants.PREGNANT_WOMEN_PROFILE.lowercase() -> context.getString(R.string.pregnant_women_profile)
+            MenuConstants.FP_MENU_ID.lowercase() -> context.getString(R.string.family_planning)
+            MenuConstants.EYE_CARE_MENU_ID.lowercase() -> context.getString(R.string.eye_care)
+            MenuConstants.CATARACT_MENU_ID.lowercase() -> context.getString(R.string.cataract)
+            MenuConstants.PREGNANCY_OUTCOME.lowercase() -> context.getString(R.string.pregnancy_outcome)
+            RMNCH.ANC.lowercase() -> context.getString(R.string.anc)
+            RMNCH.PNC_MOTHER_MENU.lowercase() -> context.getString(R.string.pnc)
+            RMNCH.CHILD_MENU.lowercase() -> context.getString(R.string.child_health)
             else -> service.uppercase(Locale.ENGLISH)
         }
 
@@ -194,7 +198,10 @@ object AssessmentUtil {
     /**
      * Maps corresponding status to display value
      */
-    fun mapAssessmentStatus(status: String): String {
+    fun mapAssessmentStatus(
+        status: String,
+        context: Context,
+    ): String {
         val assessmentStatus = try {
             AssessmentStatus.valueOf(status)
         } catch (_: Exception) {
@@ -202,76 +209,76 @@ object AssessmentUtil {
         }
         return when (assessmentStatus) {
             AssessmentStatus.NORMAL_PREGNANCY -> {
-                "Normal Pregnancy"
+                context.getString(R.string.normal_pregnancy)
             }
 
             AssessmentStatus.HIGH_RISK_PW -> {
-                "High Risk PW"
+                context.getString(R.string.high_risk_pw)
             }
 
             AssessmentStatus.USING_MODERN_FP -> {
-                "Using modern family planning methods"
+                context.getString(R.string.using_modern_family_planning_methods)
             }
 
             AssessmentStatus.NOT_USING_MODERN_FP -> {
-                "Not using modern family planning methods"
+                context.getString(R.string.not_using_modern_family_planning_methods)
             }
 
             AssessmentStatus.GAPS_IN_ANC -> {
-                "Gaps IN ANC"
+                context.getString(R.string.gaps_in_anc)
             }
 
             AssessmentStatus.C_SECTION -> {
-                "C-Section"
+                context.getString(R.string.c_section)
             }
 
             AssessmentStatus.ASSISTED_DELIVERY -> {
-                "Assisted Delivery"
+                context.getString(R.string.assisted_delivery)
             }
 
             AssessmentStatus.NORMAL_DELIVERY -> {
-                "Normal Delivery"
+                context.getString(R.string.normal_delivery)
             }
 
             AssessmentStatus.NEONATAL_DEATH -> {
-                "Neonatal Death"
+                context.getString(R.string.neo_natal_death)
             }
 
             AssessmentStatus.ABORTION -> {
-                "Abortion"
+                context.getString(R.string.abortion)
             }
 
             AssessmentStatus.STILL_BIRTH -> {
-                "Still Birth"
+                context.getString(R.string.still_birth)
             }
 
             AssessmentStatus.LIVE_BIRTH -> {
-                "Live Birth"
+                context.getString(R.string.live_birth)
             }
 
             AssessmentStatus.HIGH_RISK_PNC -> {
-                "High Risk PNC"
+                context.getString(R.string.high_risk_pnc)
             }
 
             AssessmentStatus.NORMAL_PNC -> {
-                "Normal PNC"
+                context.getString(R.string.normal_pnc)
             }
 
             AssessmentStatus.GAPS_IN_PNC -> {
-                "Gaps IN PNC"
+                context.getString(R.string.gaps_in_pnc)
             }
 
             AssessmentStatus.CONTROLLED_BP -> {
-                "Controlled BP"
+                context.getString(R.string.controlled_bp)
             }
             AssessmentStatus.CONTROLLED_BG -> {
-                "Controlled BG"
+                context.getString(R.string.controlled_bg)
             }
             AssessmentStatus.UNCONTROLLED_BP -> {
-                "Uncontrolled BP"
+                context.getString(R.string.uncontrolled_bp)
             }
             AssessmentStatus.UNCONTROLLED_BG -> {
-                "Uncontrolled BG"
+                context.getString(R.string.uncontrolled_bg)
             }
 
             AssessmentStatus.DEFAULT -> {
@@ -284,13 +291,13 @@ object AssessmentUtil {
      * Returns newborn details from the map as list
      */
     fun findNewbornDetailsFromMap(map: Map<String, Any?>): List<*>? {
-        val directList = map["newbornDetails"]
+        val directList = map[AssessmentDefinedParams.NEWBORN_DETAILS]
         if (directList is List<*>) return directList
 
         for (entry in map.entries) {
             if (entry.value is Map<*, *>) {
                 val nestedMap = entry.value as Map<*, *>
-                val nestedList = nestedMap["newbornDetails"]
+                val nestedList = nestedMap[AssessmentDefinedParams.NEWBORN_DETAILS]
                 if (nestedList is List<*>) return nestedList
             }
         }

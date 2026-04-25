@@ -33,6 +33,16 @@ interface MemberAssessmentHistoryDao {
 
     @Query(
         """
+        SELECT * FROM memberassessmenthistory
+        WHERE memberId = :memberLocalId
+        ORDER BY visitDate DESC, id DESC
+        LIMIT 1
+        """,
+    )
+    suspend fun getLatestMemberAssessmentHistoryByMemberLocalId(memberLocalId: Long): MemberAssessmentHistoryEntity?
+
+    @Query(
+        """
         SELECT
             SUM(CASE WHEN LOWER(h.serviceProvided) IN ('screened') THEN 1 ELSE 0 END) AS screened,
             SUM(CASE WHEN LOWER(h.serviceProvided) IN ('referred','referral') THEN 1 ELSE 0 END) AS referred,
@@ -147,4 +157,25 @@ interface MemberAssessmentHistoryDao {
         subVillageIds: List<Long>,
         subVillageIdsSize: Int,
     ): MaternalDashboardCountsRow?
+
+    /**
+     * Method updates and sets visit date as visit date - [noOfDays] for given member [memberId]
+     */
+    @Query(
+        """
+            UPDATE memberassessmenthistory
+                SET visitDate = strftime(
+                    '%Y-%m-%dT%H:%M:%S+00:00',
+                    datetime(
+                        visitDate,
+                        '-' || :noOfDays || ' day'
+                    )
+                )
+            WHERE memberId = :memberId
+        """,
+    )
+    suspend fun decrementDateByDays(
+        memberId: Long,
+        noOfDays: Int,
+    )
 }

@@ -184,10 +184,6 @@ class AssessmentRMNCHSummaryFragment : BaseFragment(), View.OnClickListener {
         updateStatusBar()
         binding.tvTitle.setText(R.string.assessment_result)
         binding.labelPhuReferred.setText(R.string.referral_health_facility)
-        // For ANC, show Next Follow-up Date with label "Follow up Visit"
-        binding.etNextFollowUpDate.visible()
-        binding.tvNextFollowupDateTitle.visible()
-        binding.tvNextFollowupDateTitle.text = AssessmentDefinedParams.LABEL_FOLLOW_UP_VISIT
 
         // Set follow-up date to 4 weeks (28 days) from current date
         val fourWeeksFromNow = DateUtils.getDateAfterDays(28)
@@ -222,7 +218,7 @@ class AssessmentRMNCHSummaryFragment : BaseFragment(), View.OnClickListener {
                         root.setPadding(0)
                         with(tvTitle) {
                             setPadding(8.px)
-                            text = "  • $condition" // Use bigger bullet (•)
+                            text = "  • ${RMNCH.getDisplayCondition(condition, isTranslationEnabled)}" // Use bigger bullet (•)
                             setTextColor(ContextCompat.getColor(requireContext(), R.color.red_risk))
                             setBackgroundResource(R.drawable.bg_high_risk)
                         }
@@ -247,7 +243,7 @@ class AssessmentRMNCHSummaryFragment : BaseFragment(), View.OnClickListener {
                         root.setPadding(0)
                         with(tvTitle) {
                             setPadding(8.px)
-                            text = "  • $condition" // Use bigger bullet (•)
+                            text = "  • ${RMNCH.getDisplayCondition(condition, isTranslationEnabled)}" // Use bigger bullet (•)
                             setTextColor(ContextCompat.getColor(requireContext(), R.color.low_risk_color))
                             setBackgroundResource(R.drawable.bg_low_risk)
                         }
@@ -267,7 +263,7 @@ class AssessmentRMNCHSummaryFragment : BaseFragment(), View.OnClickListener {
                     root.setPadding(0)
                     with(tvTitle) {
                         setPadding(8.px)
-                        text = "  • $condition" // Use bigger bullet (•)
+                        text = "  • ${RMNCH.getDisplayCondition(condition, isTranslationEnabled)}" // Use bigger bullet (•)
                         setBackgroundResource(R.drawable.bg_gaps)
                     }
                     gapsCardBinding.llFamilyRoot.addView(root)
@@ -336,25 +332,25 @@ class AssessmentRMNCHSummaryFragment : BaseFragment(), View.OnClickListener {
                     if (bmi < AssessmentDefinedParams.BMI_NORMAL_WEIGHT_THRESHOLD) {
                         val option = options.firstOrNull { it[DefinedParams.id] == "underWeight" }
                         option?.let {
-                            instructions.add(option[DefinedParams.name] as? String ?: "")
+                            instructions.add(option[DefinedParams.NAME] as? String ?: "")
                             instructionsCulture.add(option[DefinedParams.CULTURE_VALUE] as? String ?: "")
                         }
                     } else if (bmi < AssessmentDefinedParams.BMI_OVER_WEIGHT_THRESHOLD) {
                         val option = options.firstOrNull { it[DefinedParams.id] == "normalWeight" }
                         option?.let {
-                            instructions.add(option[DefinedParams.name] as? String ?: "")
+                            instructions.add(option[DefinedParams.NAME] as? String ?: "")
                             instructionsCulture.add(option[DefinedParams.CULTURE_VALUE] as? String ?: "")
                         }
                     } else if (bmi < AssessmentDefinedParams.BMI_OBSESS_WEIGHT_THRESHOLD) {
                         val option = options.firstOrNull { it[DefinedParams.id] == "overWeight" }
                         option?.let {
-                            instructions.add(option[DefinedParams.name] as? String ?: "")
+                            instructions.add(option[DefinedParams.NAME] as? String ?: "")
                             instructionsCulture.add(option[DefinedParams.CULTURE_VALUE] as? String ?: "")
                         }
                     } else {
                         val option = options.firstOrNull { it[DefinedParams.id] == "obsess" }
                         option?.let {
-                            instructions.add(option[DefinedParams.name] as? String ?: "")
+                            instructions.add(option[DefinedParams.NAME] as? String ?: "")
                             instructionsCulture.add(option[DefinedParams.CULTURE_VALUE] as? String ?: "")
                         }
                     }
@@ -365,19 +361,19 @@ class AssessmentRMNCHSummaryFragment : BaseFragment(), View.OnClickListener {
                     if (hb < AssessmentDefinedParams.HEMOGLOBIN_SEVERE_ANEMIA_THRESHOLD) {
                         val option = options.firstOrNull { it[DefinedParams.id] == "severeAnemia" }
                         option?.let {
-                            instructions.add(option[DefinedParams.name] as? String ?: "")
+                            instructions.add(option[DefinedParams.NAME] as? String ?: "")
                             instructionsCulture.add(option[DefinedParams.CULTURE_VALUE] as? String ?: "")
                         }
                     } else if (hb < AssessmentDefinedParams.HEMOGLOBIN_MODERATE_ANEMIA_THRESHOLD) {
                         val option = options.firstOrNull { it[DefinedParams.id] == "moderateAnemia" }
                         option?.let {
-                            instructions.add(option[DefinedParams.name] as? String ?: "")
+                            instructions.add(option[DefinedParams.NAME] as? String ?: "")
                             instructionsCulture.add(option[DefinedParams.CULTURE_VALUE] as? String ?: "")
                         }
                     } else if (hb < AssessmentDefinedParams.HEMOGLOBIN_MILD_ANEMIA_THRESHOLD) {
                         val option = options.firstOrNull { it[DefinedParams.id] == "mildAnemia" }
                         option?.let {
-                            instructions.add(option[DefinedParams.name] as? String ?: "")
+                            instructions.add(option[DefinedParams.NAME] as? String ?: "")
                             instructionsCulture.add(option[DefinedParams.CULTURE_VALUE] as? String ?: "")
                         }
                     } else {
@@ -391,7 +387,7 @@ class AssessmentRMNCHSummaryFragment : BaseFragment(), View.OnClickListener {
                 ) {
                     val option = options.firstOrNull { it[DefinedParams.id] == "lowSugar" }
                     option?.let {
-                        instructions.add(option[DefinedParams.name] as? String ?: "")
+                        instructions.add(option[DefinedParams.NAME] as? String ?: "")
                         instructionsCulture.add(option[DefinedParams.CULTURE_VALUE] as? String ?: "")
                     }
                 }
@@ -485,9 +481,7 @@ class AssessmentRMNCHSummaryFragment : BaseFragment(), View.OnClickListener {
         updateStatusBar()
         binding.tvTitle.setText(R.string.assessment_result)
         binding.labelPhuReferred.setText(R.string.referral_health_facility)
-        binding.etNextFollowUpDate.visible()
-        binding.tvNextFollowupDateTitle.visible()
-        binding.tvNextFollowupDateTitle.text = AssessmentDefinedParams.LABEL_FOLLOW_UP_VISIT
+
         val pncMap = map[RMNCH.PNC] as? Map<String, Any>
         val maternalHealth = pncMap?.get(RMNCH.ID_MATERNAL_HEALTH_ASSESSMENT) as? Map<*, *>
         val daysSinceDelivery = CommonUtils.getInteger(maternalHealth?.get(RMNCH.ID_DAYS_SINCE_DELIVERY))
@@ -537,7 +531,7 @@ class AssessmentRMNCHSummaryFragment : BaseFragment(), View.OnClickListener {
                         root.setPadding(0)
                         with(tvTitle) {
                             setPadding(8.px)
-                            text = "  • $condition" // Use bigger bullet (•)
+                            text = "  • ${RMNCH.getDisplayCondition(condition, isTranslationEnabled)}" // Use bigger bullet (•)
                             setTextColor(ContextCompat.getColor(requireContext(), R.color.red_risk))
                             setBackgroundResource(R.drawable.bg_high_risk)
                         }
@@ -562,7 +556,7 @@ class AssessmentRMNCHSummaryFragment : BaseFragment(), View.OnClickListener {
                         root.setPadding(0)
                         with(tvTitle) {
                             setPadding(8.px)
-                            text = "  • $condition" // Use bigger bullet (•)
+                            text = "  • ${RMNCH.getDisplayCondition(condition, isTranslationEnabled)}" // Use bigger bullet (•)
                             setTextColor(ContextCompat.getColor(requireContext(), R.color.low_risk_color))
                             setBackgroundResource(R.drawable.bg_low_risk)
                         }
@@ -582,7 +576,7 @@ class AssessmentRMNCHSummaryFragment : BaseFragment(), View.OnClickListener {
                     root.setPadding(0)
                     with(tvTitle) {
                         setPadding(8.px)
-                        text = "  • $condition" // Use bigger bullet (•)
+                        text = "  • ${RMNCH.getDisplayCondition(condition, isTranslationEnabled)}" // Use bigger bullet (•)
                         setBackgroundResource(R.drawable.bg_gaps)
                     }
                     gapsCardBinding.llFamilyRoot.addView(root)
@@ -683,7 +677,7 @@ class AssessmentRMNCHSummaryFragment : BaseFragment(), View.OnClickListener {
         optionsList.forEach { option ->
             val optionMap = HashMap<String, Any>()
             optionMap[DefinedParams.id] = option["id"]?.toString() ?: ""
-            optionMap[DefinedParams.name] = option["name"]?.toString() ?: ""
+            optionMap[DefinedParams.NAME] = option["name"]?.toString() ?: ""
             siteList.add(optionMap)
         }
 

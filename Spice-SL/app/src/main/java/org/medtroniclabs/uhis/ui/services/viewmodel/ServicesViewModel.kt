@@ -2,6 +2,8 @@ package org.medtroniclabs.uhis.ui.services.viewmodel
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.liveData
+import androidx.lifecycle.map
 import androidx.lifecycle.switchMap
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -13,9 +15,11 @@ import org.medtroniclabs.uhis.data.model.ChipViewItemModel
 import org.medtroniclabs.uhis.data.offlinesync.model.HouseholdMemberWithTb
 import org.medtroniclabs.uhis.di.IoDispatcher
 import org.medtroniclabs.uhis.model.household.HouseHoldFilterUiData
+import org.medtroniclabs.uhis.model.services.ServiceMemberCounts
 import org.medtroniclabs.uhis.model.services.ServiceStaticFilter
 import org.medtroniclabs.uhis.model.services.ServicesSearchFilter
 import org.medtroniclabs.uhis.network.resource.Resource
+import org.medtroniclabs.uhis.network.resource.ResourceState
 import org.medtroniclabs.uhis.repo.HouseHoldRepository
 import org.medtroniclabs.uhis.repo.HouseholdMemberRepository
 import org.medtroniclabs.uhis.ui.BaseViewModel
@@ -23,21 +27,62 @@ import javax.inject.Inject
 
 @HiltViewModel
 class ServicesViewModel @Inject constructor(
-    @IoDispatcher override var dispatcherIO: CoroutineDispatcher,
+    @param:IoDispatcher override var dispatcherIO: CoroutineDispatcher,
     private val memberRepository: HouseholdMemberRepository,
     private val houseHoldRepository: HouseHoldRepository,
 ) : BaseViewModel(dispatcherIO) {
+    /**
+     * UI payload for Services list screen.
+     *
+     * Keeps the currently visible member list and all static-filter counters together,
+     * derived from the same dynamic filter state.
+     */
+    data class FilteredMembersUiData(
+        val members: List<HouseholdMemberWithTb>,
+        val counts: ServiceMemberCounts,
+    )
+
     var filterUiData = MutableLiveData<Resource<HouseHoldFilterUiData>>()
 
     private val filterLiveData = MutableLiveData<ServicesSearchFilter>()
-    val filteredMembersLiveData: LiveData<List<HouseholdMemberWithTb>> =
+
+    /**
+     * Single stream for filtered list + counts.
+     *
+     * Recomputes whenever [filterLiveData] changes so chips/tabs and list remain consistent.
+     */
+    val filteredMembersLiveData: LiveData<Resource<FilteredMembersUiData>> =
         filterLiveData.switchMap { filter ->
-            memberRepository.getServiceMembers(
-                filter.searchInput,
-                filter.filterBySs.map { it.id!! },
-                filter.filterBySubVillages.map { it.id!! },
-                filter.staticFilter,
-            )
+            liveData(dispatcherIO) {
+                emit(
+                    Resource<FilteredMembersUiData>(
+                        state = ResourceState.LOADING,
+                    ),
+                )
+                val counts =
+                    memberRepository.getAllServiceMemberCounts(
+                        searchInput = filter.searchInput,
+                        filterBySs = filter.filterBySs.map { it.id!! },
+                        filterBySubVillages = filter.filterBySubVillages.map { it.id!! },
+                    )
+                emitSource(
+                    memberRepository
+                        .getServiceMembers(
+                            filter.searchInput,
+                            filter.filterBySs.map { it.id!! },
+                            filter.filterBySubVillages.map { it.id!! },
+                            filter.staticFilter,
+                        ).map { members ->
+                            Resource(
+                                state = ResourceState.SUCCESS,
+                                FilteredMembersUiData(
+                                    members = members,
+                                    counts = counts,
+                                ),
+                            )
+                        },
+                )
+            }
         }
 
     init {

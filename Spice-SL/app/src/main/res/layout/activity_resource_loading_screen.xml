@@ -20,6 +20,45 @@
         app:lottie_rawRes="@raw/loader_downloading" />
 
     <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/tvDownloadStatus"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="@dimen/_24sdp"
+        android:layout_marginTop="@dimen/_12sdp"
+        android:gravity="center"
+        android:text="@string/resource_loading_download_message"
+        android:textColor="@color/black"
+        android:textSize="@dimen/_15ssp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/animationView" />
+
+    <ProgressBar
+        android:id="@+id/progressSync"
+        style="?android:attr/progressBarStyleHorizontal"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="@dimen/_24sdp"
+        android:layout_marginTop="@dimen/_8sdp"
+        android:max="100"
+        android:progress="0"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tvDownloadStatus" />
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/tvSyncPercent"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/_4sdp"
+        android:textColor="@color/black"
+        android:textSize="@dimen/_14ssp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/progressSync"
+        tools:text="45%" />
+
+    <androidx.appcompat.widget.AppCompatTextView
         android:id="@+id/tvOfflineSyncMessage"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -31,7 +70,7 @@
         android:textSize="@dimen/_18ssp"
         app:layout_constraintEnd_toEndOf="@+id/animationView"
         app:layout_constraintStart_toStartOf="@+id/animationView"
-        app:layout_constraintTop_toBottomOf="@+id/animationView" />
+        app:layout_constraintTop_toBottomOf="@+id/tvSyncPercent" />
 
     <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/actionButton"

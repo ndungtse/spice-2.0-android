@@ -100,7 +100,7 @@
             android:name=".ui.dashboard.ncd.NCDDashboardViewActivity"
             android:configChanges="orientation|screenSize|keyboardHidden"
             android:exported="false"
-            android:screenOrientation="unspecified"
+            android:screenOrientation="portrait"
             android:windowSoftInputMode="adjustResize" />
         <activity
             android:name=".ui.common.PatientSearchActivity"
@@ -168,7 +168,8 @@
             android:exported="false" />
         <activity
             android:name=".ui.boarding.LoginActivity"
-            android:exported="false" /> <!-- CHW Activities -->
+            android:exported="false"
+            android:windowSoftInputMode="adjustResize" /> <!-- CHW Activities -->
         <activity
             android:name=".ui.household.summary.HouseholdSummaryActivity"
             android:exported="false"
@@ -217,7 +218,6 @@
             android:configChanges="orientation|screenSize|keyboardHidden"
             android:exported="false"
             android:screenOrientation="portrait"
-            android:windowSoftInputMode="adjustResize"
             tools:ignore="LockedOrientationActivity" />
         <activity
             android:name=".ui.household.ConsentFormActivity"

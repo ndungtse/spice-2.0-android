@@ -527,7 +527,7 @@ class EditCommunityProfileFragment : BaseFragment(), FormEventListener, View.OnC
                         if (isMarket && infrastructure.containsKey(MarketDays)) {
                             val list = infrastructure[MarketDays] as List<HashMap<*, *>>
                             list.forEach {
-                                (it[DefinedParams.name] as? String)?.let { day ->
+                                (it[DefinedParams.NAME] as? String)?.let { day ->
                                     signsList.add(
                                         day,
                                     )
@@ -545,7 +545,7 @@ class EditCommunityProfileFragment : BaseFragment(), FormEventListener, View.OnC
                         if (isMobileNetwork && infrastructure.containsKey(SelectedNetwork)) {
                             val list = infrastructure[SelectedNetwork] as List<HashMap<*, *>>
                             list.forEach {
-                                (it[DefinedParams.name] as? String)?.let { day ->
+                                (it[DefinedParams.NAME] as? String)?.let { day ->
                                     networkList.add(
                                         day,
                                     )
@@ -739,7 +739,7 @@ class EditCommunityProfileFragment : BaseFragment(), FormEventListener, View.OnC
                                         communityProfileViewModel.marketDays = list.map { data -> Pair(data, true) }.toMutableList()
                                         val daysMap = ArrayList<HashMap<String, Any>>()
                                         list.forEach {
-                                            daysMap.add(hashMapOf(DefinedParams.name to it))
+                                            daysMap.add(hashMapOf(DefinedParams.NAME to it))
                                         }
                                         formGenerator.validateCheckboxDialogue(
                                             MarketDays,
@@ -763,7 +763,7 @@ class EditCommunityProfileFragment : BaseFragment(), FormEventListener, View.OnC
                                         communityProfileViewModel.selectedNetworks = list.map { data -> Pair(data, true) }.toMutableList()
                                         val daysMap = ArrayList<HashMap<String, Any>>()
                                         list.forEach {
-                                            daysMap.add(hashMapOf(DefinedParams.name to it))
+                                            daysMap.add(hashMapOf(DefinedParams.NAME to it))
                                         }
                                         formGenerator.validateCheckboxDialogue(
                                             SelectedNetwork,

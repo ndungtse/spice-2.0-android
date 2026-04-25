@@ -23,6 +23,8 @@ import org.medtroniclabs.uhis.ui.BaseFragment
 import org.medtroniclabs.uhis.ui.MenuConstants
 import org.medtroniclabs.uhis.ui.assessment.AssessmentCommonUtils
 import org.medtroniclabs.uhis.ui.assessment.viewmodel.AssessmentViewModel
+import java.text.SimpleDateFormat
+import java.util.Locale
 
 /**
  * Fragment responsible for showing pregnant women registration summary details
@@ -106,8 +108,11 @@ class AssessmentPregnantWomenRegistrationSummaryFragment : BaseFragment(), View.
             // EDD
             val estimatedDeliveryDate =
                 DateUtils.calculateEstimatedDeliveryDate(lastMenstrualDate)
-            val estimatedDeliveryDateDisplay =
-                DateUtils.getDateFormat().format(estimatedDeliveryDate.time)
+            val eddFormat = SimpleDateFormat(
+                DateUtils.DATE_FORMAT_DD_MMMM_YYYY,
+                Locale.getDefault(),
+            )
+            val estimatedDeliveryDateDisplay = eddFormat.format(estimatedDeliveryDate.time)
             bindSummaryView(
                 getString(R.string.edd_estimated_delivery_date),
                 estimatedDeliveryDateDisplay,
@@ -145,7 +150,13 @@ class AssessmentPregnantWomenRegistrationSummaryFragment : BaseFragment(), View.
                 riskFactors.forEach { riskFactor ->
                     with(AssessmentCommonUtils.getTextSummaryLabelLayoutBinding(context)) {
                         with(tvTitle) {
-                            text = "  • $riskFactor" // Use bigger bullet (•)
+                            text =
+                                "  • ${
+                                    PregnantWomen.riskFactorDisplayText(
+                                        riskFactor,
+                                        requireContext(),
+                                    )
+                                }" // Use bigger bullet (•)
                             setTextColor("#7f1d1d".toColorInt())
                         }
                         displayData.add(root)

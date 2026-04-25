@@ -485,7 +485,16 @@ class AssessmentViewModel @Inject constructor(
             memberRegistrationRepository.updateMemberDeceasedStatus(details.id, false)
         }
 
-        val existingPregnancyDetail = memberRegistrationRepository.getPregnancyDetailByPatientId(details.id)
+        var existingPregnancyDetail = memberRegistrationRepository.getPregnancyDetailByPatientId(details.id)
+        // We need to check, date of delivery should be null and type of abortion should be null
+        // If any of them is not null, that means we already recorded pregnancy outcome.
+        // So, we should create a new record for this pregnancy outcome.
+        existingPregnancyDetail = if (existingPregnancyDetail?.dateOfDelivery.isNullOrBlank() && existingPregnancyDetail?.typeOfAbortion.isNullOrBlank()) {
+            existingPregnancyDetail
+        } else {
+            null
+        }
+
         val pregnancyDetail = existingPregnancyDetail ?: PregnancyDetail(
             householdMemberLocalId = details.id,
             patientId = details.patientId,

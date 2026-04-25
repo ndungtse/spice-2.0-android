@@ -301,6 +301,10 @@ object AppModule {
     @Singleton
     @Provides
     fun provideMemberAssessmentHistoryDao(db: SpiceDataBase): MemberAssessmentHistoryDao = db.memberAssessmentHistoryDao()
+
+    @Singleton
+    @Provides
+    fun provideIsNonProd() = BuildConfig.FLAVOR != AppConstants.FLAVOUR_PROD
 }
 
 @Retention(AnnotationRetention.BINARY)

@@ -1,5 +1,6 @@
 package org.medtroniclabs.uhis.ui.boarding.repo
 
+import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.google.gson.Gson
 import okhttp3.MultipartBody
 import okhttp3.ResponseBody
@@ -118,6 +119,7 @@ class LoginRepository @Inject constructor(
             SecuredPreference.EnvironmentKey.ISLOGGEDIN.name,
             true,
         )
+        FirebaseCrashlytics.getInstance().setUserId(userName)
     }
 
     private fun saveTokenInformation(headers: Map<String, List<String>>) {

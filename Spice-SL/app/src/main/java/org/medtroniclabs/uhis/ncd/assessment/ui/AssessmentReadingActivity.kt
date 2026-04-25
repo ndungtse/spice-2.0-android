@@ -63,6 +63,8 @@ class AssessmentReadingActivity : BaseActivity(), FormEventListener, View.OnClic
         attachObservers()
     }
 
+    override fun consumeImeInsets() = true
+
     private fun init() {
         viewModel.apply {
             formTypeId = intent.getStringExtra(DefinedParams.FORM_TYPE_ID)

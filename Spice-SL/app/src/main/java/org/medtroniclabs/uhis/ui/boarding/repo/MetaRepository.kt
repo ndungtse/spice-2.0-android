@@ -1,9 +1,7 @@
 package org.medtroniclabs.uhis.ui.boarding.repo
 
-import android.content.Context
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
-import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.withContext
@@ -69,6 +67,7 @@ import org.medtroniclabs.uhis.ui.MenuConstants
 import org.medtroniclabs.uhis.ui.assessment.AssessmentDefinedParams
 import org.medtroniclabs.uhis.ui.assessment.AssessmentDefinedParams.FamilyPlanningMethods
 import org.medtroniclabs.uhis.ui.assessment.rmnch.RMNCH
+import org.medtroniclabs.uhis.ui.boarding.ResourceLoadingSyncProgress
 import org.medtroniclabs.uhis.ui.medicalreview.motherneonate.anc.MotherNeonateUtil
 import org.medtroniclabs.uhis.ui.medicalreview.utils.MedicalReviewTypeEnums
 import java.lang.reflect.Type
@@ -77,7 +76,6 @@ import javax.inject.Inject
 class MetaRepository @Inject constructor(
     private var apiHelper: ApiHelper,
     private var roomHelper: RoomHelper,
-    @ApplicationContext private val context: Context,
 ) {
     suspend fun updateDeviceDetails(deviceDetails: DeviceDetails): Resource<DeviceDetails> =
         try {
@@ -92,7 +90,7 @@ class MetaRepository @Inject constructor(
             } else {
                 Resource(state = ResourceState.ERROR)
             }
-        } catch (e: Exception) {
+        } catch (_: Exception) {
             Resource(state = ResourceState.ERROR)
         }
 
@@ -100,6 +98,7 @@ class MetaRepository @Inject constructor(
         workflowNames: MutableList<Long>,
         meta: MutableList<String>,
         changeFacility: Boolean,
+        onProgress: ((Int) -> Unit)? = null,
     ): Resource<Boolean> {
         return try {
             withContext(Dispatchers.IO) {
@@ -166,10 +165,10 @@ class MetaRepository @Inject constructor(
                                 roomHelper.deleteChiefDoms()
                                 roomHelper.saveChiefDoms(chiefdomList)
                             }
-                            programs?.let { prgms ->
+                            programs?.let {
                                 roomHelper.deletePrograms()
                                 val list = ArrayList<ProgramEntity>()
-                                prgms.forEach { item ->
+                                programs.forEach { item ->
                                     list.add(
                                         ProgramEntity(
                                             id = item.id,
@@ -196,6 +195,7 @@ class MetaRepository @Inject constructor(
                                 insertExaminationsComplaint(insertPrescriptionInstruction(items))
                             }
                         }
+                        onProgress?.invoke(ResourceLoadingSyncProgress.USER_DATA_COMPLETE)
 
                         val formsResponse = async {
                             apiHelper.getForms(
@@ -227,6 +227,7 @@ class MetaRepository @Inject constructor(
                                     return@with Resource(state = ResourceState.ERROR)
                                 }
                             }
+                            onProgress?.invoke(ResourceLoadingSyncProgress.FORMS_COMPLETE)
                         } else {
                             return@with Resource(state = ResourceState.ERROR)
                         }
@@ -267,6 +268,7 @@ class MetaRepository @Inject constructor(
                                 return@with Resource(state = ResourceState.ERROR)
                             }
                         }
+                        onProgress?.invoke(ResourceLoadingSyncProgress.TB_SEGMENT_COMPLETE)
                         if (meta.isNotEmpty()) {
                             val metadataResponse =
                                 async { apiHelper.getFormMetadata(FormMetaRequest(meta)) }.await()
@@ -275,16 +277,16 @@ class MetaRepository @Inject constructor(
                                     return@with Resource(state = ResourceState.ERROR)
                                 }
                                 metadataResponse.body()?.entity?.let { res ->
-                                    res.symptoms.let {
+                                    res.symptoms.let { symptoms ->
                                         roomHelper.deleteAllSymptoms()
-                                        val maxId = it.maxBy { it._id }._id
-                                        it.filter { it.type != FamilyPlanningMethods }?.let {
+                                        val maxId = symptoms.maxBy { symptom -> symptom._id }._id
+                                        symptoms.filter { symptom -> symptom.type != FamilyPlanningMethods }.let {
                                             roomHelper.insertSymptoms(it)
                                         }
-                                        it
-                                            .filter { it.type.equals(FamilyPlanningMethods, true) }
-                                            .sortedBy { it.displayOrder }
-                                            ?.let { list ->
+                                        symptoms
+                                            .filter { symptom -> symptom.type.equals(FamilyPlanningMethods, true) }
+                                            .sortedBy { symptom -> symptom.displayOrder }
+                                            .let { list ->
                                                 roomHelper.insertSymptoms(
                                                     convertFamilyPlanningMethodToSymptoms(
                                                         list,
@@ -342,6 +344,7 @@ class MetaRepository @Inject constructor(
                         } else {
                             roomHelper.deleteAllSymptoms()
                         }
+                        onProgress?.invoke(ResourceLoadingSyncProgress.FORM_METADATA_COMPLETE)
                         if (CommonUtils.isNonCommunity()) {
                             val userTermsAndConditionsMeta = async {
                                 apiHelper.getUserTermsAndConditions(
@@ -368,6 +371,7 @@ class MetaRepository @Inject constructor(
                                 return@with Resource(state = ResourceState.ERROR)
                             }
                         }
+                        onProgress?.invoke(ResourceLoadingSyncProgress.METADATA_PHASE_COMPLETE)
                         Resource(state = ResourceState.SUCCESS)
                     }
                 } else {
@@ -604,8 +608,8 @@ class MetaRepository @Inject constructor(
                     tenantId = healthFacility.tenantId,
                     fhirId = healthFacility.fhirId,
                     isDefault = healthFacility.id == defaultId,
-                    isUserSite = userHealthFacilities?.any { userSiteFacility -> userSiteFacility.id == healthFacility.id } ?: false,
-                    phoneNumber = healthFacility.phuFocalPersonNumber?.toString() ?: null,
+                    isUserSite = userHealthFacilities.any { userSiteFacility -> userSiteFacility.id == healthFacility.id },
+                    phoneNumber = healthFacility.phuFocalPersonNumber?.toString(),
                 ),
             )
         }
@@ -738,47 +742,9 @@ class MetaRepository @Inject constructor(
         roomHelper.deleteAllForms()
         roomHelper.saveForms(
             formData.map { data ->
-                // Override formInput for specific form types from assets
-                val formInput = when (data.formType) {
-//                    "household_registration" -> {
-//                        try {
-//                            CommonUtils.getStringFromAssets("household_registration.json", context.assets)
-//                        } catch (e: Exception) {
-//                            // If asset file not found, use server formInput
-//                            data.formInput
-//                        }
-//                    }
-//                    "household_member_registration" -> {
-//                        try {
-//                            CommonUtils.getStringFromAssets("member_registration.json", context.assets)
-//                        } catch (e: Exception) {
-//                            // If asset file not found, use server formInput
-//                            data.formInput
-//                        }
-//                    }
-//                    "family_planning_form", "family_planning_review" -> {
-//                        try {
-//                            CommonUtils.getStringFromAssets("family_planning_form.json", context.assets)
-//                        } catch (e: Exception) {
-//                            // If asset file not found, use server formInput
-//                            data.formInput
-//                        }
-//                    }
-//                    RMNCH.PNC -> {
-//                        try {
-//                            CommonUtils.getStringFromAssets("rmnch_pnc_visit.json", context.assets)
-//                        } catch (e: Exception) {
-//                            // If asset file not found, use server formInput
-//                            data.formInput
-//                        }
-//                    }
-
-                    else -> data.formInput
-                }
-
                 FormEntity(
                     id = data.id,
-                    formInput = formInput,
+                    formInput = data.formInput,
                     formType = data.formType,
                     workflowName = data.workflowName,
                     clinicalWorkflowId = data.clinicalWorkflowId,
@@ -900,19 +866,8 @@ class MetaRepository @Inject constructor(
         }
     }
 
-    private fun saveUserIsLogin() {
-        SecuredPreference.putBoolean(
-            SecuredPreference.EnvironmentKey.ISLOGGEDIN.name,
-            true,
-        )
-        SecuredPreference.putBoolean(
-            SecuredPreference.EnvironmentKey.ISMETALOADED.name,
-            true,
-        )
-    }
-
-    suspend fun getANCPNCStatus(selectedHouseholdMemberID: Long): String? {
-        roomHelper.getPregnancyDetailByPatientId(selectedHouseholdMemberID)?.let { memberPregnancyDetail ->
+    fun getANCPNCStatus(pregnancyDetail: PregnancyDetail?): String? {
+        pregnancyDetail?.let { memberPregnancyDetail ->
             val ddDay = getDayCountFromDD(memberPregnancyDetail)
             if (memberPregnancyDetail.typeOfAbortion.isNullOrBlank() && (ddDay == null || ddDay <= 42)) {
                 val dd = getDayCountFromDD(memberPregnancyDetail)
@@ -948,6 +903,8 @@ class MetaRepository @Inject constructor(
 
                 if (months > 24) {
                     setCustomStatus(menuList, selectedHouseholdMemberID)
+                } else {
+                    setChildCustomStatus(menuList, selectedHouseholdMemberID)
                 }
 
                 Resource(
@@ -964,7 +921,7 @@ class MetaRepository @Inject constructor(
             } else {
                 Resource(state = ResourceState.ERROR)
             }
-        } catch (e: Exception) {
+        } catch (_: Exception) {
             Resource(state = ResourceState.ERROR)
         }
 
@@ -982,19 +939,36 @@ class MetaRepository @Inject constructor(
         menu.forEach { item ->
             when (item.menuId) {
                 MenuConstants.FP_MENU_ID -> {
-                    item.isDisabled = isFPMenuDisable(memberPregnancyDetail)
+                    item.isDisabled = isFPMenuDisable(memberPregnancyDetail, selectedHouseholdMemberID)
                 }
 
                 MenuConstants.PREGNANT_WOMEN_PROFILE -> {
-                    item.isDisabled = isPWProfileMenuDisable(memberPregnancyDetail)
+                    item.isDisabled = isPWProfileMenuDisable(memberPregnancyDetail, selectedHouseholdMemberID)
                 }
 
-                MenuConstants.PO_MENU_ID -> {
-                    item.isDisabled = isPOMenuDisable(memberPregnancyDetail)
+                MenuConstants.PREGNANCY_OUTCOME -> {
+                    item.isDisabled = isPOMenuDisable(memberPregnancyDetail, selectedHouseholdMemberID)
                 }
 
                 MenuConstants.RMNCH_MENU_ID -> {
-                    item.isDisabled = isRMNCHMenuDisable(memberPregnancyDetail)
+                    val rmnchWorkFlow = isRMNCHMenuDisable(memberPregnancyDetail, selectedHouseholdMemberID)
+                    item.isDisabled = rmnchWorkFlow.first
+                    item.subModule = rmnchWorkFlow.second
+                }
+            }
+        }
+    }
+
+    private suspend fun setChildCustomStatus(
+        menu: List<MenuEntity>,
+        selectedHouseholdMemberID: Long,
+    ) {
+        menu.forEach { item ->
+            when (item.menuId) {
+                MenuConstants.RMNCH_MENU_ID -> {
+                    val childVisit = isChildVisitMenuDisable(selectedHouseholdMemberID)
+                    item.isDisabled = childVisit.first
+                    item.subModule = childVisit.second
                 }
             }
         }
@@ -1028,17 +1002,26 @@ class MetaRepository @Inject constructor(
             ?: DateUtils.convertStringToDate(dateStr, DateUtils.DATE_FORMAT_yyyyMMdd)
     }
 
-    private fun isFPMenuDisable(pregnancyDetail: PregnancyDetail?): Boolean {
+    private suspend fun isFPMenuDisable(
+        pregnancyDetail: PregnancyDetail?,
+        selectedHouseholdMemberID: Long,
+    ): Boolean {
+        if (checkIfLastServiceProvidedIsToday(selectedHouseholdMemberID, MenuConstants.FP_MENU_ID)) {
+            return true
+        }
         if (pregnancyDetail == null) return false
         val daysFromDelivery = getDayCountFromDD(pregnancyDetail)
         val daysFromLmp = getDayCountFromLMP(pregnancyDetail)
-        if ((daysFromLmp != null && daysFromLmp >= 42) && (daysFromDelivery == null)) {
-            return true
-        }
-        return false
+        return (daysFromLmp != null && daysFromLmp >= 42) && (daysFromDelivery == null)
     }
 
-    private fun isPWProfileMenuDisable(pregnancyDetail: PregnancyDetail?): Boolean {
+    private suspend fun isPWProfileMenuDisable(
+        pregnancyDetail: PregnancyDetail?,
+        selectedHouseholdMemberID: Long,
+    ): Boolean {
+        if (checkIfLastServiceProvidedIsToday(selectedHouseholdMemberID, MenuConstants.PREGNANT_WOMEN_PROFILE)) {
+            return true
+        }
         if (pregnancyDetail == null) return false
         val daysFromDelivery = getDayCountFromDD(pregnancyDetail)
         val daysFromLmp = getDayCountFromLMP(pregnancyDetail)
@@ -1050,9 +1033,30 @@ class MetaRepository @Inject constructor(
         return false
     }
 
-    private fun isRMNCHMenuDisable(pregnancyDetail: PregnancyDetail?): Boolean = pregnancyDetail == null
+    private suspend fun isRMNCHMenuDisable(
+        pregnancyDetail: PregnancyDetail?,
+        selectedHouseholdMemberID: Long,
+    ): Pair<Boolean, String?> {
+        getANCPNCStatus(pregnancyDetail)?.let { workflow ->
+            if (workflow == RMNCH.ANC) {
+                return checkIfLastServiceProvidedIsToday(selectedHouseholdMemberID, MenuConstants.ANC) to workflow
+            } else if (workflow == RMNCH.PNC) {
+                return checkIfLastServiceProvidedIsToday(selectedHouseholdMemberID, MenuConstants.PNC_MOTHER) to workflow
+            }
+        }
+        return (pregnancyDetail == null) to null
+    }
 
-    private fun isPOMenuDisable(pregnancyDetail: PregnancyDetail?): Boolean {
+    private suspend fun isChildVisitMenuDisable(selectedHouseholdMemberID: Long): Pair<Boolean, String> =
+        checkIfLastServiceProvidedIsToday(selectedHouseholdMemberID, MenuConstants.CHILDHOOD_VISIT) to RMNCH.ChildHoodVisit
+
+    private suspend fun isPOMenuDisable(
+        pregnancyDetail: PregnancyDetail?,
+        selectedHouseholdMemberID: Long,
+    ): Boolean {
+        if (checkIfLastServiceProvidedIsToday(selectedHouseholdMemberID, MenuConstants.PREGNANCY_OUTCOME)) {
+            return true
+        }
         if (pregnancyDetail == null) return false
         val daysFromDelivery = getDayCountFromDD(pregnancyDetail)
         return daysFromDelivery != null && daysFromDelivery <= 42
@@ -1075,7 +1079,7 @@ class MetaRepository @Inject constructor(
         try {
             val data = roomHelper.getMenus()
             Resource(state = ResourceState.SUCCESS, data = data)
-        } catch (e: Exception) {
+        } catch (_: Exception) {
             Resource(state = ResourceState.ERROR)
         }
 
@@ -1085,33 +1089,30 @@ class MetaRepository @Inject constructor(
             val userProfile: UserProfile =
                 Gson().fromJson(data.profileData, UserProfile::class.java)
             Resource(state = ResourceState.SUCCESS, data = userProfile)
-        } catch (e: Exception) {
-            Resource(state = ResourceState.ERROR)
-        }
-
-    suspend fun getAllVillagesName(): Resource<List<VillageEntity>> =
-        try {
-            val response = roomHelper.getAllVillageEntity()
-            Resource(state = ResourceState.SUCCESS, data = response)
-        } catch (e: Exception) {
-            Resource(state = ResourceState.ERROR)
-        }
-
-    suspend fun getDefaultHealthFacility(): Resource<HealthFacilityEntity> =
-        try {
-            val response = roomHelper.getDefaultHealthFacility()
-            Resource(state = ResourceState.SUCCESS, data = response)
-        } catch (e: Exception) {
+        } catch (_: Exception) {
             Resource(state = ResourceState.ERROR)
         }
 
     suspend fun getAllVillageIds(): List<Long> = roomHelper.getAllVillageIds()
 
+    suspend fun checkIfLastServiceProvidedIsToday(
+        memberLocalId: Long,
+        serviceTypeFor: String,
+    ): Boolean {
+        val (serviceType, visitDate) = getLastServiceHistoryTypeAndVisitDate(memberLocalId) ?: return false
+        return serviceType?.equals(serviceTypeFor, ignoreCase = true) == true &&
+            DateUtils.isIsoOffsetDateTimeOnLocalCalendarToday(visitDate)
+    }
+
+    /** [Pair.first] = service type; [Pair.second] = visit date. */
+    suspend fun getLastServiceHistoryTypeAndVisitDate(memberLocalId: Long): Pair<String?, String?>? =
+        roomHelper.getLastServiceHistoryTypeAndVisitDate(memberLocalId)
+
     suspend fun getUserHealthFacility(): Resource<ArrayList<HealthFacilityEntity>> =
         try {
             val response = roomHelper.getUserHealthFacility(true)
             Resource(state = ResourceState.SUCCESS, data = response)
-        } catch (e: Exception) {
+        } catch (_: Exception) {
             Resource(state = ResourceState.ERROR)
         }
 
@@ -1125,7 +1126,7 @@ class MetaRepository @Inject constructor(
         try {
             val response = apiHelper.getPatientListTransfer(request)
             Resource(state = ResourceState.SUCCESS, data = response.body()?.entity)
-        } catch (e: Exception) {
+        } catch (_: Exception) {
             Resource(state = ResourceState.ERROR)
         }
 
@@ -1133,7 +1134,7 @@ class MetaRepository @Inject constructor(
         try {
             val response = apiHelper.patientTransferNotificationCount(request)
             Resource(state = ResourceState.SUCCESS, data = response.body()?.entity)
-        } catch (e: Exception) {
+        } catch (_: Exception) {
             Resource(state = ResourceState.ERROR)
         }
 
@@ -1141,7 +1142,7 @@ class MetaRepository @Inject constructor(
         try {
             val response = apiHelper.patientTransferUpdate(request)
             Resource(state = ResourceState.SUCCESS, data = response.body()?.message)
-        } catch (e: Exception) {
+        } catch (_: Exception) {
             Resource(state = ResourceState.ERROR)
         }
 
@@ -1159,7 +1160,7 @@ class MetaRepository @Inject constructor(
         try {
             val response = apiHelper.createSupportRequest(request)
             Resource(state = ResourceState.SUCCESS, data = response.body()?.message)
-        } catch (e: Exception) {
+        } catch (_: Exception) {
             Resource(state = ResourceState.ERROR)
         }
 
@@ -1217,7 +1218,7 @@ class MetaRepository @Inject constructor(
             } else {
                 Resource(state = ResourceState.ERROR)
             }
-        } catch (e: Exception) {
+        } catch (_: Exception) {
             Resource(state = ResourceState.ERROR)
         }
 
@@ -1229,7 +1230,7 @@ class MetaRepository @Inject constructor(
             } else {
                 Resource(state = ResourceState.ERROR, message = response.message())
             }
-        } catch (e: Exception) {
+        } catch (_: Exception) {
             Resource(state = ResourceState.ERROR)
         }
 

@@ -54,7 +54,8 @@ import org.medtroniclabs.uhis.ui.assessment.viewmodel.AssessmentViewModel
 import org.medtroniclabs.uhis.ui.cbs.activity.CbsActivity
 import org.medtroniclabs.uhis.ui.followup.FollowUpMyPatientActivity
 import org.medtroniclabs.uhis.ui.home.AssessmentToolsActivity
-import org.medtroniclabs.uhis.ui.household.HouseholdSearchActivity
+import org.medtroniclabs.uhis.ui.household.HouseholdDefinedParams
+import org.medtroniclabs.uhis.ui.household.summary.HouseholdSummaryActivity
 import org.medtroniclabs.uhis.ui.landing.LandingActivity
 import org.medtroniclabs.uhis.ui.services.ServicesActivity
 
@@ -726,7 +727,10 @@ class AssessmentActivity : BaseActivity() {
                         putExtra("isExternalMember", true)
                     }
                 } else {
-                    Intent(this, HouseholdSearchActivity::class.java)
+                    Intent(this, HouseholdSummaryActivity::class.java).apply {
+                        putExtra(DefinedParams.householdId, viewModel.selectedHouseholdId)
+                        putExtra(HouseholdDefinedParams.IS_FROM_HOUSEHOLD_REGISTRATION, false)
+                    }
                 }
             }
         }

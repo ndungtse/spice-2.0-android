@@ -4,7 +4,6 @@ import android.Manifest
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.net.Uri
 import android.os.Bundle
 import android.provider.Settings
 import android.view.View
@@ -15,14 +14,11 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.commit
 import androidx.fragment.app.replace
 import dagger.hilt.android.AndroidEntryPoint
-import org.medtroniclabs.uhis.BuildConfig
 import org.medtroniclabs.uhis.R
 import org.medtroniclabs.uhis.appextensions.isFineAndCoarseLocationPermissionGranted
-import org.medtroniclabs.uhis.appextensions.isGpsEnabled
 import org.medtroniclabs.uhis.common.DefinedParams
 import org.medtroniclabs.uhis.common.GeneralErrorDialog
 import org.medtroniclabs.uhis.common.SecuredPreference
-import org.medtroniclabs.uhis.common.SpiceLocationManager
 import org.medtroniclabs.uhis.ncd.data.PatientFollowUpEntity
 import org.medtroniclabs.uhis.ncd.followup.fragment.NCDFollowUpDialogFragment
 import org.medtroniclabs.uhis.ncd.medicalreview.NCDMRUtil
@@ -190,45 +186,47 @@ open class BaseFragment : Fragment() {
 
     fun withLocationCheck(
         onLocationAvailable: () -> Unit,
-        onLocationNotAvailable: (() -> Unit)? = null,
+//        onLocationNotAvailable: (() -> Unit)? = null,
         shouldHideProgress: Boolean = false,
     ) {
         when {
-            !requireContext().isGpsEnabled() -> {
-                showTurnOnGPSDialog()
-                onLocationNotAvailable?.invoke()
-            }
+//            !requireContext().isGpsEnabled() -> {
+//                showTurnOnGPSDialog()
+//                onLocationNotAvailable?.invoke()
+//            }
             !requireContext().isFineAndCoarseLocationPermissionGranted() -> {
                 requestLocationPermissions { permissionsGranted ->
                     if (permissionsGranted) {
-                        showProgress()
-                        val locationManager = SpiceLocationManager(requireContext())
-                        locationManager.getCurrentLocation {
-                            onLocationAvailable()
-                            if (shouldHideProgress) {
-                                hideProgress()
-                            }
-                        }
+                        onLocationAvailable()
+//                        showProgress()
+//                        val locationManager = SpiceLocationManager(requireContext())
+//                        locationManager.getCurrentLocation {
+//                            onLocationAvailable()
+//                            if (shouldHideProgress) {
+//                                hideProgress()
+//                            }
+//                        }
                     } else {
-                        showErrorDialogue(
-                            title = getString(R.string.gps_disabled_title),
-                            message = getString(R.string.gps_disabled_message),
-                            positiveButtonName = getString(R.string.ok),
-                        ) {
-                            if (it) {
-                                val intent = Intent()
-                                intent.action = Settings.ACTION_APPLICATION_DETAILS_SETTINGS
-                                val uri = Uri.fromParts(
-                                    "package",
-                                    BuildConfig.APPLICATION_ID,
-                                    null,
-                                )
-                                intent.data = uri
-                                intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
-                                startActivity(intent)
-                                onLocationNotAvailable?.invoke()
-                            }
-                        }
+                        onLocationAvailable()
+//                        showErrorDialogue(
+//                            title = getString(R.string.gps_disabled_title),
+//                            message = getString(R.string.gps_disabled_message),
+//                            positiveButtonName = getString(R.string.ok),
+//                        ) {
+//                            if (it) {
+//                                val intent = Intent()
+//                                intent.action = Settings.ACTION_APPLICATION_DETAILS_SETTINGS
+//                                val uri = Uri.fromParts(
+//                                    "package",
+//                                    BuildConfig.APPLICATION_ID,
+//                                    null,
+//                                )
+//                                intent.data = uri
+//                                intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
+//                                startActivity(intent)
+//                                onLocationNotAvailable?.invoke()
+//                            }
+//                        }
                     }
                 }
             }

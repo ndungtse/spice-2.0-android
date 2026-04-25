@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.view.View
 import androidx.activity.viewModels
 import dagger.hilt.android.AndroidEntryPoint
+import org.medtroniclabs.uhis.R
 import org.medtroniclabs.uhis.appextensions.gone
 import org.medtroniclabs.uhis.appextensions.triggerOneTimeWorker
 import org.medtroniclabs.uhis.common.AppConstants
@@ -48,6 +49,11 @@ class ResourceLoadingScreen : BaseActivity() {
     }
 
     private fun attachObserver() {
+        viewModel.syncProgressPercent.observe(this) { percent ->
+            binding.progressSync.progress = percent
+            binding.tvSyncPercent.text = getString(R.string.sync_progress_percent, percent)
+        }
+
         viewModel.oldUserDataSync.observe(this) { resourceState ->
             when (resourceState.state) {
                 ResourceState.LOADING -> {
@@ -90,6 +96,7 @@ class ResourceLoadingScreen : BaseActivity() {
                     } else if (CommonUtils.isNonCommunity() && CommonUtils.isChp()) {
                         viewModel.downloadTheFollowUpData()
                     } else {
+                        viewModel.markSyncProgressComplete()
                         launchLandingScreen()
                     }
                 }
@@ -136,6 +143,7 @@ class ResourceLoadingScreen : BaseActivity() {
     }
 
     private fun handleError() {
+        viewModel.syncProgressPercent.value = 0
         SecuredPreference.putBoolean(
             SecuredPreference.EnvironmentKey.ISMETALOADED.name,
             false,

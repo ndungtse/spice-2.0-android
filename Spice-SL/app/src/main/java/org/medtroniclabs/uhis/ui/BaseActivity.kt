@@ -12,7 +12,6 @@ import android.provider.Settings
 import android.text.TextUtils
 import android.view.Menu
 import android.view.MenuInflater
-import android.view.MenuItem
 import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
@@ -36,12 +35,12 @@ import org.medtroniclabs.uhis.app.analytics.model.UserDetail
 import org.medtroniclabs.uhis.app.analytics.utils.AnalyticsDefinedParams
 import org.medtroniclabs.uhis.app.analytics.utils.AnalyticsUtils
 import org.medtroniclabs.uhis.appextensions.isFineAndCoarseLocationPermissionGranted
-import org.medtroniclabs.uhis.appextensions.isGpsEnabled
 import org.medtroniclabs.uhis.appextensions.loadAsGif
 import org.medtroniclabs.uhis.appextensions.resetImageView
 import org.medtroniclabs.uhis.appextensions.setVisible
 import org.medtroniclabs.uhis.common.CommonUtils
 import org.medtroniclabs.uhis.common.DefinedParams.REFRESH_FRAGMENT
+import org.medtroniclabs.uhis.common.ImeInset
 import org.medtroniclabs.uhis.common.LocaleHelper
 import org.medtroniclabs.uhis.common.SecuredPreference
 import org.medtroniclabs.uhis.databinding.ActivityBaseBinding
@@ -55,7 +54,7 @@ import org.medtroniclabs.uhis.ui.landing.LandingActivity
 import kotlin.math.abs
 
 @AndroidEntryPoint
-open class BaseActivity : SpiceRootActivity() {
+open class BaseActivity : SpiceRootActivity(), ImeInset {
     private lateinit var binding: ActivityBaseBinding
 
     private val baseViewModel: BaseViewModel by viewModels()
@@ -79,6 +78,7 @@ open class BaseActivity : SpiceRootActivity() {
             binding.fakeStatusBar,
             binding.fakeNavBar,
             false,
+            imeInset = this,
         )
         UserDetail.startDateTime = AnalyticsUtils.getCurrentDateTimeInLocalTime()
         setListener()
@@ -177,6 +177,8 @@ open class BaseActivity : SpiceRootActivity() {
     }
 
     fun getString(): String = binding.titleToolbar.text.toString()
+
+    fun getTitleToolbar() = binding.titleToolbar
 
     fun hideHomeButton(status: Boolean) {
         if (status) {
@@ -296,7 +298,7 @@ open class BaseActivity : SpiceRootActivity() {
             }
             if (!touchTargetIsEditText) {
                 val imm = getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
-                imm.hideSoftInputFromWindow(v.getWindowToken(), 0)
+                imm.hideSoftInputFromWindow(v.windowToken, 0)
             }
         }
     }
@@ -511,8 +513,6 @@ open class BaseActivity : SpiceRootActivity() {
         return true
     }
 
-    override fun onOptionsItemSelected(item: MenuItem): Boolean = super.onOptionsItemSelected(item)
-
     fun onHomeClick(callbackHome: (() -> Unit?)? = null) {
         binding.ivHome.safeClickListener {
             if (callbackHome == null) {
@@ -604,8 +604,7 @@ open class BaseActivity : SpiceRootActivity() {
                 newBase?.let {
                     LocaleHelper.onAttach(
                         it,
-                        org.medtroniclabs.uhis.common.CommonUtils
-                            .parseUserLocale(),
+                        CommonUtils.parseUserLocale(),
                     )
                 },
             )
@@ -616,38 +615,39 @@ open class BaseActivity : SpiceRootActivity() {
 
     fun withLocationCheck(
         onLocationAvailable: () -> Unit,
-        onLocationNotAvailable: (() -> Unit)? = null,
+//        onLocationNotAvailable: (() -> Unit)? = null,
     ) {
         when {
-            !isGpsEnabled() -> {
-                showTurnOnGPSDialog()
-                onLocationNotAvailable?.invoke()
-            }
+//            !isGpsEnabled() -> {
+//                showTurnOnGPSDialog()
+//                onLocationNotAvailable?.invoke()
+//            }
 
             !isFineAndCoarseLocationPermissionGranted() -> {
                 requestLocationPermissions { permissionsGranted ->
                     if (permissionsGranted) {
                         onLocationAvailable()
                     } else {
-                        showErrorDialogue(
-                            title = getString(R.string.gps_disabled_title),
-                            message = getString(R.string.gps_disabled_message),
-                            positiveButtonName = getString(R.string.ok),
-                        ) {
-                            if (it) {
-                                val intent = Intent()
-                                intent.action = Settings.ACTION_APPLICATION_DETAILS_SETTINGS
-                                val uri = Uri.fromParts(
-                                    "package",
-                                    BuildConfig.APPLICATION_ID,
-                                    null,
-                                )
-                                intent.data = uri
-                                intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
-                                startActivity(intent)
-                                onLocationNotAvailable?.invoke()
-                            }
-                        }
+                        onLocationAvailable()
+//                        showErrorDialogue(
+//                            title = getString(R.string.gps_disabled_title),
+//                            message = getString(R.string.gps_disabled_message),
+//                            positiveButtonName = getString(R.string.ok),
+//                        ) {
+//                            if (it) {
+//                                val intent = Intent()
+//                                intent.action = Settings.ACTION_APPLICATION_DETAILS_SETTINGS
+//                                val uri = Uri.fromParts(
+//                                    "package",
+//                                    BuildConfig.APPLICATION_ID,
+//                                    null,
+//                                )
+//                                intent.data = uri
+//                                intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
+//                                startActivity(intent)
+//                                onLocationNotAvailable?.invoke()
+//                            }
+//                        }
                     }
                 }
             }
@@ -686,4 +686,6 @@ open class BaseActivity : SpiceRootActivity() {
             dialogProvider().show(supportFragmentManager, tag)
         }
     }
+
+    override fun consumeImeInsets() = false
 }

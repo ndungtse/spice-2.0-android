@@ -28,6 +28,7 @@ import org.medtroniclabs.uhis.ncd.data.RegisterCallResponse
 import org.medtroniclabs.uhis.network.ApiHelper
 import org.medtroniclabs.uhis.network.resource.Resource
 import org.medtroniclabs.uhis.network.resource.ResourceState
+import org.medtroniclabs.uhis.ui.boarding.ResourceLoadingSyncProgress
 import retrofit2.Response
 import timber.log.Timber
 import java.lang.reflect.Type
@@ -66,26 +67,33 @@ class NCDFollowUpRepo @Inject constructor(
     suspend fun fetchSyncNcdFollowUpData(
         villageIds: List<Long> = emptyList(),
         serverLastSyncedAt: String? = null,
-    ): Boolean =
-        try {
+        onProgress: ((Int) -> Unit)? = null,
+    ): Boolean {
+        return try {
             val syncedResponse = getSyncedNcdFollowUpEntities(villageIds, serverLastSyncedAt)
-            if (syncedResponse.isSuccessful) {
-                syncedResponse.body()?.string()?.let { response ->
-                    // Deserialize the JSON response into the NCDFollowUpDownload model
-                    val type: Type = object : TypeToken<NCDFollowUpDownload>() {}.type
-                    val responseInitialDownload: NCDFollowUpDownload? = Gson().fromJson(response, type)
-                    // Save the deserialized follow-up data
-                    responseInitialDownload?.let { saveNcdFollowUpData(it) } ?: false
-                } ?: false
-            } else {
-                false
+            if (!syncedResponse.isSuccessful) {
+                return false
             }
+            onProgress?.invoke(ResourceLoadingSyncProgress.NCD_FOLLOW_UP_RESPONSE)
+            val bodyString = syncedResponse.body()?.string() ?: return false
+            val type: Type = object : TypeToken<NCDFollowUpDownload>() {}.type
+            val responseInitialDownload: NCDFollowUpDownload? = Gson().fromJson(bodyString, type)
+            val saved = responseInitialDownload?.let { saveNcdFollowUpData(it) } ?: false
+            if (saved) {
+                onProgress?.invoke(ResourceLoadingSyncProgress.LOCAL_PERSIST_COMPLETE)
+            }
+            saved
         } catch (e: Exception) {
             Timber.d("Exception: ${e.localizedMessage}")
             false
         }
+    }
 
-    suspend fun getNcdFollowUpData(liveData: MutableLiveData<Resource<Boolean>>) {
+    suspend fun getNcdFollowUpData(
+        liveData: MutableLiveData<Resource<Boolean>>,
+        onProgress: ((Int) -> Unit)? = null,
+    ) {
+        onProgress?.invoke(ResourceLoadingSyncProgress.NCD_FOLLOW_UP_START)
         // Retrieve all village IDs from the local database
         val prefKey = SecuredPreference.EnvironmentKey.LINKED_VILLAGE_IDS.name
         val villageIds = SecuredPreference.getLongList(prefKey)
@@ -94,9 +102,9 @@ class NCDFollowUpRepo @Inject constructor(
         val lastSyncedAt =
             SecuredPreference.getString(SecuredPreference.EnvironmentKey.NCD_FOLLOW_UP_LAST_SYNCED.name)
         val isInitialDataSuccess = if (lastSyncedAt == null) {
-            fetchSyncNcdFollowUpData(villageIds, null)
+            fetchSyncNcdFollowUpData(villageIds, null, onProgress)
         } else {
-            fetchSyncNcdFollowUpData(villageIds, lastSyncedAt)
+            fetchSyncNcdFollowUpData(villageIds, lastSyncedAt, onProgress)
         }
 
         // Placeholder: Add logic to handle unsynced data download

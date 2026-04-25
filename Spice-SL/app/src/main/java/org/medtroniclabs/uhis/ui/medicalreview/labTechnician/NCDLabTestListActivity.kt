@@ -37,6 +37,8 @@ class NCDLabTestListActivity : BaseActivity(), View.OnClickListener, Investigati
         attachObserver()
     }
 
+    override fun consumeImeInsets() = true
+
     private fun attachObserver() {
         patientDetailViewModel.patientDetailsLiveData.observe(this) { resourceData ->
             when (resourceData.state) {

@@ -20,7 +20,6 @@ import org.medtroniclabs.uhis.app.analytics.model.UserDetail
 import org.medtroniclabs.uhis.app.analytics.utils.AnalyticsDefinedParams
 import org.medtroniclabs.uhis.app.analytics.utils.AnalyticsUtils
 import org.medtroniclabs.uhis.appextensions.startBackgroundOfflineSync
-import org.medtroniclabs.uhis.appextensions.visible
 import org.medtroniclabs.uhis.common.CommonUtils
 import org.medtroniclabs.uhis.common.DateUtils
 import org.medtroniclabs.uhis.common.DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ
@@ -34,6 +33,7 @@ import org.medtroniclabs.uhis.common.SecuredPreference
 import org.medtroniclabs.uhis.data.model.RecommendedDosageListModel
 import org.medtroniclabs.uhis.databinding.FragmentExternalMemberRegistrationBinding
 import org.medtroniclabs.uhis.db.entity.HouseholdMemberEntity
+import org.medtroniclabs.uhis.db.entity.SubVillageEntity
 import org.medtroniclabs.uhis.db.entity.VillageEntity
 import org.medtroniclabs.uhis.formgeneration.FormGenerator
 import org.medtroniclabs.uhis.formgeneration.listener.FormEventListener
@@ -64,6 +64,7 @@ class ExternalMemberRegistrationFragment : BaseFragment(), FormEventListener, Vi
     private var pendingVillageId: Long? = null
     private var pendingSsId: Long? = null
     private var pendingSubVillageId: Long? = null
+    private var lastSubVillageList: List<SubVillageEntity> = emptyList()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -124,6 +125,10 @@ class ExternalMemberRegistrationFragment : BaseFragment(), FormEventListener, Vi
                         nationalIdView.filters = filters.toTypedArray()
                     }
                 }
+                formGenerator.updateNationalIdLabelForIdType(
+                    selectedId,
+                    SecuredPreference.getIsTranslationEnabled(),
+                )
             } else if (id == MemberRegistration.NATIONAL_ID) {
                 // This is national id component - hide error (validation handled elsewhere)
                 formGenerator.hideError(id)
@@ -196,11 +201,6 @@ class ExternalMemberRegistrationFragment : BaseFragment(), FormEventListener, Vi
                                 }
                             }
                         }
-
-                        // Show village/union field if we have more than 1
-                        if (data.response is List<*> && data.response.size > 1) {
-                            formGenerator.getViewByTag(VILLAGE_ID + formGenerator.rootSuffix)?.visible()
-                        }
                     }
                 }
                 else -> {
@@ -230,8 +230,29 @@ class ExternalMemberRegistrationFragment : BaseFragment(), FormEventListener, Vi
             when (resourceState.state) {
                 ResourceState.SUCCESS -> {
                     resourceState.data?.let { data ->
+                        lastSubVillageList =
+                            (data.response as? List<*>)
+                                ?.filterIsInstance<SubVillageEntity>()
+                                .orEmpty()
                         formGenerator.spinnerDataInjection(data, getResultSpinnerMapList(data))
-                        // Apply pending Sub-village selection after data injection
+
+                        // Auto-select if single sub-village (same as household registration) so Union is filled via onUpdateInstruction
+                        if (data.response is List<*> && data.response.size == 1) {
+                            val only = data.response[0]
+                            val id: Any? =
+                                when (only) {
+                                    is SubVillageEntity -> only.id
+                                    is Map<*, *> -> only[DefinedParams.ID]
+                                    else -> null
+                                }
+                            if (id != null) {
+                                formGenerator.getViewByTag(SUB_VILLAGE_ID)?.let { view ->
+                                    formGenerator.setValueForView(id, view)
+                                }
+                            }
+                        }
+
+                        // Apply pending Sub-village selection after data injection (edit mode)
                         applyPendingSelectionIfReady(SUB_VILLAGE_ID, pendingSubVillageId) {
                             pendingSubVillageId = null
                         }
@@ -325,6 +346,10 @@ class ExternalMemberRegistrationFragment : BaseFragment(), FormEventListener, Vi
             formGenerator.setValueForView(details.nationalId, view)
             view.isEnabled = details.idType.isNotEmpty()
         }
+        formGenerator.updateNationalIdLabelForIdType(
+            details.idType,
+            SecuredPreference.getIsTranslationEnabled(),
+        )
 
         // Gender: select then disable like normal edit
         details.gender.let { gender ->
@@ -403,6 +428,18 @@ class ExternalMemberRegistrationFragment : BaseFragment(), FormEventListener, Vi
         }
     }
 
+    /**
+     * Keeps Union ([VILLAGE_ID]) hidden; after user picks sub-village, set parent village id on the hidden Union spinner.
+     */
+    private fun applyVillageIdFromSubVillageSelection(selectedId: Any?) {
+        val subVillageId = CommonUtils.getLongOrNull(selectedId) ?: return
+        if (subVillageId == 0L) return
+        val parentVillageId = lastSubVillageList.find { it.id == subVillageId }?.villageId ?: return
+        formGenerator.getViewByTag(VILLAGE_ID)?.let { view ->
+            formGenerator.setValueForView(parentVillageId, view)
+        }
+    }
+
     private fun applyPendingSelectionIfReady(
         fieldId: String,
         pendingId: Long?,
@@ -441,9 +478,14 @@ class ExternalMemberRegistrationFragment : BaseFragment(), FormEventListener, Vi
     }
 
     override fun onRenderingComplete() {
-        // Trigger initial load for Union dropdown after form is rendered
+        // Union list (hidden) — load for auto-fill / result map when a single union exists
         householdRegistrationViewModel.loadDataCacheByType(
             VILLAGE_ID,
+            "",
+        )
+        // SS list is scoped to logged-in Kormi user, not to Union selection
+        householdRegistrationViewModel.loadShasthyaShebikaDataCacheByType(
+            SHASTHYA_SHEBIKA_ID,
             "",
         )
     }
@@ -452,27 +494,7 @@ class ExternalMemberRegistrationFragment : BaseFragment(), FormEventListener, Vi
         id: String,
         selectedId: Any?,
     ) {
-        // Handle dropdown dependencies for external members
         when (id) {
-            VILLAGE_ID -> {
-                // Union selected - load SS list
-                val villageIdLong = CommonUtils.getLongOrNull(selectedId) ?: 0L
-                if (villageIdLong != 0L) {
-                    householdRegistrationViewModel.loadShasthyaShebikaDataCacheByType(
-                        SHASTHYA_SHEBIKA_ID,
-                        "",
-                    )
-                    // During edit prefill, preserve pending child values and avoid clearing.
-                    if (pendingSsId == null && pendingSubVillageId == null) {
-                        formGenerator.getViewByTag(SHASTHYA_SHEBIKA_ID)?.let { view ->
-                            formGenerator.setValueForView(null, view)
-                        }
-                        formGenerator.getViewByTag(SUB_VILLAGE_ID)?.let { view ->
-                            formGenerator.setValueForView(null, view)
-                        }
-                    }
-                }
-            }
             SHASTHYA_SHEBIKA_ID -> {
                 // SS selected - load Village list
                 val shasthyaShebikaIdLong = CommonUtils.getLongOrNull(selectedId) ?: 0L
@@ -489,6 +511,9 @@ class ExternalMemberRegistrationFragment : BaseFragment(), FormEventListener, Vi
                         }
                     }
                 }
+            }
+            SUB_VILLAGE_ID -> {
+                applyVillageIdFromSubVillageSelection(selectedId)
             }
         }
     }

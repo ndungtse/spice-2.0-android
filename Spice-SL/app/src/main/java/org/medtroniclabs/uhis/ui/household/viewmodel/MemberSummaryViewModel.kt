@@ -2,8 +2,10 @@ package org.medtroniclabs.uhis.ui.household.viewmodel
 
 import android.content.Intent
 import androidx.lifecycle.MediatorLiveData
+import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.launch
 import org.medtroniclabs.uhis.common.DefinedParams
 import org.medtroniclabs.uhis.db.local.RoomHelper
 import org.medtroniclabs.uhis.db.response.MemberAssessmentHistoryResponse
@@ -13,8 +15,9 @@ import javax.inject.Inject
 
 @HiltViewModel
 class MemberSummaryViewModel @Inject constructor(
-    @IoDispatcher override var dispatcherIO: CoroutineDispatcher,
+    @param:IoDispatcher override var dispatcherIO: CoroutineDispatcher,
     private val roomHelper: RoomHelper,
+    private val isNonProd: Boolean,
 ) : BaseViewModel(dispatcherIO) {
     var householdId: Long = -1
         private set
@@ -44,4 +47,11 @@ class MemberSummaryViewModel @Inject constructor(
             memberDetails.value = value
         }
     }
+
+    fun decrementAssessmentHistoryDate() =
+        viewModelScope.launch(dispatcherIO) {
+            roomHelper.decrementAssessmentHistoryVisitDate(memberId, 1)
+        }
+
+    fun isNonProdEnv() = isNonProd
 }

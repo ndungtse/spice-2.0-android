@@ -10,6 +10,7 @@ import androidx.fragment.app.activityViewModels
 import org.medtroniclabs.uhis.R
 import org.medtroniclabs.uhis.appextensions.getLongTime
 import org.medtroniclabs.uhis.common.DateUtils
+import org.medtroniclabs.uhis.common.DateUtils.DATE_FORMAT_DD_MMMM_YYYY
 import org.medtroniclabs.uhis.common.DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ
 import org.medtroniclabs.uhis.common.DateUtils.DATE_ddMMyyyy
 import org.medtroniclabs.uhis.common.DateUtils.calculateAge
@@ -87,7 +88,7 @@ class PregnancyDetailsRMNCHFragment : BaseFragment() {
                     val formattedEDD = DateUtils.convertDateFormat(
                         edd,
                         DATE_FORMAT_yyyyMMddHHmmssZZZZZ,
-                        DATE_ddMMyyyy,
+                        DATE_FORMAT_DD_MMMM_YYYY,
                     )
                     createSummary(
                         getString(R.string.estimated_delivery_date),
@@ -208,14 +209,16 @@ class PregnancyDetailsRMNCHFragment : BaseFragment() {
                     }
                 }
                 if (highRiskList.isNotEmpty()) {
-                    val highRiskDisplay = highRiskList.joinToString()
+                    val highRiskDisplay = highRiskList.joinToString { condition ->
+                        RMNCH.getDisplayCondition(condition, isTranslationEnabled)
+                    }
                     createSummary(
-                        AssessmentDefinedParams.LABEL_HIGH_RISK_PREGNANT_WOMAN,
+                        getString(R.string.highrisk_pregnant_women),
                         highRiskDisplay,
                     )
                 } else {
                     createSummary(
-                        AssessmentDefinedParams.LABEL_HIGH_RISK_PREGNANT_WOMAN,
+                        getString(R.string.highrisk_pregnant_women),
                         getString(R.string.na),
                     )
                 }
@@ -226,14 +229,16 @@ class PregnancyDetailsRMNCHFragment : BaseFragment() {
                     gapsList.addAll(StringConverter.convertStringToList(gapsJson))
                 }
                 if (gapsList.isNotEmpty()) {
-                    val gapsDisplay = gapsList.joinToString()
+                    val gapsDisplay = gapsList.joinToString { condition ->
+                        RMNCH.getDisplayCondition(condition, isTranslationEnabled)
+                    }
                     createSummary(
-                        AssessmentDefinedParams.LABEL_GAPS_IN_ANC,
+                        getString(R.string.gaps_in_anc),
                         gapsDisplay,
                     )
                 } else {
                     createSummary(
-                        AssessmentDefinedParams.LABEL_GAPS_IN_ANC,
+                        getString(R.string.gaps_in_anc),
                         getString(R.string.na),
                     )
                 }
@@ -280,7 +285,9 @@ class PregnancyDetailsRMNCHFragment : BaseFragment() {
                     }
                 }
                 if (highRiskList.isNotEmpty()) {
-                    val risksString = highRiskList.joinToString()
+                    val risksString = highRiskList.joinToString { condition ->
+                        RMNCH.getDisplayCondition(condition, isTranslationEnabled)
+                    }
                     createSummary(
                         getString(R.string.high_risk_mother),
                         risksString,
@@ -296,7 +303,9 @@ class PregnancyDetailsRMNCHFragment : BaseFragment() {
                     gapsList.addAll(StringConverter.convertStringToList(gapsInPnc))
                 }
                 if (gapsList.isNotEmpty()) {
-                    val gapsString = gapsList.joinToString()
+                    val gapsString = gapsList.joinToString { condition ->
+                        RMNCH.getDisplayCondition(condition, isTranslationEnabled)
+                    }
                     createSummary(
                         getString(R.string.gaps_in_pnc),
                         gapsString,

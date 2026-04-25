@@ -21,6 +21,7 @@
             "isNeededDefault": true,
             "viewType": "SingleSelectionView",
             "errorMessage": "Please select a valid option",
+            "cultureErrorMessage": "অনুগ্রহ করে বৈধ নির্বাচন করুন",
             "isSummary": true,
             "optionsList":
             [
@@ -53,6 +54,7 @@
             "isMandatory": true,
             "isNeededDefault": true,
             "errorMessage": "Please select a valid option",
+            "cultureErrorMessage": "অনুগ্রহ করে বৈধ নির্বাচন করুন",
             "title": "Weight",
             "titleCulture": "ওজন (কেজি)",
             "viewType": "EditText",
@@ -71,15 +73,16 @@
             "hintCulture": "খাবার",
             "isNeededDefault": true,
             "errorMessage": "Please select a valid option",
+            "cultureErrorMessage": "অনুগ্রহ করে বৈধ নির্বাচন করুন",
             "title": "What was the child fed in the last 24 hours?",
-            "titleCulture": "গত ২৪ ঘন্টায় শিশুকে বাড়তি খাবার দেওয়া হয়েছে কিনা?",
+            "titleCulture": "গত ২৪ ঘন্টায় শিশুকে কী কী খাওয়ানো হয়েছে?",
             "optionsList":
             [
                 {
                     "id": 0,
                     "value": "mothersBreastMilk",
                     "name": "Mother's breast milk",
-                    "cultureValue": "মায়ের দুধ "
+                    "cultureValue": "মায়ের দুধ"
                 },
                 {
                     "id": 1,
@@ -91,7 +94,7 @@
                     "id": 2,
                     "value": "formulaMilk",
                     "name": "Formula milk",
-                    "cultureValue": "ফর্মুলা দুধ "
+                    "cultureValue": "ফর্মুলা দুধ"
                 },
                 {
                     "id": 3,
@@ -103,13 +106,19 @@
                     "id": 4,
                     "value": "ricePowder",
                     "name": "Rice powder",
-                    "cultureValue": "চালের গুঁড়া "
+                    "cultureValue": "চালের গুঁড়া"
                 },
                 {
                     "id": 5,
+                    "value": "familyFood",
+                    "name": "Family Food",
+                    "cultureValue": "পারিবারিক খাবার"
+                },
+                {
+                    "id": 6,
                     "value": "other",
                     "name": "Other",
-                    "cultureValue": "অন্যান্য "
+                    "cultureValue": "অন্যান্য"
                 }
             ],
             "visibility": "visible",
@@ -128,6 +137,7 @@
             "isNeededDefault": true,
             "isSummary": true,
             "errorMessage": "Please select a valid option",
+            "cultureErrorMessage": "অনুগ্রহ করে বৈধ নির্বাচন করুন",
             "title": "Within how many hours after birth was breastfed?",
             "titleCulture": "প্রসবের কত ঘণ্টার মধ্যে মায়ের বুকের দুধ খাওয়ানো হয়েছে?",
             "viewType": "EditText",
@@ -165,6 +175,7 @@
             ],
             "readOnly": true,
             "errorMessage": "Please select a valid option",
+            "cultureErrorMessage": "অনুগ্রহ করে বৈধ নির্বাচন করুন",
             "title": "At what month was additional food started?",
             "titleCulture": "শিশুকে  বাড়তি খাবার কত মাসে শুরু করা হয়েছে?",
             "viewType": "Spinner",
@@ -180,6 +191,7 @@
             "isNeededDefault": true,
             "viewType": "SingleSelectionView",
             "errorMessage": "Please select a valid option",
+            "cultureErrorMessage": "অনুগ্রহ করে বৈধ নির্বাচন করুন",
             "isSummary": true,
             "optionsList":
             [
@@ -210,6 +222,7 @@
             "isNeededDefault": true,
             "viewType": "SingleSelectionView",
             "errorMessage": "Please select a valid option",
+            "cultureErrorMessage": "অনুগ্রহ করে বৈধ নির্বাচন করুন",
             "isSummary": true,
             "optionsList":
             [
@@ -240,6 +253,7 @@
             "isNeededDefault": true,
             "viewType": "SingleSelectionView",
             "errorMessage": "Please select a valid option",
+            "cultureErrorMessage": "অনুগ্রহ করে একটি বৈধ মান লিখুন",
             "isSummary": true,
             "optionsList":
             [
@@ -270,6 +284,7 @@
             "isNeededDefault": true,
             "viewType": "SingleSelectionView",
             "errorMessage": "Please select a valid option",
+            "cultureErrorMessage": "অনুগ্রহ করে বৈধ নির্বাচন করুন",
             "isSummary": true,
             "optionsList":
             [
@@ -318,6 +333,7 @@
             "isNeededDefault": true,
             "viewType": "SingleSelectionView",
             "errorMessage": "Please select a valid option",
+            "cultureErrorMessage": "অনুগ্রহ করে বৈধ নির্বাচন করুন",
             "isSummary": true,
             "optionsList":
             [
@@ -349,6 +365,7 @@
             "isMandatory": true,
             "isNeededDefault": true,
             "errorMessage": "Please select a valid option",
+            "cultureErrorMessage": "অনুগ্রহ করে বৈধ নির্বাচন করুন",
             "title": "If any complication, specify",
             "titleCulture": "কোনো জটিলতা থাকলে লিখুন",
             "isInfo": "gone",
@@ -375,6 +392,7 @@
             "isNeededDefault": true,
             "viewType": "SingleSelectionView",
             "errorMessage": "Please select a valid option",
+            "cultureErrorMessage": "অনুগ্রহ করে বৈধ নির্বাচন করুন",
             "isSummary": true,
             "optionsList":
             [

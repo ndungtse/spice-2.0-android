@@ -8,7 +8,6 @@ import androidx.room.Query
 import androidx.room.RawQuery
 import androidx.room.Transaction
 import androidx.sqlite.db.SimpleSQLiteQuery
-import org.medtroniclabs.uhis.common.DefinedParams
 import org.medtroniclabs.uhis.data.offlinesync.model.HHSignatureDetail
 import org.medtroniclabs.uhis.data.offlinesync.model.HouseHoldMember
 import org.medtroniclabs.uhis.data.offlinesync.model.HouseholdMemberStatus
@@ -18,9 +17,9 @@ import org.medtroniclabs.uhis.db.entity.AssessmentEntity
 import org.medtroniclabs.uhis.db.entity.HouseholdEntity
 import org.medtroniclabs.uhis.db.entity.HouseholdMemberEntity
 import org.medtroniclabs.uhis.db.entity.MemberAssessmentHistoryEntity
-import org.medtroniclabs.uhis.mappingkey.MemberRegistration
 import org.medtroniclabs.uhis.model.MemberDobGenderModel
 import org.medtroniclabs.uhis.model.assessment.AssessmentMemberDetails
+import org.medtroniclabs.uhis.model.services.ServiceMemberCounts
 import org.medtroniclabs.uhis.model.services.ServiceStaticFilter
 
 @Dao
@@ -293,9 +292,10 @@ interface MemberDAO {
      * Returns a live list of members with last-activity info.
      *
      * **Filters** (all optional):
-     * @param searchInput match against household name or number; blank = no filter
-     * @param filterBySs whitelist of Shasthya Shebika IDs; null/empty = no filter
-     * @param filterBySubVillages whitelist of sub-village IDs; null/empty = no filter
+     * @param searchInput match against member name or phone number; blank = no filter
+     * @param filterBySs whitelist of Shasthya Shebika IDs; empty = no filter
+     * @param filterBySubVillages whitelist of sub-village IDs; empty = no filter
+     * @param staticFilter selected static service bucket to apply
      *
      */
     fun getServiceMembers(
@@ -312,6 +312,13 @@ interface MemberDAO {
             staticFilter == ServiceStaticFilter.EXTERNAL_MEMBERS ||
                 staticFilter == ServiceStaticFilter.EXTERNAL_PREGNANT_WOMEN
 
+        if (staticFilter != ServiceStaticFilter.EXTERNAL_MEMBERS &&
+            staticFilter != ServiceStaticFilter.ALL_MEMBERS &&
+            staticFilter != ServiceStaticFilter.CHILDREN_UNDER_TWO_YEARS
+        ) {
+            conditions += ServiceFilterConditions.IS_ACTIVE
+        }
+
         if (searchInput.isNotBlank()) {
             conditions += "(hhm.name LIKE ? OR hhm.phone_number LIKE ?)"
             val pattern = "%${searchInput.trim()}%"
@@ -321,167 +328,53 @@ interface MemberDAO {
 
         // Apply SS filter - for external members, use hhm.shasthya_shebika_id; for regular members, use hh.shasthya_shebika_id
         if (filterBySs.isNotEmpty()) {
-            if (isExternalMember) {
-                conditions += "hhm.shasthya_shebika_id IN (${filterBySs.joinToString(",") { "?" }})"
+            conditions += if (isExternalMember) {
+                "hhm.shasthya_shebika_id IN (${filterBySs.joinToString(",") { "?" }})"
             } else {
-                conditions += "hh.shasthya_shebika_id IN (${filterBySs.joinToString(",") { "?" }})"
+                "hh.shasthya_shebika_id IN (${filterBySs.joinToString(",") { "?" }})"
             }
             args.addAll(filterBySs)
         }
 
         // Apply SubVillage filter - for external members, use hhm.sub_village_id; for regular members, use hh.sub_village_id
         if (filterBySubVillages.isNotEmpty()) {
-            if (isExternalMember) {
-                conditions += "hhm.sub_village_id IN (${filterBySubVillages.joinToString(",") { "?" }})"
+            conditions += if (isExternalMember) {
+                "hhm.sub_village_id IN (${filterBySubVillages.joinToString(",") { "?" }})"
             } else {
-                conditions += "hh.sub_village_id IN (${filterBySubVillages.joinToString(",") { "?" }})"
+                "hh.sub_village_id IN (${filterBySubVillages.joinToString(",") { "?" }})"
             }
             args.addAll(filterBySubVillages)
         }
 
         when (staticFilter) {
             ServiceStaticFilter.FAMILY_PLANNING_COUNSELLING_ELIGIBLE -> {
-                conditions += "hhm.gender = ?"
-                args += DefinedParams.GENDER_FEMALE
-                conditions += "hhm.marital_status = ?"
-                args += MemberRegistration.MaritalStatus.MARRIED.value
-                conditions += "substr(hhm.date_of_birth, 1, 10) <= date('now', '-${MemberRegistration.MIN_AGE_PREGNANCY} years')"
-                conditions += "substr(hhm.date_of_birth, 1, 10) >= date('now', '-${MemberRegistration.MAX_AGE_PREGNANCY} years')"
-                conditions +=
-                    """
-                    NOT EXISTS (
-                        SELECT 1 FROM (
-                            SELECT pd.dateOfDelivery, pd.lastMenstrualPeriod, pd.estimatedDeliveryDate
-                            FROM PregnancyDetail AS pd
-                            WHERE pd.householdMemberLocalId = hhm.id
-                            ORDER BY pd.id DESC
-                            LIMIT 1
-                        ) AS latest_pregnancy
-                        WHERE (latest_pregnancy.dateOfDelivery IS NULL OR latest_pregnancy.dateOfDelivery = '')
-                        AND (latest_pregnancy.lastMenstrualPeriod IS NOT NULL AND latest_pregnancy.lastMenstrualPeriod != '')
-                        AND (latest_pregnancy.estimatedDeliveryDate IS NULL OR substr(latest_pregnancy.estimatedDeliveryDate, 1, 10) >= date('now', '-45 days'))
-                    )
-                    """.trimIndent()
+                conditions += ServiceFilterConditions.FAMILY_PLANNING
             }
-
             ServiceStaticFilter.PREGNANT_WOMEN -> {
-                conditions +=
-                    """
-                    EXISTS (
-                        SELECT 1 FROM (
-                            SELECT pd.dateOfDelivery, pd.lastMenstrualPeriod, pd.estimatedDeliveryDate
-                            FROM PregnancyDetail AS pd
-                            WHERE pd.householdMemberLocalId = hhm.id
-                            ORDER BY pd.id DESC
-                            LIMIT 1
-                        ) AS latest_pregnancy
-                        WHERE (latest_pregnancy.dateOfDelivery IS NULL OR latest_pregnancy.dateOfDelivery = '')
-                        AND (latest_pregnancy.lastMenstrualPeriod IS NOT NULL AND latest_pregnancy.lastMenstrualPeriod != '')
-                        AND (latest_pregnancy.estimatedDeliveryDate IS NULL OR substr(latest_pregnancy.estimatedDeliveryDate, 1, 10) >= date('now', '-45 days'))
-                    )
-                    """.trimIndent()
+                conditions += ServiceFilterConditions.PREGNANT_WOMEN
             }
-
             ServiceStaticFilter.POSTNATAL_CARE_MOTHERS -> {
-                conditions +=
-                    """
-                    EXISTS (
-                        SELECT 1 FROM (
-                            SELECT pd.dateOfDelivery
-                            FROM PregnancyDetail AS pd
-                            WHERE pd.householdMemberLocalId = hhm.id
-                            ORDER BY pd.id DESC
-                            LIMIT 1
-                        ) AS latest_pregnancy
-                        WHERE (latest_pregnancy.dateOfDelivery IS NOT NULL AND latest_pregnancy.dateOfDelivery != '')
-                        AND substr(latest_pregnancy.dateOfDelivery, 1, 10) >= date('now', '-42 days')
-                    )
-                    """.trimIndent()
+                conditions += ServiceFilterConditions.POSTNATAL_MOTHERS
             }
-
             ServiceStaticFilter.CHILDREN_UNDER_TWO_YEARS -> {
-                conditions += "substr(hhm.date_of_birth, 1, 10) > date('now', '-2 years')"
+                conditions += ServiceFilterConditions.CHILDREN_UNDER_TWO
             }
-
             ServiceStaticFilter.EXPECTED_DELIVERIES -> {
-                conditions +=
-                    """
-                    EXISTS (
-                        SELECT 1 FROM (
-                            SELECT pd.dateOfDelivery, pd.estimatedDeliveryDate
-                            FROM PregnancyDetail AS pd
-                            WHERE pd.householdMemberLocalId = hhm.id
-                            ORDER BY pd.id DESC
-                            LIMIT 1
-                        ) AS latest_pregnancy
-                        WHERE (latest_pregnancy.dateOfDelivery IS NULL OR latest_pregnancy.dateOfDelivery = '')
-                        AND (latest_pregnancy.estimatedDeliveryDate IS NOT NULL AND latest_pregnancy.estimatedDeliveryDate != '')
-                        AND substr(latest_pregnancy.estimatedDeliveryDate, 1, 10) BETWEEN date('now') AND date('now', '+30 days')
-                    )
-                    """.trimIndent()
+                conditions += ServiceFilterConditions.EXPECTED_DELIVERIES
             }
-
             ServiceStaticFilter.PENDING_DELIVERIES -> {
-                conditions +=
-                    """
-                    EXISTS (
-                        SELECT 1 FROM (
-                            SELECT pd.dateOfDelivery, pd.estimatedDeliveryDate
-                            FROM PregnancyDetail AS pd
-                            WHERE pd.householdMemberLocalId = hhm.id
-                            ORDER BY pd.id DESC
-                            LIMIT 1
-                        ) AS latest_pregnancy
-                        WHERE (latest_pregnancy.dateOfDelivery IS NULL OR latest_pregnancy.dateOfDelivery = '')
-                        AND (latest_pregnancy.estimatedDeliveryDate IS NOT NULL AND latest_pregnancy.estimatedDeliveryDate != '')
-                        AND substr(latest_pregnancy.estimatedDeliveryDate, 1, 10) < date('now', '-45 days')
-                    )
-                    """.trimIndent()
+                conditions += ServiceFilterConditions.PENDING_DELIVERIES
             }
-
             ServiceStaticFilter.HIGH_RISK_PREGNANT_WOMEN -> {
-                conditions +=
-                    """
-                    EXISTS (
-                        SELECT 1 FROM (
-                            SELECT pd.dateOfDelivery, pd.lastMenstrualPeriod, pd.estimatedDeliveryDate, pd.highRiskPregnantWoman
-                            FROM PregnancyDetail AS pd
-                            WHERE pd.householdMemberLocalId = hhm.id
-                            ORDER BY pd.id DESC
-                            LIMIT 1
-                        ) AS latest_pregnancy
-                        WHERE (latest_pregnancy.dateOfDelivery IS NULL OR latest_pregnancy.dateOfDelivery = '')
-                        AND (latest_pregnancy.lastMenstrualPeriod IS NOT NULL AND latest_pregnancy.lastMenstrualPeriod != '')
-                        AND (latest_pregnancy.estimatedDeliveryDate IS NULL OR substr(latest_pregnancy.estimatedDeliveryDate, 1, 10) >= date('now', '-45 days'))
-                        AND (latest_pregnancy.highRiskPregnantWoman IS NOT NULL AND latest_pregnancy.highRiskPregnantWoman != '')
-                    )
-                    """.trimIndent()
+                conditions += ServiceFilterConditions.HIGH_RISK_PREGNANT_WOMEN
             }
-
             ServiceStaticFilter.EXTERNAL_MEMBERS -> {
-                conditions += "hhm.household_id IS NULL"
+                conditions += ServiceFilterConditions.EXTERNAL_MEMBER
             }
-
             ServiceStaticFilter.EXTERNAL_PREGNANT_WOMEN -> {
-                conditions += "hhm.household_id IS NULL"
-                conditions += "hhm.isActive = 1"
-                conditions +=
-                    """
-                    EXISTS (
-                        SELECT 1 FROM (
-                            SELECT pd.dateOfDelivery, pd.lastMenstrualPeriod, pd.estimatedDeliveryDate
-                            FROM PregnancyDetail AS pd
-                            WHERE pd.householdMemberLocalId = hhm.id
-                            ORDER BY pd.id DESC
-                            LIMIT 1
-                        ) AS latest_pregnancy
-                        WHERE (latest_pregnancy.dateOfDelivery IS NULL OR latest_pregnancy.dateOfDelivery = '')
-                        AND (latest_pregnancy.lastMenstrualPeriod IS NOT NULL AND latest_pregnancy.lastMenstrualPeriod != '')
-                        AND (latest_pregnancy.estimatedDeliveryDate IS NULL OR substr(latest_pregnancy.estimatedDeliveryDate, 1, 10) >= date('now', '-45 days'))
-                    )
-                    """.trimIndent()
+                conditions += ServiceFilterConditions.EXTERNAL_MEMBER
+                conditions += ServiceFilterConditions.PREGNANT_WOMEN
             }
-
             else -> {}
         }
 
@@ -552,6 +445,160 @@ interface MemberDAO {
             ORDER BY hhm.id DESC
             """.trimIndent()
         return getServiceMembersRaw(SimpleSQLiteQuery(query, args.toTypedArray()))
+    }
+
+    /**
+     * Internal raw-query entry point for all counts. Use [getAllServiceMemberCounts] instead.
+     *
+     * The query should project all aliases required by [ServiceMemberCounts].
+     */
+    @RawQuery
+    suspend fun getAllServiceMemberCountsRaw(query: SimpleSQLiteQuery): ServiceMemberCounts
+
+    /**
+     * Returns counts for all service static filters in a single optimized query.
+     *
+     * Uses conditional aggregation (SUM/CASE WHEN) to compute all counts in one database pass.
+     * Dynamic filters are applied consistently with [getServiceMembers].
+     *
+     * **Filters** (all optional):
+     * @param searchInput match against member name or phone number; blank = no filter
+     * @param filterBySs whitelist of Shasthya Shebika IDs; empty = no filter
+     * @param filterBySubVillages whitelist of sub-village IDs; empty = no filter
+     *
+     * @return [ServiceMemberCounts] containing counts for each filter
+     */
+    suspend fun getAllServiceMemberCounts(
+        searchInput: String = "",
+        filterBySs: List<Long> = emptyList(),
+        filterBySubVillages: List<Long> = emptyList(),
+    ): ServiceMemberCounts {
+        val args = mutableListOf<Any>()
+        val globalConditions = mutableListOf<String>()
+
+        if (searchInput.isNotBlank()) {
+            globalConditions += "(hhm.name LIKE ? OR hhm.phone_number LIKE ?)"
+            val pattern = "%${searchInput.trim()}%"
+            args += pattern
+            args += pattern
+        }
+
+        val globalWhereClause = if (globalConditions.isEmpty()) "" else "WHERE ${globalConditions.joinToString(" AND ")}"
+
+        // For non-external members, SS/SubVillage filters use household columns
+        val householdSsFilter = if (filterBySs.isNotEmpty()) {
+            args.addAll(filterBySs)
+            "AND hh.shasthya_shebika_id IN (${filterBySs.joinToString(",") { "?" }})"
+        } else {
+            ""
+        }
+
+        val householdSvFilter = if (filterBySubVillages.isNotEmpty()) {
+            args.addAll(filterBySubVillages)
+            "AND hh.sub_village_id IN (${filterBySubVillages.joinToString(",") { "?" }})"
+        } else {
+            ""
+        }
+
+        // For external members, SS/SubVillage filters use member columns
+        val externalSsFilter = if (filterBySs.isNotEmpty()) {
+            args.addAll(filterBySs)
+            "AND hhm.shasthya_shebika_id IN (${filterBySs.joinToString(",") { "?" }})"
+        } else {
+            ""
+        }
+
+        val externalSvFilter = if (filterBySubVillages.isNotEmpty()) {
+            args.addAll(filterBySubVillages)
+            "AND hhm.sub_village_id IN (${filterBySubVillages.joinToString(",") { "?" }})"
+        } else {
+            ""
+        }
+
+        val query =
+            """
+            SELECT
+                SUM(CASE WHEN
+                    ${ServiceFilterConditions.HAS_HOUSEHOLD}
+                    $householdSsFilter
+                    $householdSvFilter
+                THEN 1 ELSE 0 END) AS all_members,
+
+                SUM(CASE WHEN
+                    ${ServiceFilterConditions.HAS_HOUSEHOLD}
+                    $householdSsFilter
+                    $householdSvFilter
+                    AND ${ServiceFilterConditions.IS_ACTIVE}
+                    AND ${ServiceFilterConditions.FAMILY_PLANNING}
+                THEN 1 ELSE 0 END) AS family_planning,
+
+                SUM(CASE WHEN
+                    ${ServiceFilterConditions.HAS_HOUSEHOLD}
+                    $householdSsFilter
+                    $householdSvFilter
+                    AND ${ServiceFilterConditions.IS_ACTIVE}
+                    AND ${ServiceFilterConditions.PREGNANT_WOMEN}
+                THEN 1 ELSE 0 END) AS pregnant_women,
+
+                SUM(CASE WHEN
+                    ${ServiceFilterConditions.HAS_HOUSEHOLD}
+                    $householdSsFilter
+                    $householdSvFilter
+                    AND ${ServiceFilterConditions.IS_ACTIVE}
+                    AND ${ServiceFilterConditions.HIGH_RISK_PREGNANT_WOMEN}
+                THEN 1 ELSE 0 END) AS high_risk_pregnant,
+
+                SUM(CASE WHEN
+                    ${ServiceFilterConditions.HAS_HOUSEHOLD}
+                    $householdSsFilter
+                    $householdSvFilter
+                    AND ${ServiceFilterConditions.IS_ACTIVE}
+                    AND ${ServiceFilterConditions.POSTNATAL_MOTHERS}
+                THEN 1 ELSE 0 END) AS postnatal_mothers,
+
+                SUM(CASE WHEN
+                    ${ServiceFilterConditions.HAS_HOUSEHOLD}
+                    $householdSsFilter
+                    $householdSvFilter
+                    AND ${ServiceFilterConditions.CHILDREN_UNDER_TWO}
+                THEN 1 ELSE 0 END) AS children_under_two,
+
+                SUM(CASE WHEN
+                    ${ServiceFilterConditions.EXTERNAL_MEMBER}
+                    $externalSsFilter
+                    $externalSvFilter
+                THEN 1 ELSE 0 END) AS external_members,
+
+                SUM(CASE WHEN
+                    ${ServiceFilterConditions.EXTERNAL_MEMBER}
+                    $externalSsFilter
+                    $externalSvFilter
+                    AND ${ServiceFilterConditions.IS_ACTIVE}
+                    AND ${ServiceFilterConditions.PREGNANT_WOMEN}
+                THEN 1 ELSE 0 END) AS external_pregnant,
+
+                SUM(CASE WHEN
+                    ${ServiceFilterConditions.HAS_HOUSEHOLD}
+                    $householdSsFilter
+                    $householdSvFilter
+                    AND ${ServiceFilterConditions.IS_ACTIVE}
+                    AND ${ServiceFilterConditions.EXPECTED_DELIVERIES}
+                THEN 1 ELSE 0 END) AS expected_deliveries,
+
+                SUM(CASE WHEN
+                    ${ServiceFilterConditions.HAS_HOUSEHOLD}
+                    $householdSsFilter
+                    $householdSvFilter
+                    AND ${ServiceFilterConditions.IS_ACTIVE}
+                    AND ${ServiceFilterConditions.PENDING_DELIVERIES}
+                THEN 1 ELSE 0 END) AS pending_deliveries
+
+            FROM householdmember AS hhm
+            LEFT JOIN Household AS hh ON hh.id = hhm.household_id
+            $globalWhereClause
+            """.trimIndent()
+
+        return getAllServiceMemberCountsRaw(SimpleSQLiteQuery(query, args.toTypedArray()))
     }
 
     /**

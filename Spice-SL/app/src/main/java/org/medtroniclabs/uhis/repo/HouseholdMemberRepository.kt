@@ -22,6 +22,7 @@ import org.medtroniclabs.uhis.mappingkey.HouseHoldRegistration
 import org.medtroniclabs.uhis.mappingkey.MemberRegistration
 import org.medtroniclabs.uhis.mappingkey.MemberRegistration.ID_MARITAL_STATUS
 import org.medtroniclabs.uhis.model.assessment.AssessmentMemberDetails
+import org.medtroniclabs.uhis.model.services.ServiceMemberCounts
 import org.medtroniclabs.uhis.model.services.ServiceStaticFilter
 import org.medtroniclabs.uhis.network.resource.Resource
 import org.medtroniclabs.uhis.network.resource.ResourceState
@@ -412,10 +413,21 @@ class HouseholdMemberRepository @Inject constructor(
     ) = roomHelper.getServiceMembers(searchInput, filterBySs, filterBySubVillages, staticFilter)
 
     /**
+     * Fetches all service static-filter counts using the same dynamic filters as [getServiceMembers].
+     */
+    suspend fun getAllServiceMemberCounts(
+        searchInput: String = "",
+        filterBySs: List<Long> = emptyList(),
+        filterBySubVillages: List<Long> = emptyList(),
+    ): ServiceMemberCounts = roomHelper.getAllServiceMemberCounts(searchInput, filterBySs, filterBySubVillages)
+
+    /**
      * Retrieves all National IDs for the specified ID type from the Room database.
      *
      * @param idType The type of ID to filter by.
      * @return A list of National IDs.
      */
     suspend fun getAllNationalIds(idType: String): List<String> = roomHelper.getAllNationalIds(idType)
+
+    suspend fun getPregnancyDetails(id: Long) = roomHelper.getPregnancyDetailByPatientId(id)
 }

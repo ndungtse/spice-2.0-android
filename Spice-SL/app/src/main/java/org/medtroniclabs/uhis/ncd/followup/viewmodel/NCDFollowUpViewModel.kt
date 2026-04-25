@@ -52,7 +52,7 @@ class NCDFollowUpViewModel @Inject constructor(
     private var ncdMedicalReviewRepo: NCDMedicalReviewRepository,
     private val screeningRepository: ScreeningRepository,
 ) : BaseViewModel(dispatcherIO) {
-    var spanCount: Int = DefinedParams.span_count_1
+    var spanCount: Int = DefinedParams.SPAN_COUNT_1
     var searchText = ""
     var type = ""
     var sortModel: SortModelForFollowUp? = null

@@ -37,7 +37,7 @@ class PatientListViewModel @Inject constructor(
     @IoDispatcher override var dispatcherIO: CoroutineDispatcher,
 ) : BaseViewModel(dispatcherIO) {
     // Patient list - Grid count
-    var spanCount: Int = DefinedParams.span_count_1
+    var spanCount: Int = DefinedParams.SPAN_COUNT_1
     var totalPatientCount = MutableLiveData<String>()
     var searchText = ""
     var medicalReviewDueTag: List<ChipViewItemModel>? = null
