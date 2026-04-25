@@ -92,13 +92,13 @@
             "id": "pregnantWomanExistingIllness",
             "orderId": 1,
             "hint": "Illness",
-            "hintCulture": "অসুখ",
+            "hintCulture": "রোগ",
             "isSummary": false,
             "viewType": "DialogCheckbox",
             "isMandatory": true,
             "isEnabled": true,
             "title": "Pregnant woman has any existing illness",
-            "titleCulture": "গর্ভবতী মায়ের আগে থেকে কোনো অসুখ আছে কি?",
+            "titleCulture": "গর্ভবতী মায়ের আগে থেকে কোন অসুখ আছে কি?",
             "errorMessage": "Please select a valid option",
             "visibility": "visible",
             "optionsList":
@@ -1211,7 +1211,7 @@
                 {
                     "id": "moderateAnemia",
                     "name": "In moderate anemia, eat more iron-rich foods such as meat, liver, eggs, green leafy vegetables, lentils, green plantain, and jaggery. Do not discard the water used for cooking rice or vegetables. Take vitamin C–rich foods (like lemon or amla) to improve iron absorption. Consult a doctor to adjust your iron tablet dose.",
-                    "cultureValue": "আপনার মাঝারি রক্তস্বল্পতা রয়েছে মাংস, কলিজা, ডিম, সবুজ শাকসবজি, ডাল, কাঁচাকলা ও গুড় বেশি করে খাবেন। ভাত বা সবজি রান্নার পানি ফেলে দেবেন না। আয়রন ট্যাবলেটের মাত্রা ঠিক করতে ডাক্তারের পরামর্শ নিন।"
+                    "cultureValue": "আপনার মাঝারি রক্তস্বল্পতা রয়েছে মাংস, কলিজা, ডিম, সবুজ শাকসবজি, ডাল, কাঁচাকলা জাতীয় খাবার বেশি করে খাবেন।  ভাত বা সবজি রান্নার পানি ফেলে দেবেন না। লেবু বা আমলকির মতো ভিটামিন C যুক্ত খাবার খান, এতে আয়রন ভালো কাজ করে। আয়রন ট্যাবলেটের মাত্রা ঠিক করতে ডাক্তারের পরামর্শ নিন।"
                 },
                 {
                     "id": "severeAnemia",

@@ -639,7 +639,7 @@
             "maxLength": 2,
             "orderId": 22,
             "title": "Total Consumed till now",
-            "titleCulture": "পূর্ববর্তী PNC ভিজিট থেকে এ পর্যন্ত মোট সেবন",
+            "titleCulture": "এখন পর্যন্ত কতটি আয়রন বড়ি খেয়েছেন?",
             "viewType": "EditText",
             "visibility": "visible"
         },
@@ -655,7 +655,7 @@
             "maxLength": 2,
             "orderId": 23,
             "title": "Provided",
-            "titleCulture": "এই ভিজিটে প্রদত্ত",
+            "titleCulture": "এই ভিজিটে ব্র্যাক হতে প্রদানকৃত আয়রণ বড়ির সংখ্যা",
             "viewType": "EditText",
             "visibility": "visible"
         },
@@ -681,7 +681,7 @@
             "maxLength": 2,
             "orderId": 25,
             "title": "Total Consumed till now",
-            "titleCulture": "পূর্ববর্তী PNC ভিজিট থেকে এ পর্যন্ত মোট সেবন",
+            "titleCulture": "এখন পর্যন্ত কতটি ক্যালসিয়াম বড়ি খেয়েছেন?",
             "viewType": "EditText",
             "visibility": "visible"
         },
@@ -697,7 +697,7 @@
             "maxLength": 2,
             "orderId": 26,
             "title": "Provided",
-            "titleCulture": "এই ভিজিটে প্রদত্ত",
+            "titleCulture": "এই ভিজিটে ব্র্যাক হতে প্রদানকৃত ক্যালসিয়াম বড়ির সংখ্যা",
             "viewType": "EditText",
             "visibility": "visible"
         },

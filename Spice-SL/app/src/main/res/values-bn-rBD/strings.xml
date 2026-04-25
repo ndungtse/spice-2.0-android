@@ -575,7 +575,7 @@
     <string name="view_discontinued_medication">স্থগিতকৃত ওষুধের তালিকা দেখুন</string>
     <string name="hide_discontinued_medication">স্থগিতকৃত ওষুধ সরিয়ে রাখুন</string>
     <string name="no_data_found">কোন ডেটা পাওয়া যায়নি</string>
-    <string name="edit">সম্পাদনা</string>
+    <string name="edit">এডিট</string>
     <string name="confirmation">নিশ্চিতকরণ</string>
     <string name="delete_confirmation">আপনি কি নিশ্চিত যে আপনি এটি মুছতে চান?</string>
     <string name="prescribed_since">যেদিন থেকে প্রেসক্রাইব</string>
