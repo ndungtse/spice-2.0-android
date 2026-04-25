@@ -60,6 +60,7 @@
     <string name="other">Other</string>
     <string name="none">None</string>
     <string name="assessment">Assessment</string>
+    <string name="assessments">Assessments</string>
     <string name="household_members">Household Members</string>
     <string name="finish_registration">FINISH REGISTRATION</string>
     <string name="add_new_member">ADD NEW MEMBER</string>
@@ -190,8 +191,8 @@
     <string name="pending">Pending</string>
     <string name="finished">Finished</string>
     <string name="apply">Apply</string>\
-    <string name="filter_count">Filter (%1d)</string>
-    <string name="sort_count">Sort (%1d)</string>
+    <string name="filter_count">Filter (%1$s)</string>
+    <string name="sort_count">Sort (%1$s)</string>
     <string name="villages">Villages</string>
     <string name="start_with_validation">Phone number should starts with %1$s </string>
     <string name="or">or</string>
@@ -746,6 +747,10 @@
     <string name="phu_walk_ins_title">PHU Walk-ins</string>
     <string name="households_in">" Households in "</string>
     <string name="no_household_found">No Household found.</string>
+    <plurals name="plural_household_found">
+        <item quantity="one">%s Household</item>
+        <item quantity="other">%s Households</item>
+    </plurals>
     <string name="open_play_store">Open Play Store</string>
     <string name="please_check_if_play_store_available">Please check if Google Play Store is installed in the device</string>
 
@@ -1276,7 +1281,7 @@
     <string name="delivery_at_others" translatable="false">Delivery At(Others)</string>
     <string name="please_select_a_valid_value" translatable="false">Please select a valid value</string>
     <string name="please_select_a_valid_value_month" translatable="false">"Please enter a valid input for the month (0 to 11) and the week (0 to 4)."</string>
-    <string name="select_member_deceased" translatable="false">Select Member Deceased</string>
+    <string name="select_member_deceased">Select Member Deceased</string>
     <string name="other_signs_and_symptoms" translatable="false">Other Signs and Symptoms</string>
     <string name="reason_of_death" translatable="false">Reason of Death</string>
     <string name="deceased" translatable="false">Deceased</string>
@@ -1292,7 +1297,7 @@
     <string name="age_validation_grandchild" translatable="false">A Grandchild must be at least 30 years younger than the Household Head.</string>
     <string name="age_validation_grandparent" translatable="false">A Grandparent must be at least 30 years older than the Household Head.</string>
     <string name="invalid_credentials" translatable="false">Invalid credentials</string>
-    <string name="invalid_credentials_custom" translatable="false">Your username or password might be wrong. Please try again, or click on \'Forgot Password\' for help.</string>
+    <string name="invalid_credentials_custom">Your username or password might be wrong. Please try again, or click on \'Forgot Password\' for help.</string>
     <string name="job_aid_reading_result" translatable="false">Job Aid (RDT - Reading Results)</string>
     <string name="site_of_disease" translatable="false">Site of Disease</string>
     <string name="treatment_outcome" translatable="false">Treatment Outcome</string>
@@ -1653,6 +1658,10 @@
     <string name="pregnancy_too_early_access_desc_1">Pregnancy assessment can only be conducted after 6 weeks from LMP.</string>
     <string name="pregnancy_too_early_access_desc_2">Please revisit after 6 weeks for complete pregnancy profile assessment.</string>
     <string name="risk_factors_identified">⚠️ Risk factors identified</string>
+    <string name="risk_factor_age_under_18">Age &lt;18 years</string>
+    <string name="risk_factor_age_over_35">Age &gt;35 years</string>
+    <string name="risk_factor_short_birth_spacing">Short birth spacing &lt;2 year</string>
+    <string name="risk_factor_multipara">Multipara &gt;3</string>
 
     <string name="last_visit_date">Last Visit Date</string>
     <string name="recent_service">Recent service</string>
@@ -1670,9 +1679,9 @@
     <string name="service_recipient_list"><![CDATA[Service Recipient List]]></string>
     <string name="no_members_found"><![CDATA[No members found]]></string>
     <plurals name="plural_member">
-        <item quantity="zero">%d Member</item>
-        <item quantity="one">%d Member</item>
-        <item quantity="other">%d Members</item>
+        <item quantity="zero">%1$s Members</item>
+        <item quantity="one">%1$s Member</item>
+        <item quantity="other">%1$s Members</item>
     </plurals>
     <string name="short_acting_message">Short-Acting Reversible Methods (SARCs) (Pills, Condoms, Injectables)</string>
     <string name="long_acting_message">Long-Acting Reversible Methods (LARCs)- (IUCD, Implant)</string>

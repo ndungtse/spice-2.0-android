@@ -150,7 +150,13 @@ class AssessmentPregnantWomenRegistrationSummaryFragment : BaseFragment(), View.
                 riskFactors.forEach { riskFactor ->
                     with(AssessmentCommonUtils.getTextSummaryLabelLayoutBinding(context)) {
                         with(tvTitle) {
-                            text = "  • $riskFactor" // Use bigger bullet (•)
+                            text =
+                                "  • ${
+                                    PregnantWomen.riskFactorDisplayText(
+                                        riskFactor,
+                                        requireContext(),
+                                    )
+                                }" // Use bigger bullet (•)
                             setTextColor("#7f1d1d".toColorInt())
                         }
                         displayData.add(root)

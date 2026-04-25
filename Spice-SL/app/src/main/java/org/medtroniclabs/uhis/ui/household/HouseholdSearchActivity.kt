@@ -26,6 +26,9 @@ import org.medtroniclabs.uhis.ui.household.HouseholdDefinedParams.IS_FROM_HOUSEH
 import org.medtroniclabs.uhis.ui.household.adapter.HouseholdListAdapter
 import org.medtroniclabs.uhis.ui.household.summary.HouseholdSummaryActivity
 import org.medtroniclabs.uhis.ui.household.viewmodel.HouseholdListViewModel
+import org.medtroniclabs.uhis.common.CommonUtils
+import java.text.NumberFormat
+import java.util.Locale
 
 @AndroidEntryPoint
 class HouseholdSearchActivity : BaseActivity(), View.OnClickListener {
@@ -120,13 +123,14 @@ class HouseholdSearchActivity : BaseActivity(), View.OnClickListener {
             }
 
             if (count > 0) {
-                binding.llFilter.btnFilter.text = this.getString(R.string.filter_count, count)
+                binding.llFilter.btnFilter.text =
+                    this.getString(R.string.filter_count, formatCountForCurrentLocale(count))
             } else {
                 binding.llFilter.btnFilter.text = getString(R.string.filter)
             }
             val sortCount = if (it.sortOrder == HouseholdSortOrder.DEFAULT) 0 else 1
             binding.llFilter.btnSort.text = if (sortCount > 0) {
-                getString(R.string.sort_count, sortCount)
+                getString(R.string.sort_count, formatCountForCurrentLocale(sortCount))
             } else {
                 getString(R.string.sort)
             }
@@ -155,11 +159,20 @@ class HouseholdSearchActivity : BaseActivity(), View.OnClickListener {
         }
     }
 
-    private fun setLabelValue(size: Int): CharSequence =
-        if (size > 1) {
-            "$size ${getString(R.string.households)}"
+    private fun setLabelValue(size: Int): CharSequence {
+        val countStr = formatCountForCurrentLocale(size)
+        return resources.getQuantityString(
+            R.plurals.plural_household_found,
+            size,
+            countStr,
+        )
+    }
+
+    private fun formatCountForCurrentLocale(size: Int): String =
+        if (CommonUtils.parseUserLocale() == DefinedParams.BN) {
+            NumberFormat.getIntegerInstance(Locale.forLanguageTag("bn-BD")).format(size)
         } else {
-            "$size ${getString(R.string.household)}"
+            size.toString()
         }
 
     override fun onClick(view: View) {

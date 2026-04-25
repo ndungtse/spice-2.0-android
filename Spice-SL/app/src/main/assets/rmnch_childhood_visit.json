@@ -21,6 +21,7 @@
             "isNeededDefault": true,
             "viewType": "SingleSelectionView",
             "errorMessage": "Please select a valid option",
+            "cultureErrorMessage": "অনুগ্রহ করে বৈধ নির্বাচন করুন",
             "isSummary": true,
             "optionsList":
             [
@@ -53,6 +54,7 @@
             "isMandatory": true,
             "isNeededDefault": true,
             "errorMessage": "Please select a valid option",
+            "cultureErrorMessage": "অনুগ্রহ করে বৈধ নির্বাচন করুন",
             "title": "Weight",
             "titleCulture": "ওজন (কেজি)",
             "viewType": "EditText",
@@ -71,8 +73,9 @@
             "hintCulture": "খাবার",
             "isNeededDefault": true,
             "errorMessage": "Please select a valid option",
+            "cultureErrorMessage": "অনুগ্রহ করে বৈধ নির্বাচন করুন",
             "title": "What was the child fed in the last 24 hours?",
-            "titleCulture": "গত ২৪ ঘন্টায় শিশুকে বাড়তি খাবার দেওয়া হয়েছে কিনা?",
+            "titleCulture": "গত ২৪ ঘন্টায় শিশুকে কী কী খাওয়ানো হয়েছে?",
             "optionsList":
             [
                 {
@@ -134,6 +137,7 @@
             "isNeededDefault": true,
             "isSummary": true,
             "errorMessage": "Please select a valid option",
+            "cultureErrorMessage": "অনুগ্রহ করে বৈধ নির্বাচন করুন",
             "title": "Within how many hours after birth was breastfed?",
             "titleCulture": "প্রসবের কত ঘণ্টার মধ্যে মায়ের বুকের দুধ খাওয়ানো হয়েছে?",
             "viewType": "EditText",
@@ -171,6 +175,7 @@
             ],
             "readOnly": true,
             "errorMessage": "Please select a valid option",
+            "cultureErrorMessage": "অনুগ্রহ করে বৈধ নির্বাচন করুন",
             "title": "At what month was additional food started?",
             "titleCulture": "শিশুকে  বাড়তি খাবার কত মাসে শুরু করা হয়েছে?",
             "viewType": "Spinner",
@@ -186,6 +191,7 @@
             "isNeededDefault": true,
             "viewType": "SingleSelectionView",
             "errorMessage": "Please select a valid option",
+            "cultureErrorMessage": "অনুগ্রহ করে বৈধ নির্বাচন করুন",
             "isSummary": true,
             "optionsList":
             [
@@ -216,6 +222,7 @@
             "isNeededDefault": true,
             "viewType": "SingleSelectionView",
             "errorMessage": "Please select a valid option",
+            "cultureErrorMessage": "অনুগ্রহ করে বৈধ নির্বাচন করুন",
             "isSummary": true,
             "optionsList":
             [
@@ -246,6 +253,7 @@
             "isNeededDefault": true,
             "viewType": "SingleSelectionView",
             "errorMessage": "Please select a valid option",
+            "cultureErrorMessage": "অনুগ্রহ করে একটি বৈধ মান লিখুন",
             "isSummary": true,
             "optionsList":
             [
@@ -276,6 +284,7 @@
             "isNeededDefault": true,
             "viewType": "SingleSelectionView",
             "errorMessage": "Please select a valid option",
+            "cultureErrorMessage": "অনুগ্রহ করে বৈধ নির্বাচন করুন",
             "isSummary": true,
             "optionsList":
             [
@@ -324,6 +333,7 @@
             "isNeededDefault": true,
             "viewType": "SingleSelectionView",
             "errorMessage": "Please select a valid option",
+            "cultureErrorMessage": "অনুগ্রহ করে বৈধ নির্বাচন করুন",
             "isSummary": true,
             "optionsList":
             [
@@ -355,6 +365,7 @@
             "isMandatory": true,
             "isNeededDefault": true,
             "errorMessage": "Please select a valid option",
+            "cultureErrorMessage": "অনুগ্রহ করে বৈধ নির্বাচন করুন",
             "title": "If any complication, specify",
             "titleCulture": "কোনো জটিলতা থাকলে লিখুন",
             "isInfo": "gone",
@@ -381,6 +392,7 @@
             "isNeededDefault": true,
             "viewType": "SingleSelectionView",
             "errorMessage": "Please select a valid option",
+            "cultureErrorMessage": "অনুগ্রহ করে বৈধ নির্বাচন করুন",
             "isSummary": true,
             "optionsList":
             [

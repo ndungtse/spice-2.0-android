@@ -82,6 +82,8 @@
             "orderId": 0,
             "title": "Temperature",
             "titleCulture": "তাপমাত্রা (ফারেনহাইট)",
+            "errorMessage": "Please enter a valid temperature",
+            "cultureErrorMessage": "অনুগ্রহ করে বৈধ তাপমাত্রার মান লিখুন",
             "unitMeasurement": "°F",
             "viewType": "EditText",
             "visibility": "visible"
@@ -91,6 +93,8 @@
             "hint": "[Enter number]",
             "hintCulture": "[সংখ্যা লিখুন]",
             "id": "pulse",
+            "errorMessage": "Please enter a valid pulse",
+            "cultureErrorMessage": "অনুগ্রহ করে নাড়ির গতির বৈধ মান লিখুন",
             "inputType": 3,
             "isEnabled": true,
             "isMandatory": true,
@@ -354,6 +358,8 @@
             "orderId": 12,
             "title": "Hemoglobin (Hb)",
             "titleCulture": "হিমোগ্লোবিন (Hb)- রক্ত পরীক্ষা",
+            "errorMessage": "Please enter a valid hemoglobin value",
+            "cultureErrorMessage": "অনুগ্রহ করে হিমোগ্লোবিন পরীক্ষার বৈধ মান লিখুন",
             "unitMeasurement": "g/dL",
             "viewType": "EditText",
             "visibility": "visible"
@@ -463,7 +469,7 @@
             ],
             "orderId": 16,
             "title": "Blood Sugar",
-            "titleCulture": "গ্লুকোজ(mmol/l)-রক্ত পরীক্ষা",
+            "titleCulture": "রক্তে গ্লুকোজ পরীক্ষার ধরন",
             "viewType": "SingleSelectionView",
             "visibility": "visible"
         },
@@ -820,6 +826,7 @@
         },
         {
             "errorMessage": "Please select a valid option",
+            "cultureErrorMessage": "অনুগ্রহ করে বৈধ নির্বাচন করুন",
             "family": "summary",
             "fieldName": "Referral Facility",
             "id": "referralFacility",

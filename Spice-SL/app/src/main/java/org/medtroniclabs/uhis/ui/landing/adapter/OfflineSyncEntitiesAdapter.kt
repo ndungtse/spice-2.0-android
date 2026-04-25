@@ -41,7 +41,7 @@ class OfflineSyncEntitiesAdapter :
         position: Int,
     ) {
         val item = items[position]
-        holder.binding.tvLabel.text = item.tableName
+        holder.binding.tvLabel.text = holder.binding.root.context.getString(item.labelRes)
         holder.binding.tvValue.text = ": ${item.unSyncedCount}"
     }
 }
