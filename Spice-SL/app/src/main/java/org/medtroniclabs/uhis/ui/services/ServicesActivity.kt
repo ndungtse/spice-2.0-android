@@ -28,7 +28,10 @@ import org.medtroniclabs.uhis.ui.externalmember.ExternalMemberRegistrationActivi
 import org.medtroniclabs.uhis.ui.household.MemberSelectionListener
 import org.medtroniclabs.uhis.ui.household.summary.MemberSummaryActivity
 import org.medtroniclabs.uhis.ui.services.viewmodel.ServicesViewModel
+import org.medtroniclabs.uhis.common.CommonUtils
 import org.medtroniclabs.uhis.common.DefinedParams as CommonDefinedParams
+import java.text.NumberFormat
+import java.util.Locale
 
 /**
  * Activity responsible to display members based on services
@@ -247,7 +250,10 @@ class ServicesActivity : BaseActivity(), View.OnClickListener, MemberSelectionLi
             }
 
             if (count > 0) {
-                binding.llFilter.btnFilter.text = this.getString(R.string.filter_count, count)
+                binding.llFilter.btnFilter.text = this.getString(
+                    R.string.filter_count,
+                    formatIntegerForUserLocale(count),
+                )
             } else {
                 binding.llFilter.btnFilter.text = getString(R.string.filter)
             }
@@ -275,9 +281,17 @@ class ServicesActivity : BaseActivity(), View.OnClickListener, MemberSelectionLi
         }
     }
 
+    private fun formatIntegerForUserLocale(value: Int): String =
+        if (CommonUtils.parseUserLocale() == CommonDefinedParams.BN) {
+            NumberFormat.getIntegerInstance(Locale.forLanguageTag("bn-BD")).format(value)
+        } else {
+            value.toString()
+        }
+
     private fun setMembers(membersList: List<HouseholdMemberWithTb>) {
         val size = membersList.size
-        binding.tvMembersCount.text = resources.getQuantityString(R.plurals.plural_member, size, size)
+        val countStr = formatIntegerForUserLocale(size)
+        binding.tvMembersCount.text = resources.getQuantityString(R.plurals.plural_member, size, countStr)
         if (membersList.isNotEmpty()) {
             binding.llFilter.btnFilter.visible()
             binding.tvNoMembersFound.gone()

@@ -119,7 +119,7 @@
             ],
             "orderId": 7,
             "title": "Pregnancy Test",
-            "titleCulture": "গর্ভবতী পরীক্ষা কি করেছেন?",
+            "titleCulture": "আপনি কি গর্ভবতী নিশ্চিতকরণ পরীক্ষা করেছেন?",
             "viewType": "Spinner",
             "visibility": "gone"
         },

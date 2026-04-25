@@ -19,7 +19,7 @@
             "title": "Time of death",
             "titleCulture": "মৃত্যুর সময়",
             "errorMessage": "Please select time of death",
-            "errorMessageCulture": "অনুগ্রহ করে মৃত্যুর সময় নির্বাচন করুন",
+            "cultureErrorMessage": "অনুগ্রহ করে মৃত্যুর সময় নির্বাচন করুন",
             "visibility": "visible",
             "optionsList":
             [
@@ -170,7 +170,7 @@
             "title": "Gestation month at the time of death",
             "titleCulture": "মৃত্যুর সময় গর্ভকাল (মাস)",
             "errorMessage": "Please enter gestation month",
-            "errorMessageCulture": "অনুগ্রহ করে গর্ভকাল (মাস) লিখুন",
+            "cultureErrorMessage": "অনুগ্রহ করে গর্ভকাল (মাস) লিখুন",
             "visibility": "gone",
             "hint": "Enter gestation month",
             "hintCulture": "গর্ভকাল (মাস) লিখুন",
@@ -190,7 +190,7 @@
             "title": "Cause of death",
             "titleCulture": "মাতৃমৃত্যুর কারণ",
             "errorMessage": "Please select cause of death",
-            "errorMessageCulture": "অনুগ্রহ করে মাতৃমৃত্যুর কারণ নির্বাচন করুন",
+            "cultureErrorMessage": "অনুগ্রহ করে মাতৃমৃত্যুর কারণ নির্বাচন করুন",
             "visibility": "gone",
             "hint": "Cause of death",
             "hintCulture": "মাতৃমৃত্যুর কারণ নির্বাচন করুন",
@@ -257,9 +257,9 @@
             "inputType": 2,
             "isEnabled": true,
             "title": "Gestation month at the time of abortion",
-            "titleCulture": "গর্ভপাতের সময় গর্ভকাল (মাস)",
+            "titleCulture": "গর্ভপাতের সময় গর্ভকাল মাস",
             "errorMessage": "Please enter gestation month (must be less than 6 months)",
-            "errorMessageCulture": "অনুগ্রহ করে গর্ভকাল (মাস) লিখুন (৬ মাসের কম হতে হবে)",
+            "cultureErrorMessage": "অনুগ্রহ করে গর্ভকাল (মাস) লিখুন (৬ মাসের কম হতে হবে)",
             "visibility": "visible",
             "hint": "Enter gestation month",
             "hintCulture": "গর্ভকাল (মাস) লিখুন",
@@ -357,7 +357,7 @@
             "title": "Type of Abortion",
             "titleCulture": "গর্ভপাতের ধরন",
             "errorMessage": "Please select type of abortion",
-            "errorMessageCulture": "অনুগ্রহ করে গর্ভপাতের ধরন নির্বাচন করুন",
+            "cultureErrorMessage": "গর্ভপাতের ধরন নির্বাচন করুন",
             "visibility": "gone",
             "optionsList":
             [
@@ -408,7 +408,7 @@
             "title": "Live Birth",
             "titleCulture": "জীবিত শিশুর জন্ম",
             "errorMessage": "Please enter number of live births",
-            "errorMessageCulture": "অনুগ্রহ করে জীবিত শিশু জন্মের সংখ্যা লিখুন",
+            "cultureErrorMessage": "অনুগ্রহ করে জীবিত শিশুর সংখ্যা লিখুন",
             "visibility": "visible",
             "hint": "Enter number",
             "hintCulture": "সংখ্যা লিখুন",
@@ -429,9 +429,9 @@
             "isMandatory": true,
             "isEnabled": true,
             "title": "Stillbirth",
-            "titleCulture": "মৃত শিশুর জন্ম",
+            "titleCulture": "সময়ের আগেই প্রসব",
             "errorMessage": "Please enter number of stillbirths",
-            "errorMessageCulture": "অনুগ্রহ করে মৃত শিশু জন্মের সংখ্যা লিখুন",
+            "cultureErrorMessage": "অনুগ্রহ করে মৃত শিশুর সংখ্যা লিখুন",
             "visibility": "visible",
             "hint": "Enter number",
             "hintCulture": "সংখ্যা লিখুন",
@@ -450,7 +450,7 @@
             "title": "Place of delivery",
             "titleCulture": "প্রসবের স্থান",
             "errorMessage": "Please select place of delivery",
-            "errorMessageCulture": "অনুগ্রহ করে প্রসবের স্থান নির্বাচন করুন",
+            "cultureErrorMessage": "অনুগ্রহ করে প্রসবের স্থান নির্বাচন করুন",
             "visibility": "visible",
             "optionsList":
             [
@@ -491,7 +491,7 @@
             "title": "Date of delivery",
             "titleCulture": "প্রসবের তারিখ",
             "errorMessage": "Please select date of delivery",
-            "errorMessageCulture": "অনুগ্রহ করে প্রসবের তারিখ নির্বাচন করুন",
+            "cultureErrorMessage": "অনুগ্রহ করে প্রসবের তারিখ নির্বাচন করুন",
             "visibility": "visible",
             "hint": "Select date",
             "hintCulture": "তারিখ নির্বাচন করুন",
@@ -509,7 +509,7 @@
             "title": "Mode of Delivery",
             "titleCulture": "প্রসবের পদ্ধতি",
             "errorMessage": "Please select mode of delivery",
-            "errorMessageCulture": "অনুগ্রহ করে প্রসবের পদ্ধতি নির্বাচন করুন",
+            "cultureErrorMessage": "অনুগ্রহ করে প্রসবের পদ্ধতি নির্বাচন করুন",
             "visibility": "visible",
             "optionsList":
             [
@@ -542,7 +542,7 @@
             "title": "Birth Attendant",
             "titleCulture": "প্রসবের সহায়তাকারী",
             "errorMessage": "Please select birth attendant",
-            "errorMessageCulture": "অনুগ্রহ করে প্রসবের সহায়তাকারী নির্বাচন করুন",
+            "cultureErrorMessage": "অনুগ্রহ করে প্রসবের সহায়তাকারী নির্বাচন করুন",
             "visibility": "gone",
             "optionsList":
             [
@@ -605,7 +605,7 @@
             "title": "Any complications during delivery?",
             "titleCulture": "প্রসব কালীন কোন জটিলতা হয়েছিল কিনা",
             "errorMessage": "Please select if there were any complications",
-            "errorMessageCulture": "অনুগ্রহ করে নির্বাচন করুন যে কোন জটিলতা ছিল কিনা",
+            "cultureErrorMessage": "অনুগ্রহ করে প্রসবকালীন জটিলতা থাকলে নির্বাচন করুন",
             "visibility": "visible",
             "optionsList":
             [
@@ -642,10 +642,10 @@
             "title": "Complications during delivery",
             "titleCulture": "প্রসবকালীন জটিলতা",
             "errorMessage": "Please select complications",
-            "errorMessageCulture": "অনুগ্রহ করে জটিলতা নির্বাচন করুন",
+            "cultureErrorMessage": "অনুগ্রহ করে জটিলতা নির্বাচন করুন",
             "visibility": "gone",
             "hint": "complications",
-            "hintCulture": "জটিলতা নির্বাচন করুন",
+            "hintCulture": "জটিলতা",
             "optionsList":
             [
                 {
@@ -748,11 +748,7 @@
             ],
             "instructionsCulture":
             [
-                "আপা, আমি বুঝতে পারছি এই সময়টা আপনার জন্য খুব কঠিন। তারপরও আপনার ভবিষ্যতের সুস্থতার জন্য একটা গুরুত্বপূর্ণ কথা বলি—\nএখন অন্তত ৬ মাস গর্ভধারণ না করা খুব জরুরি। এতে আপনার শরীর ও মন ভালোভাবে সুস্থ হওয়ার সময় পাবে। তাড়াতাড়ি গর্ভধারণ করলে আপনার ও পরবর্তী বাচ্চার জন্য ঝুঁকি বাড়বে।",
-                "তাই এই সময়টা নিরাপদ রাখতে একটা পরিবার পরিকল্পনা পদ্ধতি ব্যবহার করা খুব দরকার—যেমন: কপার-টি, পিল, ইনজেকশন বা কনডম। আপনি চাইলে আমি আপনার জন্য সবচেয়ে সহজ ও ভালো পদ্ধতিটা বেছে নিতে সাহায্য করতে পারি।",
-                "একটা গুরুত্বপূর্ণ বিষয়—মাসিক শুরু না হলেও গর্ভধারণ হতে পারে, তাই দেরি না করে এখন থেকেই পদ্ধতি শুরু করা ভালো।",
-                "আপা, যখন আপনি আবার বাচ্চা নিতে প্রস্তুত হবেন, তার আগে একবার আমাদের সাথে যোগাযোগ করবেন। তখন আমরা নিশ্চিত করব—আপনি ঠিকভাবে ফলিক অ্যাসিড খাচ্ছেন, ভালো খাবার নিচ্ছেন, আর শুরু থেকেই (প্রথম ৩ মাসের মধ্যে) নিয়মিত চেকআপ করছেন।",
-                "আপনার সুস্থতা আগে—সঠিক সময়ে সঠিক সিদ্ধান্ত নিলে ভবিষ্যতে মা ও বাচ্চা দুজনই নিরাপদ থাকবে।"
+               
             ]
         }
     ]

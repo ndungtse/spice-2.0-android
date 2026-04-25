@@ -22,6 +22,7 @@ import org.medtroniclabs.uhis.repo.HouseHoldRepository
 import org.medtroniclabs.uhis.repo.HouseholdMemberRepository
 import org.medtroniclabs.uhis.repo.OfflineSyncRepository
 // import org.medtroniclabs.uhis.repo.RxBuddyRepository
+import org.medtroniclabs.uhis.R
 import org.medtroniclabs.uhis.ui.BaseViewModel
 import java.time.ZoneId
 import java.time.ZonedDateTime
@@ -40,9 +41,9 @@ class OfflineSyncViewModel @Inject constructor(
     @IoDispatcher override var dispatcherIO: CoroutineDispatcher,
 ) : BaseViewModel(dispatcherIO) {
     private val entityList = mutableListOf(
-        OfflineSyncEntityDetail("Households", 0),
-        OfflineSyncEntityDetail("Household Member", 0),
-        OfflineSyncEntityDetail("Assessments", 0),
+        OfflineSyncEntityDetail(R.string.households, 0),
+        OfflineSyncEntityDetail(R.string.household_members, 0),
+        OfflineSyncEntityDetail(R.string.assessments, 0),
         // OfflineSyncEntityDetail("Follow-Up", 0),
         // OfflineSyncEntityDetail("Community Profile", 0),
         // OfflineSyncEntityDetail("RxBuddy Register", 0),

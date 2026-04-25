@@ -1,5 +1,7 @@
 package org.medtroniclabs.uhis.mappingkey
 
+import android.content.Context
+import org.medtroniclabs.uhis.R
 import org.medtroniclabs.uhis.common.CommonUtils
 import org.medtroniclabs.uhis.common.DateUtils
 import org.medtroniclabs.uhis.common.DefinedParams
@@ -224,5 +226,23 @@ object PregnantWomen {
             riskFactors.add("Known patient of Autoimmune Disease")
         }
         return riskFactors
+    }
+
+    /**
+     * Localized display for a risk string produced by [computeRiskFactors] (internal keys are English).
+     */
+    fun riskFactorDisplayText(
+        riskFactor: String,
+        context: Context,
+    ): String {
+        val resId =
+            when (riskFactor) {
+                "Age <18 years" -> R.string.risk_factor_age_under_18
+                "Age >35 years" -> R.string.risk_factor_age_over_35
+                "Short birth spacing <2 year" -> R.string.risk_factor_short_birth_spacing
+                "Multipara >3" -> R.string.risk_factor_multipara
+                else -> return riskFactor
+            }
+        return context.getString(resId)
     }
 }
