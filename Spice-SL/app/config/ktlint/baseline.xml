@@ -279,10 +279,6 @@
     <file name="src/main/java/org/medtroniclabs/uhis/db/entity/BaseEntity.kt">
         <error line="14" column="9" source="standard:property-naming" />
     </file>
-    <file name="src/main/java/org/medtroniclabs/uhis/formgeneration/FormGenerator.kt">
-        <error line="158" column="1" source="standard:no-unused-imports" />
-        <error line="159" column="1" source="standard:no-unused-imports" />
-    </file>
     <file name="src/main/java/org/medtroniclabs/uhis/formgeneration/config/DefinedParams.kt">
         <error line="11" column="15" source="standard:property-naming" />
         <error line="20" column="15" source="standard:property-naming" />
@@ -1035,12 +1031,6 @@
         <error line="30" column="15" source="standard:property-naming" />
         <error line="31" column="15" source="standard:property-naming" />
     </file>
-    <file name="src/main/java/org/medtroniclabs/uhis/ui/household/HouseholdSearchActivity.kt">
-        <error line="3" column="1" source="standard:import-ordering" />
-    </file>
-    <file name="src/main/java/org/medtroniclabs/uhis/ui/landing/adapter/OfflineSyncEntitiesAdapter.kt">
-        <error line="44" column="66" source="standard:chain-method-continuation" />
-    </file>
     <file name="src/main/java/org/medtroniclabs/uhis/ui/landing/viewmodel/OfflineSyncViewModel.kt">
         <error line="3" column="1" source="standard:import-ordering" />
     </file>
@@ -1217,8 +1207,5 @@
     </file>
     <file name="src/main/java/org/medtroniclabs/uhis/ui/peersupervisor/PerformanceMonitoringViewModel.kt">
         <error line="64" column="17" source="standard:backing-property-naming" />
-    </file>
-    <file name="src/main/java/org/medtroniclabs/uhis/ui/services/ServicesActivity.kt">
-        <error line="3" column="1" source="standard:import-ordering" />
     </file>
 </baseline>

@@ -14,6 +14,7 @@ import org.medtroniclabs.uhis.databinding.RowActivitiesBinding
 import org.medtroniclabs.uhis.db.entity.MenuEntity
 import org.medtroniclabs.uhis.formgeneration.extension.safeClickListener
 import org.medtroniclabs.uhis.ui.MenuConstants
+import org.medtroniclabs.uhis.ui.assessment.rmnch.RMNCH
 import org.medtroniclabs.uhis.ui.home.MenuSelectionListener
 
 class DashboardMenuItemsAdapter(
@@ -52,7 +53,7 @@ class DashboardMenuItemsAdapter(
         val imageModel = getResourceActivityId(
             model.menuId,
             holder.context,
-            model.name,
+            model.subModule,
         )
         val backgroundColorResId = if (model.isDisabled) R.color.border_gray else R.color.white
         holder.binding.root.apply {
@@ -83,7 +84,7 @@ class DashboardMenuItemsAdapter(
     private fun getResourceActivityId(
         menuID: String,
         context: Context,
-        name: String,
+        subModule: String?,
     ): Drawable? =
         when (menuID) {
             MenuConstants.CBS_MENU_ID.lowercase() -> ContextCompat.getDrawable(
@@ -112,11 +113,11 @@ class DashboardMenuItemsAdapter(
             )
 
             MenuConstants.ICCM_MENU_ID -> {
-                if (name == MenuConstants.OTHER_SYMPTOMS) {
-                    ContextCompat.getDrawable(context, R.drawable.ic_general)
-                } else {
-                    ContextCompat.getDrawable(context, R.drawable.ic_general)
-                }
+                ContextCompat.getDrawable(
+                    context,
+                    R
+                        .drawable.ic_general,
+                )
             }
 
             MenuConstants.TB_MENU_ID.lowercase() -> ContextCompat.getDrawable(
@@ -143,12 +144,47 @@ class DashboardMenuItemsAdapter(
                 R.drawable.ic_cataract,
             )
 
-            MenuConstants.RMNCH_MENU_ID, MenuConstants.MATERNAL_HEALTH, MenuConstants.PREGNANT_WOMEN_PROFILE, MenuConstants.PREGNANCY_OUTCOME ->
+            MenuConstants.PREGNANCY_OUTCOME -> ContextCompat.getDrawable(
+                context,
+                R.drawable.ic_fp_pnc,
+            )
+
+            MenuConstants.MATERNAL_HEALTH, MenuConstants.PREGNANT_WOMEN_PROFILE ->
                 ContextCompat
                     .getDrawable(
                         context,
                         R.drawable.ic_rmnch_tool,
                     )
+
+            MenuConstants.RMNCH_MENU_ID -> {
+                var drawableRes = -1
+                when (subModule) {
+                    RMNCH.ANC -> {
+                        drawableRes = R.drawable.ic_rmnch_tool
+                    }
+
+                    RMNCH.PNC -> {
+                        drawableRes = R.drawable.ic_fp_pnc
+                    }
+
+                    RMNCH.ChildHoodVisit -> {
+                        drawableRes = R.drawable.ic_child_health
+                    }
+                }
+                if (drawableRes == -1) {
+                    ContextCompat
+                        .getDrawable(
+                            context,
+                            R.drawable.ic_rmnch_tool,
+                        )
+                } else {
+                    ContextCompat
+                        .getDrawable(
+                            context,
+                            drawableRes,
+                        )
+                }
+            }
 
             MenuConstants.OTHER_SYMPTOMS -> ContextCompat.getDrawable(
                 context,

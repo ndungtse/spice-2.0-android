@@ -14,6 +14,7 @@ import org.medtroniclabs.uhis.appextensions.gone
 import org.medtroniclabs.uhis.appextensions.hideKeyboard
 import org.medtroniclabs.uhis.appextensions.setTextChangeListener
 import org.medtroniclabs.uhis.appextensions.visible
+import org.medtroniclabs.uhis.common.CommonUtils
 import org.medtroniclabs.uhis.common.DefinedParams
 import org.medtroniclabs.uhis.common.DefinedParams.isHouseHold
 import org.medtroniclabs.uhis.databinding.ActivityHouseholdSearchBinding
@@ -26,7 +27,6 @@ import org.medtroniclabs.uhis.ui.household.HouseholdDefinedParams.IS_FROM_HOUSEH
 import org.medtroniclabs.uhis.ui.household.adapter.HouseholdListAdapter
 import org.medtroniclabs.uhis.ui.household.summary.HouseholdSummaryActivity
 import org.medtroniclabs.uhis.ui.household.viewmodel.HouseholdListViewModel
-import org.medtroniclabs.uhis.common.CommonUtils
 import java.text.NumberFormat
 import java.util.Locale
 

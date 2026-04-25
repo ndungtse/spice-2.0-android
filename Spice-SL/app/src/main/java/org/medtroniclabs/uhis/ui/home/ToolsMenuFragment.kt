@@ -123,19 +123,16 @@ class ToolsMenuFragment : BaseFragment(), MenuSelectionListener {
         }
     }
 
-    private suspend fun getResolvedMenuLabels(menus: List<MenuEntity>): List<MenuEntity> {
-        val workflowName = viewModel.getANCPNCStatus()
-        val rmnchTitle =
-            when (workflowName) {
-                RMNCH.ANC -> getString(R.string.anc)
-                RMNCH.PNC -> getString(R.string.pnc)
-                else -> getString(R.string.child_health)
-            }
-
-        // Keep a single RMNCH tile and only update its display label based on active workflow.
-        return menus.map { menu ->
+    private fun getResolvedMenuLabels(menus: List<MenuEntity>): List<MenuEntity> =
+        menus.map { menu ->
             when (menu.menuId.lowercase()) {
                 MenuConstants.RMNCH_MENU_ID.lowercase() -> {
+                    // Keep a single RMNCH tile and only update its display label based on active workflow.
+                    val rmnchTitle = when (menu.subModule) {
+                        RMNCH.ANC -> getString(R.string.anc)
+                        RMNCH.PNC -> getString(R.string.pnc)
+                        else -> getString(R.string.child_health)
+                    }
                     menu.copy(name = rmnchTitle, displayValue = null)
                 }
 
@@ -168,7 +165,6 @@ class ToolsMenuFragment : BaseFragment(), MenuSelectionListener {
                 }
             }
         }
-    }
 
     override fun onMenuSelected(
         menuId: String,
@@ -183,18 +179,18 @@ class ToolsMenuFragment : BaseFragment(), MenuSelectionListener {
     ) {
         when (menuId) {
             MenuConstants.RMNCH_MENU_ID -> {
-                if (subModule == null) {
-                    lifecycleScope.launch {
-                        viewModel.getANCPNCStatus()?.let { workflowName ->
-                            startAssessmentActivity(MenuConstants.RMNCH_MENU_ID, workflowName)
-                        }
-                    }
-//                    RMNCHFlowSelectionDialog
-//                        .newInstance()
-//                        .show(childFragmentManager, RMNCHFlowSelectionDialog.TAG)
-                } else {
-                    startAssessmentActivity(MenuConstants.RMNCH_MENU_ID, RMNCH.ChildHoodVisit)
+                subModule?.let {
+                    startAssessmentActivity(MenuConstants.RMNCH_MENU_ID, subModule)
                 }
+//                if (subModule == null) {
+//                    lifecycleScope.launch {
+//                        viewModel.getANCPNCStatus()?.let { workflowName ->
+//                            startAssessmentActivity(MenuConstants.RMNCH_MENU_ID, workflowName)
+//                        }
+//                    }
+//                } else {
+//                    startAssessmentActivity(MenuConstants.RMNCH_MENU_ID, RMNCH.ChildHoodVisit)
+//                }
             }
 
             MenuConstants.CBS_MENU_ID.uppercase() -> {

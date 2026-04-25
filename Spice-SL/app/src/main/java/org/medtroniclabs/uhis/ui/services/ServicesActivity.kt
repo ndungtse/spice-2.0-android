@@ -12,6 +12,7 @@ import org.medtroniclabs.uhis.appextensions.gone
 import org.medtroniclabs.uhis.appextensions.hideKeyboard
 import org.medtroniclabs.uhis.appextensions.setTextChangeListener
 import org.medtroniclabs.uhis.appextensions.visible
+import org.medtroniclabs.uhis.common.CommonUtils
 import org.medtroniclabs.uhis.common.SecuredPreference
 import org.medtroniclabs.uhis.data.model.ChipViewItemModel
 import org.medtroniclabs.uhis.data.offlinesync.model.HouseholdMemberWithTb
@@ -28,10 +29,9 @@ import org.medtroniclabs.uhis.ui.externalmember.ExternalMemberRegistrationActivi
 import org.medtroniclabs.uhis.ui.household.MemberSelectionListener
 import org.medtroniclabs.uhis.ui.household.summary.MemberSummaryActivity
 import org.medtroniclabs.uhis.ui.services.viewmodel.ServicesViewModel
-import org.medtroniclabs.uhis.common.CommonUtils
-import org.medtroniclabs.uhis.common.DefinedParams as CommonDefinedParams
 import java.text.NumberFormat
 import java.util.Locale
+import org.medtroniclabs.uhis.common.DefinedParams as CommonDefinedParams
 
 /**
  * Activity responsible to display members based on services
@@ -169,14 +169,11 @@ class ServicesActivity : BaseActivity(), View.OnClickListener, MemberSelectionLi
     private fun setDropDownData(counts: ServiceMemberCounts) {
         // Remove any existing listener, so that the filter won't get triggered
         binding.tvMemberTypes.onItemSelectedListener = null
+
         val dropDownList = buildDropDownList(counts)
         spinnerAdapter = CustomSpinnerAdapter(this, SecuredPreference.getIsTranslationEnabled())
         spinnerAdapter.setData(dropDownList)
         binding.tvMemberTypes.adapter = spinnerAdapter
-        // Set listener after setting adapter, so that the filter works
-        binding.tvMemberTypes.post {
-            binding.tvMemberTypes.onItemSelectedListener = dropdownListener
-        }
 
         if (!isPreselectedFilterAlreadySet) {
             isPreselectedFilterAlreadySet = true
@@ -190,6 +187,11 @@ class ServicesActivity : BaseActivity(), View.OnClickListener, MemberSelectionLi
         }
         if (lastPosition != -1) {
             binding.tvMemberTypes.setSelection(lastPosition, false)
+        }
+
+        // Set listener after setting adapter, so that the filter works
+        binding.tvMemberTypes.post {
+            binding.tvMemberTypes.onItemSelectedListener = dropdownListener
         }
     }
 

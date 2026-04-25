@@ -1,9 +1,7 @@
 package org.medtroniclabs.uhis.ui.boarding.repo
 
-import android.content.Context
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
-import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.withContext
@@ -78,7 +76,6 @@ import javax.inject.Inject
 class MetaRepository @Inject constructor(
     private var apiHelper: ApiHelper,
     private var roomHelper: RoomHelper,
-    @ApplicationContext private val context: Context,
 ) {
     suspend fun updateDeviceDetails(deviceDetails: DeviceDetails): Resource<DeviceDetails> =
         try {
@@ -93,7 +90,7 @@ class MetaRepository @Inject constructor(
             } else {
                 Resource(state = ResourceState.ERROR)
             }
-        } catch (e: Exception) {
+        } catch (_: Exception) {
             Resource(state = ResourceState.ERROR)
         }
 
@@ -168,10 +165,10 @@ class MetaRepository @Inject constructor(
                                 roomHelper.deleteChiefDoms()
                                 roomHelper.saveChiefDoms(chiefdomList)
                             }
-                            programs?.let { prgms ->
+                            programs?.let {
                                 roomHelper.deletePrograms()
                                 val list = ArrayList<ProgramEntity>()
-                                prgms.forEach { item ->
+                                programs.forEach { item ->
                                     list.add(
                                         ProgramEntity(
                                             id = item.id,
@@ -280,16 +277,16 @@ class MetaRepository @Inject constructor(
                                     return@with Resource(state = ResourceState.ERROR)
                                 }
                                 metadataResponse.body()?.entity?.let { res ->
-                                    res.symptoms.let {
+                                    res.symptoms.let { symptoms ->
                                         roomHelper.deleteAllSymptoms()
-                                        val maxId = it.maxBy { it._id }._id
-                                        it.filter { it.type != FamilyPlanningMethods }?.let {
+                                        val maxId = symptoms.maxBy { symptom -> symptom._id }._id
+                                        symptoms.filter { symptom -> symptom.type != FamilyPlanningMethods }.let {
                                             roomHelper.insertSymptoms(it)
                                         }
-                                        it
-                                            .filter { it.type.equals(FamilyPlanningMethods, true) }
-                                            .sortedBy { it.displayOrder }
-                                            ?.let { list ->
+                                        symptoms
+                                            .filter { symptom -> symptom.type.equals(FamilyPlanningMethods, true) }
+                                            .sortedBy { symptom -> symptom.displayOrder }
+                                            .let { list ->
                                                 roomHelper.insertSymptoms(
                                                     convertFamilyPlanningMethodToSymptoms(
                                                         list,
@@ -611,8 +608,8 @@ class MetaRepository @Inject constructor(
                     tenantId = healthFacility.tenantId,
                     fhirId = healthFacility.fhirId,
                     isDefault = healthFacility.id == defaultId,
-                    isUserSite = userHealthFacilities?.any { userSiteFacility -> userSiteFacility.id == healthFacility.id } ?: false,
-                    phoneNumber = healthFacility.phuFocalPersonNumber?.toString() ?: null,
+                    isUserSite = userHealthFacilities.any { userSiteFacility -> userSiteFacility.id == healthFacility.id },
+                    phoneNumber = healthFacility.phuFocalPersonNumber?.toString(),
                 ),
             )
         }
@@ -869,19 +866,8 @@ class MetaRepository @Inject constructor(
         }
     }
 
-    private fun saveUserIsLogin() {
-        SecuredPreference.putBoolean(
-            SecuredPreference.EnvironmentKey.ISLOGGEDIN.name,
-            true,
-        )
-        SecuredPreference.putBoolean(
-            SecuredPreference.EnvironmentKey.ISMETALOADED.name,
-            true,
-        )
-    }
-
-    suspend fun getANCPNCStatus(selectedHouseholdMemberID: Long): String? {
-        roomHelper.getPregnancyDetailByPatientId(selectedHouseholdMemberID)?.let { memberPregnancyDetail ->
+    fun getANCPNCStatus(pregnancyDetail: PregnancyDetail?): String? {
+        pregnancyDetail?.let { memberPregnancyDetail ->
             val ddDay = getDayCountFromDD(memberPregnancyDetail)
             if (memberPregnancyDetail.typeOfAbortion.isNullOrBlank() && (ddDay == null || ddDay <= 42)) {
                 val dd = getDayCountFromDD(memberPregnancyDetail)
@@ -935,7 +921,7 @@ class MetaRepository @Inject constructor(
             } else {
                 Resource(state = ResourceState.ERROR)
             }
-        } catch (e: Exception) {
+        } catch (_: Exception) {
             Resource(state = ResourceState.ERROR)
         }
 
@@ -965,7 +951,9 @@ class MetaRepository @Inject constructor(
                 }
 
                 MenuConstants.RMNCH_MENU_ID -> {
-                    item.isDisabled = isRMNCHMenuDisable(memberPregnancyDetail, selectedHouseholdMemberID)
+                    val rmnchWorkFlow = isRMNCHMenuDisable(memberPregnancyDetail, selectedHouseholdMemberID)
+                    item.isDisabled = rmnchWorkFlow.first
+                    item.subModule = rmnchWorkFlow.second
                 }
             }
         }
@@ -978,7 +966,9 @@ class MetaRepository @Inject constructor(
         menu.forEach { item ->
             when (item.menuId) {
                 MenuConstants.RMNCH_MENU_ID -> {
-                    item.isDisabled = isChildVisitMenuDisable(selectedHouseholdMemberID)
+                    val childVisit = isChildVisitMenuDisable(selectedHouseholdMemberID)
+                    item.isDisabled = childVisit.first
+                    item.subModule = childVisit.second
                 }
             }
         }
@@ -1046,19 +1036,19 @@ class MetaRepository @Inject constructor(
     private suspend fun isRMNCHMenuDisable(
         pregnancyDetail: PregnancyDetail?,
         selectedHouseholdMemberID: Long,
-    ): Boolean {
-        getANCPNCStatus(selectedHouseholdMemberID)?.let {
-            if (it == RMNCH.ANC && checkIfLastServiceProvidedIsToday(selectedHouseholdMemberID, MenuConstants.ANC)) {
-                return true
-            } else if (it == RMNCH.PNC && checkIfLastServiceProvidedIsToday(selectedHouseholdMemberID, MenuConstants.PNC_MOTHER)) {
-                return true
+    ): Pair<Boolean, String?> {
+        getANCPNCStatus(pregnancyDetail)?.let { workflow ->
+            if (workflow == RMNCH.ANC) {
+                return checkIfLastServiceProvidedIsToday(selectedHouseholdMemberID, MenuConstants.ANC) to workflow
+            } else if (workflow == RMNCH.PNC) {
+                return checkIfLastServiceProvidedIsToday(selectedHouseholdMemberID, MenuConstants.PNC_MOTHER) to workflow
             }
         }
-        return pregnancyDetail == null
+        return (pregnancyDetail == null) to null
     }
 
-    private suspend fun isChildVisitMenuDisable(selectedHouseholdMemberID: Long): Boolean =
-        checkIfLastServiceProvidedIsToday(selectedHouseholdMemberID, MenuConstants.CHILDHOOD_VISIT)
+    private suspend fun isChildVisitMenuDisable(selectedHouseholdMemberID: Long): Pair<Boolean, String> =
+        checkIfLastServiceProvidedIsToday(selectedHouseholdMemberID, MenuConstants.CHILDHOOD_VISIT) to RMNCH.ChildHoodVisit
 
     private suspend fun isPOMenuDisable(
         pregnancyDetail: PregnancyDetail?,
@@ -1089,7 +1079,7 @@ class MetaRepository @Inject constructor(
         try {
             val data = roomHelper.getMenus()
             Resource(state = ResourceState.SUCCESS, data = data)
-        } catch (e: Exception) {
+        } catch (_: Exception) {
             Resource(state = ResourceState.ERROR)
         }
 
@@ -1099,23 +1089,7 @@ class MetaRepository @Inject constructor(
             val userProfile: UserProfile =
                 Gson().fromJson(data.profileData, UserProfile::class.java)
             Resource(state = ResourceState.SUCCESS, data = userProfile)
-        } catch (e: Exception) {
-            Resource(state = ResourceState.ERROR)
-        }
-
-    suspend fun getAllVillagesName(): Resource<List<VillageEntity>> =
-        try {
-            val response = roomHelper.getAllVillageEntity()
-            Resource(state = ResourceState.SUCCESS, data = response)
-        } catch (e: Exception) {
-            Resource(state = ResourceState.ERROR)
-        }
-
-    suspend fun getDefaultHealthFacility(): Resource<HealthFacilityEntity> =
-        try {
-            val response = roomHelper.getDefaultHealthFacility()
-            Resource(state = ResourceState.SUCCESS, data = response)
-        } catch (e: Exception) {
+        } catch (_: Exception) {
             Resource(state = ResourceState.ERROR)
         }
 
@@ -1138,7 +1112,7 @@ class MetaRepository @Inject constructor(
         try {
             val response = roomHelper.getUserHealthFacility(true)
             Resource(state = ResourceState.SUCCESS, data = response)
-        } catch (e: Exception) {
+        } catch (_: Exception) {
             Resource(state = ResourceState.ERROR)
         }
 
@@ -1152,7 +1126,7 @@ class MetaRepository @Inject constructor(
         try {
             val response = apiHelper.getPatientListTransfer(request)
             Resource(state = ResourceState.SUCCESS, data = response.body()?.entity)
-        } catch (e: Exception) {
+        } catch (_: Exception) {
             Resource(state = ResourceState.ERROR)
         }
 
@@ -1160,7 +1134,7 @@ class MetaRepository @Inject constructor(
         try {
             val response = apiHelper.patientTransferNotificationCount(request)
             Resource(state = ResourceState.SUCCESS, data = response.body()?.entity)
-        } catch (e: Exception) {
+        } catch (_: Exception) {
             Resource(state = ResourceState.ERROR)
         }
 
@@ -1168,7 +1142,7 @@ class MetaRepository @Inject constructor(
         try {
             val response = apiHelper.patientTransferUpdate(request)
             Resource(state = ResourceState.SUCCESS, data = response.body()?.message)
-        } catch (e: Exception) {
+        } catch (_: Exception) {
             Resource(state = ResourceState.ERROR)
         }
 
@@ -1186,7 +1160,7 @@ class MetaRepository @Inject constructor(
         try {
             val response = apiHelper.createSupportRequest(request)
             Resource(state = ResourceState.SUCCESS, data = response.body()?.message)
-        } catch (e: Exception) {
+        } catch (_: Exception) {
             Resource(state = ResourceState.ERROR)
         }
 
@@ -1244,7 +1218,7 @@ class MetaRepository @Inject constructor(
             } else {
                 Resource(state = ResourceState.ERROR)
             }
-        } catch (e: Exception) {
+        } catch (_: Exception) {
             Resource(state = ResourceState.ERROR)
         }
 
@@ -1256,7 +1230,7 @@ class MetaRepository @Inject constructor(
             } else {
                 Resource(state = ResourceState.ERROR, message = response.message())
             }
-        } catch (e: Exception) {
+        } catch (_: Exception) {
             Resource(state = ResourceState.ERROR)
         }
 
