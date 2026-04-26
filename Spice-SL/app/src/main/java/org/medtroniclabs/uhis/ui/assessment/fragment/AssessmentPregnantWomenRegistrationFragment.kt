@@ -325,6 +325,12 @@ class AssessmentPregnantWomenRegistrationFragment :
         formLayout: FormLayout,
         resultMap: Any?,
     ) {
+        val title = if (isTranslationEnabled && !formLayout.hintCulture.isNullOrBlank()) {
+            formLayout.hintCulture
+        } else {
+            formLayout.hint
+        }
+
         val inputData = EntityMapper.mapToSignsAndSymptomsEntity(formLayout.optionsList)
         if (id == PregnantWomen.ID_OBSTETRIC_COMPLICATIONS) {
             val gravidaParityDiff = getGravidaParityDiff()
@@ -336,7 +342,7 @@ class AssessmentPregnantWomenRegistrationFragment :
             .newInstance(
                 id,
                 resultMap,
-                title = formLayout.hint,
+                title = title,
                 inputData = inputData,
             ) { map ->
                 formGenerator.validateCheckboxDialogue(id, formLayout, map)

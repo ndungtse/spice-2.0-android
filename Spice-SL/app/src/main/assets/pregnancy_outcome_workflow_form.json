@@ -406,7 +406,7 @@
             "isMandatory": true,
             "isEnabled": true,
             "title": "Live Birth",
-            "titleCulture": "জীবিত শিশুর জন্ম",
+            "titleCulture": "জীবিত শিশু জন্মের সংখ্যা",
             "errorMessage": "Please enter number of live births",
             "cultureErrorMessage": "অনুগ্রহ করে জীবিত শিশুর সংখ্যা লিখুন",
             "visibility": "visible",
@@ -429,7 +429,7 @@
             "isMandatory": true,
             "isEnabled": true,
             "title": "Stillbirth",
-            "titleCulture": "সময়ের আগেই প্রসব",
+            "titleCulture": "মৃত শিশু জন্মের সংখ্যা",
             "errorMessage": "Please enter number of stillbirths",
             "cultureErrorMessage": "অনুগ্রহ করে মৃত শিশুর সংখ্যা লিখুন",
             "visibility": "visible",
@@ -644,7 +644,7 @@
             "errorMessage": "Please select complications",
             "cultureErrorMessage": "অনুগ্রহ করে জটিলতা নির্বাচন করুন",
             "visibility": "gone",
-            "hint": "complications",
+            "hint": "Complications",
             "hintCulture": "জটিলতা",
             "optionsList":
             [
@@ -748,7 +748,7 @@
             ],
             "instructionsCulture":
             [
-               
+
             ]
         }
     ]

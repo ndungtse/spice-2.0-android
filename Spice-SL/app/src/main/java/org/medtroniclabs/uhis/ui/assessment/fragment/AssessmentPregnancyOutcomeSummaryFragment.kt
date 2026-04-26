@@ -185,6 +185,7 @@ class AssessmentPregnancyOutcomeSummaryFragment : BaseFragment(), View.OnClickLi
             val isNewCounselling = item.id == AssessmentDefinedParams.COUNSELLING_EMOTIONAL_SUPPORT ||
                 item.id == AssessmentDefinedParams.COUNSELLING_FUTURE_PREGNANCY_PLANNING
             val isAdditionalField = item.id in additionalSummaryFieldIds
+            val displayTitle = if (isTranslationEnabled) item.cultureValue ?: item.title else item.title
 
             when {
                 isOldCounselling || isNewCounselling -> {
@@ -208,7 +209,7 @@ class AssessmentPregnancyOutcomeSummaryFragment : BaseFragment(), View.OnClickLi
                             getSpinnerDisplayValue(item.id.toString(), value, isTranslationEnabled) ?: value
                         }
                         if (item.id != AssessmentDefinedParams.DATE_OF_DELIVERY) {
-                            bindSummaryView(item.title, displayValue.toString())
+                            bindSummaryView(displayTitle, displayValue.toString())
                         }
                     }
                 }
@@ -217,7 +218,7 @@ class AssessmentPregnancyOutcomeSummaryFragment : BaseFragment(), View.OnClickLi
                     // Other isSummary fields: show normally
                     // Convert ID to display name for SingleSelectionView/Spinner fields
                     val displayValue = getSpinnerDisplayValue(item.id.toString(), item.value, isTranslationEnabled) ?: item.value
-                    bindSummaryView(item.title, displayValue)
+                    bindSummaryView(displayTitle, displayValue)
                 }
             }
         }

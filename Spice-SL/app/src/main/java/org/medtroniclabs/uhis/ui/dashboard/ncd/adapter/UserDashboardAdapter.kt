@@ -3,11 +3,8 @@ package org.medtroniclabs.uhis.ui.dashboard.ncd.adapter
 import android.content.Context
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import org.medtroniclabs.uhis.appextensions.gone
-import org.medtroniclabs.uhis.appextensions.isTablet
-import org.medtroniclabs.uhis.appextensions.visible
 import org.medtroniclabs.uhis.databinding.ListItemUserDashboardBinding
 
 data class DashboardCardItem(
@@ -41,27 +38,13 @@ class UserDashboardAdapter(
         position: Int,
     ) {
         userDashboardLists[position].let { dashboard ->
-            val context = holder.binding.root.context
             holder.binding.apply {
                 tvKey.text = dashboard.title.uppercase()
                 tvValue.text = if (customize) "0" else dashboard.count.toString()
                 root.setOnClickListener {
                     onCardClick(dashboard)
                 }
-
-                if (context.isTablet()) {
-                    ivActivity.apply {
-                        visible()
-                        setImageDrawable(
-                            ContextCompat.getDrawable(
-                                root.context,
-                                dashboard.iconRes,
-                            ),
-                        )
-                    }
-                } else {
-                    ivActivity.gone()
-                }
+                ivActivity.gone()
             }
         }
     }

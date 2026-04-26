@@ -172,7 +172,7 @@
                 {
                     "id": "Technical worker",
                     "name": "Technical worker",
-                    "cultureValue": "প্র্রযুক্তিগত কর্মী (যেমনঃ ড্রাইভার/ ইলেকট্রিশিয়ান/ ওয়েলডিং/ মেকানিকস/ রঙ মিস্ত্রি/ রাজমিস্ত্রি)"
+                    "cultureValue": "প্রযুক্তিগত কর্মী (যেমনঃ ড্রাইভার/ ইলেকট্রিশিয়ান/ ওয়েলডিং/ মেকানিক )"
                 },
                 {
                     "id": "Day laborer",
@@ -275,7 +275,7 @@
             "visibility": "visible",
             "isInfo": "visible",
             "infoTitle": "Who has great difficulty or cannot see, hear, walk, climb, do things independently, remember, concentrate, communicate, or understand others",
-            "infoTitleCulture": "যার খুব অসুবিধা হয় অথবা সে দেখতে, শুনতে, হাঁটতে, আরোহণ করতে, স্বাধীনভাবে কিছু করতে, মনে রাখতে, মনোযোগ দিতে, যোগাযোগ করতে বা অন্যদের বোঝাতে পারে না"
+            "infoTitleCulture": "যার খুব অসুবিধা হয় অথবা দেখতে, শুনতে, হাটতে, উপরে উঠতে, কিছু করতে, মনে রাখতে, মনোযোগ দিতে, যোগাযোগ করতে বা অন্যদের বোঝাতে পারে না।"
         }
     ]
 }

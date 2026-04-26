@@ -6,11 +6,10 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.activityViewModels
-import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.LinearLayoutManager
 import dagger.hilt.android.AndroidEntryPoint
 import org.medtroniclabs.uhis.R
 import org.medtroniclabs.uhis.appextensions.gone
-import org.medtroniclabs.uhis.appextensions.isTablet
 import org.medtroniclabs.uhis.appextensions.visible
 import org.medtroniclabs.uhis.common.DateUtils
 import org.medtroniclabs.uhis.common.DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ
@@ -80,7 +79,11 @@ class DashboardFragment : BaseFragment(), View.OnClickListener {
             dashboardFilterCount = count
             updateFilterButtonLabel(dashboardFilterCount)
             if (::cgCalender.isInitialized) {
-                getDashboardList()
+                if (!binding.etFromDate.text.isNullOrEmpty() && !binding.etToDate.text.isNullOrEmpty()) {
+                    getDashboardList(true)
+                } else {
+                    getDashboardList()
+                }
             }
         }
         viewModel.userDashboardDetails.observe(viewLifecycleOwner) { resourceState ->
@@ -133,9 +136,9 @@ class DashboardFragment : BaseFragment(), View.OnClickListener {
             isSelectionRequired = true,
         ) { _, _, isChecked ->
             if (isChecked) {
-                val isVisible =
+                val isCustomize =
                     cgCalender.getSelectedTags().any { it.value == CommonEnums.CUSTOMISE.value }
-                if (isVisible) {
+                if (isCustomize) {
                     resetCounts()
                     binding.clDateRange.visible()
                 } else {
@@ -310,16 +313,7 @@ class DashboardFragment : BaseFragment(), View.OnClickListener {
             // )
         }
         binding.rvActivitiesList.apply {
-            layoutManager =
-                GridLayoutManager(
-                    requireContext(),
-                    if (requireContext().isTablet()) 3 else 1,
-                    // when {
-                    //     resources.getBoolean(R.bool.isLargeTablet) -> 3
-                    //     resources.getBoolean(R.bool.isTablet) -> 2
-                    //     else -> 1
-                    // },
-                )
+            layoutManager = LinearLayoutManager(requireContext())
             adapter = UserDashboardAdapter(customize, userDashboardList) {
                 // Navigation from dashboard cards is intentionally disabled.
             }
