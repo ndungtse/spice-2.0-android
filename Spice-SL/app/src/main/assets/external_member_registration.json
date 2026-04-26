@@ -325,13 +325,13 @@
             "optionsList":
             [
                 {
-                    "name": "Present",
-                    "cultureValue": "রয়েছে",
+                    "name": "Yes",
+                    "cultureValue": "হ্যাঁ",
                     "id": "present"
                 },
                 {
-                    "name": "Absent",
-                    "cultureValue": "নেই",
+                    "name": "No",
+                    "cultureValue": "না",
                     "id": "absent"
                 }
             ],

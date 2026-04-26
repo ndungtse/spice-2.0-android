@@ -676,15 +676,16 @@ class AssessmentRMNCHSummaryFragment : BaseFragment(), View.OnClickListener {
         val siteList = ArrayList<Map<String, Any>>()
         optionsList.forEach { option ->
             val optionMap = HashMap<String, Any>()
-            optionMap[DefinedParams.id] = option["id"]?.toString() ?: ""
-            optionMap[DefinedParams.NAME] = option["name"]?.toString() ?: ""
+            optionMap[DefinedParams.id] = option[DefinedParams.id]?.toString() ?: ""
+            optionMap[DefinedParams.NAME] = option[DefinedParams.NAME]?.toString() ?: ""
+            optionMap[DefinedParams.CULTURE_VALUE] = option[DefinedParams.CULTURE_VALUE]?.toString() ?: ""
             siteList.add(optionMap)
         }
 
         binding.etPhuChange.background = ContextCompat.getDrawable(requireContext(), R.drawable.edittext_background)
         val background = binding.etPhuChange.background as? GradientDrawable
         background?.setStroke(resources.getDimensionPixelSize(R.dimen._1sdp), ContextCompat.getColor(requireContext(), R.color.edittext_stroke))
-        val adapter = CustomSpinnerAdapterCustomLayout(requireContext())
+        val adapter = CustomSpinnerAdapterCustomLayout(requireContext(), isTranslationEnabled)
         adapter.setData(siteList)
         binding.etPhuChange.adapter = adapter
         binding.etPhuChange.onItemSelectedListener =
