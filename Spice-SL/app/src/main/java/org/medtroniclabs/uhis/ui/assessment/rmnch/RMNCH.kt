@@ -7,6 +7,9 @@ import org.medtroniclabs.uhis.common.DefinedParams
 import org.medtroniclabs.uhis.formgeneration.config.ViewType
 import org.medtroniclabs.uhis.ui.MenuConstants
 import org.medtroniclabs.uhis.ui.assessment.AssessmentCommonUtils
+import org.medtroniclabs.uhis.ui.assessment.referrallogic.ANCGaps
+import org.medtroniclabs.uhis.ui.assessment.referrallogic.ANCNonUrgentReferrals
+import org.medtroniclabs.uhis.ui.assessment.referrallogic.ANCUrgentReferrals
 import java.text.DecimalFormat
 import java.util.Date
 import java.util.Locale
@@ -15,6 +18,20 @@ import kotlin.collections.mapOf
 import kotlin.math.abs
 
 object RMNCH {
+    private val ancConditionCultureMap: Map<String, String> by lazy {
+        buildMap {
+            ANCUrgentReferrals.entries.forEach { condition ->
+                put(normalizeConditionKey(condition.value), condition.cultureValue)
+            }
+            ANCNonUrgentReferrals.entries.forEach { condition ->
+                put(normalizeConditionKey(condition.value), condition.cultureValue)
+            }
+            ANCGaps.entries.forEach { condition ->
+                put(normalizeConditionKey(condition.value), condition.cultureValue)
+            }
+        }
+    }
+
     const val PlaceOfDelivery = "placeOfDelivery"
     const val ANC = "anc"
     const val PNC = "pncMother"
@@ -504,14 +521,18 @@ object RMNCH {
         translate: Boolean,
     ): String {
         val parts = value.split("::", limit = 2)
-        return if (parts.size != 2) {
-            value
-        } else if (translate && parts.last().isNotBlank()) {
+        return if (parts.size == 2 && translate && parts.last().isNotBlank()) {
             parts.last()
-        } else {
+        } else if (parts.size == 2) {
             parts.first()
+        } else if (!translate) {
+            value
+        } else {
+            ancConditionCultureMap[normalizeConditionKey(value)] ?: value
         }
     }
+
+    private fun normalizeConditionKey(value: String): String = value.trim().lowercase(Locale.ENGLISH)
 
     /**
      * ANC/PNC referral type

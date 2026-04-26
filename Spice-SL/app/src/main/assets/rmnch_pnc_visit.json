@@ -840,7 +840,7 @@
                     "name": "UH&FWC (Union health and family welfare center)"
                 },
                 {
-                    "cultureValue": "মাতৃ ও শিশু কল্যাণ কেন্দ্র",
+                    "cultureValue": "মা ও শিশু কল্যাণ কেন্দ্র",
                     "id": "mcwc",
                     "name": "MCWC (Mother and Child Welfare Center)"
                 },
@@ -850,7 +850,7 @@
                     "name": "UHC (Upazila Health complex)"
                 },
                 {
-                    "cultureValue": "জেলা সদর হাসপাতাল",
+                    "cultureValue": "জেলা হাসপাতাল",
                     "id": "districtHospital",
                     "name": "District Hospital"
                 },

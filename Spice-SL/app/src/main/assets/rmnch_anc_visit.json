@@ -100,7 +100,7 @@
             "isMandatory": true,
             "isEnabled": true,
             "title": "Pregnant woman has any existing illness",
-            "titleCulture": "গর্ভবতী মায়ের আগে থেকে কোন অসুখ আছে কি?",
+            "titleCulture": "গর্ভবতী মায়ের আগে থেকে কি কি দীর্ঘমেয়াদী রোগ আছে",
             "errorMessage": "Please select a valid option",
             "cultureErrorMessage": "অনুগ্রহ করে বৈধ নির্বাচন করুন",
             "visibility": "visible",
