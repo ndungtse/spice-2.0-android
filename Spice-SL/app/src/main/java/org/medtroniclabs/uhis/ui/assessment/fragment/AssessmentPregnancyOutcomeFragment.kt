@@ -484,10 +484,16 @@ class AssessmentPregnancyOutcomeFragment :
         // Use localDataCache if available, otherwise use id (for database loading)
         val dialogKey = formLayout.localDataCache ?: id
 
+        val title = if (isTranslationEnabled && !formLayout.hintCulture.isNullOrBlank()) {
+            formLayout.hintCulture
+        } else {
+            formLayout.hint
+        }
+
         if (formLayout.localDataCache != null) {
             // If localDataCache exists, load from database
             CheckBoxDialog
-                .newInstance(dialogKey, resultMap, title = formLayout.hint) { map ->
+                .newInstance(dialogKey, resultMap, title = title) { map ->
                     formGenerator.validateCheckboxDialogue(id, formLayout, map)
                 }.show(childFragmentManager, CheckBoxDialog.TAG)
         } else {
@@ -496,7 +502,7 @@ class AssessmentPregnancyOutcomeFragment :
                 val filteredInputData = getFilteredCauseOfDeathOptions(formLayout, dialogKey)
                 val validatedResultMap = validateCauseOfDeathSelections(resultMap, formLayout)
                 CheckBoxDialog
-                    .newInstance(dialogKey, validatedResultMap, title = formLayout.hint, inputData = filteredInputData) { map ->
+                    .newInstance(dialogKey, validatedResultMap, title = title, inputData = filteredInputData) { map ->
                         formGenerator.validateCheckboxDialogue(id, formLayout, map)
                     }.show(childFragmentManager, CheckBoxDialog.TAG)
             } else {
@@ -516,7 +522,7 @@ class AssessmentPregnancyOutcomeFragment :
                     )
                 }
                 CheckBoxDialog
-                    .newInstance(dialogKey, resultMap, title = formLayout.hint, inputData = inputData) { map ->
+                    .newInstance(dialogKey, resultMap, title = title, inputData = inputData) { map ->
                         formGenerator.validateCheckboxDialogue(id, formLayout, map)
                     }.show(childFragmentManager, CheckBoxDialog.TAG)
             }

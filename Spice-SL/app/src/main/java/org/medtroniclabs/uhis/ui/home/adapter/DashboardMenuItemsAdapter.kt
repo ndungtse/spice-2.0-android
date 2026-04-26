@@ -146,7 +146,7 @@ class DashboardMenuItemsAdapter(
 
             MenuConstants.PREGNANCY_OUTCOME -> ContextCompat.getDrawable(
                 context,
-                R.drawable.ic_fp_pnc,
+                R.drawable.ic_po_pnc,
             )
 
             MenuConstants.MATERNAL_HEALTH, MenuConstants.PREGNANT_WOMEN_PROFILE ->
@@ -164,7 +164,7 @@ class DashboardMenuItemsAdapter(
                     }
 
                     RMNCH.PNC -> {
-                        drawableRes = R.drawable.ic_fp_pnc
+                        drawableRes = R.drawable.ic_po_pnc
                     }
 
                     RMNCH.ChildHoodVisit -> {

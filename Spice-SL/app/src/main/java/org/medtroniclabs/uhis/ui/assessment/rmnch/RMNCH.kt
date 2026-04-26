@@ -7,14 +7,43 @@ import org.medtroniclabs.uhis.common.DefinedParams
 import org.medtroniclabs.uhis.formgeneration.config.ViewType
 import org.medtroniclabs.uhis.ui.MenuConstants
 import org.medtroniclabs.uhis.ui.assessment.AssessmentCommonUtils
+import org.medtroniclabs.uhis.ui.assessment.referrallogic.ANCGaps
+import org.medtroniclabs.uhis.ui.assessment.referrallogic.ANCNonUrgentReferrals
+import org.medtroniclabs.uhis.ui.assessment.referrallogic.ANCUrgentReferrals
+import org.medtroniclabs.uhis.ui.assessment.referrallogic.PNCGaps
+import org.medtroniclabs.uhis.ui.assessment.referrallogic.PNCNonUrgentReferrals
+import org.medtroniclabs.uhis.ui.assessment.referrallogic.PNCSupplementation
+import org.medtroniclabs.uhis.ui.assessment.referrallogic.PNCUrgentReferrals
 import java.text.DecimalFormat
 import java.util.Date
 import java.util.Locale
 import java.util.concurrent.TimeUnit
-import kotlin.collections.mapOf
 import kotlin.math.abs
+import org.medtroniclabs.uhis.formgeneration.config.DefinedParams as ConfigDefinedParams
 
 object RMNCH {
+    private val rmnchConditionCultureMap: Map<String, String> by lazy {
+        buildMap {
+            ANCUrgentReferrals.entries.forEach { condition ->
+                put(normalizeConditionKey(condition.value), condition.cultureValue)
+            }
+            ANCNonUrgentReferrals.entries.forEach { condition ->
+                put(normalizeConditionKey(condition.value), condition.cultureValue)
+            }
+            ANCGaps.entries.forEach { condition ->
+                put(normalizeConditionKey(condition.value), condition.cultureValue)
+            }
+            PNCUrgentReferrals.entries.forEach { condition ->
+                put(normalizeConditionKey(condition.value), condition.cultureValue)
+            }
+            PNCNonUrgentReferrals.entries.forEach { condition ->
+                put(normalizeConditionKey(condition.value), condition.cultureValue)
+            }
+            addPncSupplementationCombinationMappings()
+            put(normalizeConditionKey(PNCGaps.CONTRACEPTION_GAP.value), PNCGaps.CONTRACEPTION_GAP.cultureValue)
+        }
+    }
+
     const val PlaceOfDelivery = "placeOfDelivery"
     const val ANC = "anc"
     const val PNC = "pncMother"
@@ -453,15 +482,27 @@ object RMNCH {
      * Neonatal death cause options
      */
     val neonatalDeathCauseOptions: ArrayList<Map<String, Any>> = arrayListOf(
-        mapOf("id" to "asphyxia", "name" to "Asphyxia", "cultureValue" to "শ্বাসরোধ"),
-        mapOf("id" to "abnormallyLowTemperature", "name" to "Abnormally low temperature", "cultureValue" to "অস্বাভাবিক কম তাপমাত্রা"),
-        mapOf("id" to "lowBirthWeight", "name" to "Low birth weight", "cultureValue" to "কম জন্ম ওজন"),
-        mapOf("id" to "convulsions", "name" to "Convulsions", "cultureValue" to "খিঁচুনি"),
-        mapOf("id" to "prematureBirth", "name" to "Premature birth", "cultureValue" to "অপরিণত জন্ম"),
-        mapOf("id" to "sepsisUmbilicalSepsis", "name" to "Sepsis/ Umbilical sepsis", "cultureValue" to "নাভির সংক্রমণ / সংক্রমণ"),
-        mapOf("id" to "pneumonia", "name" to "Pneumonia", "cultureValue" to "নিউমোনিয়া"),
-        mapOf("id" to "congenitalAnomaly", "name" to "Congenital Anomaly", "cultureValue" to "জন্মগত ত্রুটি"),
-        mapOf("id" to "unknown", "name" to "Unknown", "cultureValue" to "জানা নেই"),
+        mapOf(ConfigDefinedParams.ID to "asphyxia", ConfigDefinedParams.NAME to "Asphyxia", ConfigDefinedParams.CULTURE_VALUE to "শ্বাসরোধ"),
+        mapOf(
+            ConfigDefinedParams.ID to "abnormallyLowTemperature",
+            ConfigDefinedParams.NAME to "Abnormally low temperature",
+            ConfigDefinedParams.CULTURE_VALUE to "অস্বাভাবিক কম তাপমাত্রা",
+        ),
+        mapOf(ConfigDefinedParams.ID to "lowBirthWeight", ConfigDefinedParams.NAME to "Low birth weight", ConfigDefinedParams.CULTURE_VALUE to "কম জন্ম ওজন"),
+        mapOf(ConfigDefinedParams.ID to "convulsions", ConfigDefinedParams.NAME to "Convulsions", ConfigDefinedParams.CULTURE_VALUE to "খিঁচুনি"),
+        mapOf(ConfigDefinedParams.ID to "prematureBirth", ConfigDefinedParams.NAME to "Premature birth", ConfigDefinedParams.CULTURE_VALUE to "অপরিণত জন্ম"),
+        mapOf(
+            ConfigDefinedParams.ID to "sepsisUmbilicalSepsis",
+            ConfigDefinedParams.NAME to "Sepsis/ Umbilical sepsis",
+            ConfigDefinedParams.CULTURE_VALUE to "নাভির সংক্রমণ / সংক্রমণ",
+        ),
+        mapOf(ConfigDefinedParams.ID to "pneumonia", ConfigDefinedParams.NAME to "Pneumonia", ConfigDefinedParams.CULTURE_VALUE to "নিউমোনিয়া"),
+        mapOf(
+            ConfigDefinedParams.ID to "congenitalAnomaly",
+            ConfigDefinedParams.NAME to "Congenital Anomaly",
+            ConfigDefinedParams.CULTURE_VALUE to "জন্মগত ত্রুটি",
+        ),
+        mapOf(ConfigDefinedParams.ID to "unknown", ConfigDefinedParams.NAME to "Unknown", ConfigDefinedParams.CULTURE_VALUE to "জানা নেই"),
     )
 
     /**
@@ -469,8 +510,12 @@ object RMNCH {
      */
     val neonatalDeathTypeOptions: List<Map<String, Any>> =
         listOf(
-            mapOf("id" to DEATH_TYPE_NEONATAL, "name" to "Neo Natal", "cultureValue" to "নবজাতকের মৃত্যু"),
-            mapOf("id" to DEATH_TYPE_OTHER, "name" to "Other", "cultureValue" to "অন্যান্য"),
+            mapOf(
+                ConfigDefinedParams.ID to DEATH_TYPE_NEONATAL,
+                ConfigDefinedParams.NAME to "Neo Natal",
+                ConfigDefinedParams.CULTURE_VALUE to "নবজাতকের মৃত্যু",
+            ),
+            mapOf(ConfigDefinedParams.ID to DEATH_TYPE_OTHER, ConfigDefinedParams.NAME to "Other", ConfigDefinedParams.CULTURE_VALUE to "অন্যান্য"),
         )
 
     /**
@@ -478,22 +523,54 @@ object RMNCH {
      */
     val maternalDeathTypeOptions: List<Map<String, Any>> =
         listOf(
-            mapOf("id" to DEATH_TYPE_MOTHER, "name" to "Maternal", "cultureValue" to "মাতৃ"),
-            mapOf("id" to DEATH_TYPE_OTHER, "name" to "Other", "cultureValue" to "অন্যান্য"),
+            mapOf(
+                ConfigDefinedParams.ID to DEATH_TYPE_MOTHER,
+                ConfigDefinedParams.NAME to "Maternal",
+                ConfigDefinedParams.CULTURE_VALUE to "মাতৃমৃত্যু",
+            ),
+            mapOf(ConfigDefinedParams.ID to DEATH_TYPE_OTHER, ConfigDefinedParams.NAME to "Other", ConfigDefinedParams.CULTURE_VALUE to "অন্যান্য"),
         )
 
     /**
      * Maternal death cause options
      */
     val maternalDeathCauseOptions = arrayListOf(
-        mapOf("id" to "excessiveBleeding", "name" to "Excessive bleeding", "cultureValue" to "অতিরিক্ত রক্তক্ষরণ"),
-        mapOf("id" to "infection", "name" to "Infection", "cultureValue" to "সংক্রমণ"),
-        mapOf("id" to "hypertensiveDisorder", "name" to "Hypertensive disorder (Eclampsia)", "cultureValue" to "উচ্চ রক্তচাপজনিত জটিলতা (ইক্ল্যাম্পসিয়া)"),
-        mapOf("id" to "obstructedLabor", "name" to "Obstructed labor", "cultureValue" to "বাধাগ্রস্থ প্রসব"),
-        mapOf("id" to "uterineRupture", "name" to "Uterine rupture", "cultureValue" to "জরায়ু ফেটে যাওয়া"),
-        mapOf("id" to "unsafeAbortion", "name" to "Unsafe abortion", "cultureValue" to "অনিরাপদ গর্ভপাত"),
-        mapOf("id" to "severeAnemia", "name" to "Severe Anemia", "cultureValue" to "মারাত্মক রক্তস্বল্পতা"),
-        mapOf("id" to "otherMedicalComplications", "name" to "Other medical complications", "cultureValue" to "অন্যান্য চিকিৎসাজনিত জটিলতা"),
+        mapOf(
+            ConfigDefinedParams.ID to "excessiveBleeding",
+            ConfigDefinedParams.NAME to "Excessive bleeding",
+            ConfigDefinedParams.CULTURE_VALUE to "অতিরিক্ত রক্তক্ষরণ",
+        ),
+        mapOf(ConfigDefinedParams.ID to "infection", ConfigDefinedParams.NAME to "Infection", ConfigDefinedParams.CULTURE_VALUE to "সংক্রমণ"),
+        mapOf(
+            ConfigDefinedParams.ID to "hypertensiveDisorder",
+            ConfigDefinedParams.NAME to "Hypertensive disorder (Eclampsia)",
+            ConfigDefinedParams.CULTURE_VALUE to "উচ্চ রক্তচাপজনিত জটিলতা (ইক্ল্যাম্পসিয়া)",
+        ),
+        mapOf(
+            ConfigDefinedParams.ID to "obstructedLabor",
+            ConfigDefinedParams.NAME to "Obstructed labor",
+            ConfigDefinedParams.CULTURE_VALUE to "বাধাগ্রস্থ প্রসব",
+        ),
+        mapOf(
+            ConfigDefinedParams.ID to "uterineRupture",
+            ConfigDefinedParams.NAME to "Uterine rupture",
+            ConfigDefinedParams.CULTURE_VALUE to "জরায়ু ফেটে যাওয়া",
+        ),
+        mapOf(
+            ConfigDefinedParams.ID to "unsafeAbortion",
+            ConfigDefinedParams.NAME to "Unsafe abortion",
+            ConfigDefinedParams.CULTURE_VALUE to "অনিরাপদ গর্ভপাত",
+        ),
+        mapOf(
+            ConfigDefinedParams.ID to "severeAnemia",
+            ConfigDefinedParams.NAME to "Severe Anemia",
+            ConfigDefinedParams.CULTURE_VALUE to "মারাত্মক রক্তস্বল্পতা",
+        ),
+        mapOf(
+            ConfigDefinedParams.ID to "otherMedicalComplications",
+            ConfigDefinedParams.NAME to "Other medical complications",
+            ConfigDefinedParams.CULTURE_VALUE to "অন্যান্য চিকিৎসাজনিত জটিলতা",
+        ),
     )
 
     /**
@@ -504,14 +581,47 @@ object RMNCH {
         translate: Boolean,
     ): String {
         val parts = value.split("::", limit = 2)
-        return if (parts.size != 2) {
-            value
-        } else if (translate && parts.last().isNotBlank()) {
+        return if (parts.size == 2 && translate && parts.last().isNotBlank()) {
             parts.last()
-        } else {
+        } else if (parts.size == 2) {
             parts.first()
+        } else if (!translate) {
+            value
+        } else {
+            rmnchConditionCultureMap[normalizeConditionKey(value)] ?: value
         }
     }
+
+    /**
+     * Adds culture mappings for every non-empty combination of PNC supplementation gaps.
+     *
+     * Why bitmask:
+     * - We have 3 supplementation items and need all 2^3 - 1 = 7 non-empty combinations.
+     * - A bitmask guarantees complete coverage without hardcoding each pair/triple.
+     *
+     * Ordering note:
+     * - The list order (Vitamin A -> IFA -> Calcium) must stay aligned with evaluator output.
+     * - `joinToString()` uses ", " which matches the generated gap key format exactly.
+     */
+    private fun MutableMap<String, String>.addPncSupplementationCombinationMappings() {
+        val supplementations =
+            listOf(
+                PNCSupplementation.VITAMIN_A,
+                PNCSupplementation.IFA,
+                PNCSupplementation.CALCIUM,
+            )
+
+        for (mask in 1 until (1 shl supplementations.size)) {
+            val selectedSupplements = supplementations.filterIndexed { index, _ -> (mask and (1 shl index)) != 0 }
+            val supplementationText = selectedSupplements.joinToString { it.value }
+            val supplementationCultureText = selectedSupplements.joinToString { it.cultureValue }
+            val key = "${PNCGaps.SUPPLEMENTATION.value} ($supplementationText)"
+            val cultureValue = "${PNCGaps.SUPPLEMENTATION.cultureValue} ($supplementationCultureText)"
+            put(normalizeConditionKey(key), cultureValue)
+        }
+    }
+
+    private fun normalizeConditionKey(value: String): String = value.trim().lowercase(Locale.ENGLISH)
 
     /**
      * ANC/PNC referral type
