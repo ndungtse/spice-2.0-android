@@ -14,6 +14,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import org.medtroniclabs.uhis.BuildConfig
 import org.medtroniclabs.uhis.R
 import org.medtroniclabs.uhis.app.analytics.model.UserDetail
+import org.medtroniclabs.uhis.appextensions.getStringForLocale
 import org.medtroniclabs.uhis.appextensions.hideKeyboard
 import org.medtroniclabs.uhis.common.AppConstants.IS_DIFFERENT_LOGIN
 import org.medtroniclabs.uhis.common.CommonUtils
@@ -27,6 +28,7 @@ import org.medtroniclabs.uhis.network.resource.ResourceState
 import org.medtroniclabs.uhis.ui.BaseActivity
 import org.medtroniclabs.uhis.ui.boarding.viewmodel.LoginViewModel
 import org.medtroniclabs.uhis.ui.landing.LandingActivity
+import java.util.Locale
 import java.util.UUID
 
 @AndroidEntryPoint
@@ -110,15 +112,27 @@ class LoginActivity : BaseActivity(), View.OnClickListener {
                                 }
                             }
                         }
-                    } ?: resourceState.message?.let {
-                        if (it.equals(getString(R.string.invalid_credentials), true)) {
+                    } ?: resourceState.message?.let { message ->
+                        if (message.equals(getString(R.string.invalid_credentials), true)) {
                             showErrorSnackBar(
                                 getString(R.string.invalid_credentials_custom),
                                 Snackbar.LENGTH_INDEFINITE,
                                 snackBarDuration,
                             )
+                        } else if (message.equals(getStringForLocale(R.string.disabled_account, Locale.ENGLISH), true)) {
+                            showErrorSnackBar(
+                                getString(R.string.disabled_account),
+                                Snackbar.LENGTH_INDEFINITE,
+                                snackBarDuration,
+                            )
+                        } else if (message.equals(getStringForLocale(R.string.account_locked_multiple_attempts, Locale.ENGLISH), true)) {
+                            showErrorSnackBar(
+                                getString(R.string.account_locked_multiple_attempts),
+                                Snackbar.LENGTH_INDEFINITE,
+                                snackBarDuration,
+                            )
                         } else {
-                            showErrorSnackBar(it)
+                            showErrorSnackBar(message)
                         }
                     }
                 }

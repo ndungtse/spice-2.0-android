@@ -5,9 +5,11 @@ import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.content.Context
 import android.content.pm.PackageManager
+import android.content.res.Configuration
 import android.graphics.Bitmap
 import android.location.LocationManager
 import android.os.Build
+import androidx.annotation.StringRes
 import androidx.core.app.NotificationCompat
 import androidx.core.content.ContextCompat
 import androidx.work.Constraints
@@ -23,6 +25,7 @@ import org.medtroniclabs.uhis.ui.assessment.referrallogic.utils.ReferralStatus
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
+import java.util.Locale
 import java.util.concurrent.TimeUnit
 
 private const val NOTIFICATION_ID = 99 // Unique ID for the notification
@@ -187,3 +190,51 @@ fun Context.startBackgroundOfflineSync() {
 }
 
 fun Double.toCleanString(): String = if (this % 1.0 == 0.0) this.toInt().toString() else this.toString()
+
+/**
+ * Returns a localized string resource for the specified [locale],
+ * regardless of the app’s currently active language configuration.
+ *
+ * This creates a temporary [Context] with an overridden [Configuration]
+ * so the requested string is resolved using the provided locale only,
+ * without changing the app-wide locale or UI language.
+ *
+ * Useful for:
+ * - Fetching base/default language strings (e.g. English) while app is in another language
+ * - Comparing translated vs canonical values
+ * - Logging / analytics with consistent language output
+ * - Accessing strings for a specific locale on demand
+ *
+ * Example:
+ * ```
+ * val englishTitle = context.getStringForLocale(
+ *     R.string.title,
+ *     Locale.ENGLISH
+ * )
+ * ```
+ *
+ * @param resId The string resource ID to resolve.
+ * @param locale The target locale used to fetch the resource.
+ *
+ * @return The localized string for the given resource in the requested locale.
+ *
+ * @see Configuration.setLocale
+ * @see Context.createConfigurationContext
+ *
+ * Note:
+ * - Does not update the app’s global language setting
+ * - Does not recreate UI components
+ * - Requires the target locale resources to exist
+ *   (falls back to default resources if unavailable)
+ */
+fun Context.getStringForLocale(
+    @StringRes resId: Int,
+    locale: Locale,
+): String {
+    val config = Configuration(resources.configuration)
+    config.setLocale(locale)
+
+    return createConfigurationContext(config)
+        .resources
+        .getString(resId)
+}

@@ -1660,4 +1660,6 @@
     <string name="uncontrolled_bp">অনিয়ন্ত্রিত রক্তচাপ</string>
     <string name="uncontrolled_bg">অনিয়ন্ত্রিত ডায়াবেটিস</string>
     <string name="follow_up_visit">ফলো-আপ ভিজিট</string>
+    <string name="disabled_account">অ্যাকাউন্টটি নিষ্ক্রিয় করা হয়েছে</string>
+    <string name="account_locked_multiple_attempts">একাধিকবার ভুল লগইন চেষ্টার কারণে অ্যাকাউন্টটি সাময়িকভাবে লক করা হয়েছে।</string>
 </resources>
