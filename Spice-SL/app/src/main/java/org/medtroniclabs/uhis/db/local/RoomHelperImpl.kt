@@ -1331,10 +1331,10 @@ class RoomHelperImpl @Inject constructor(
     override suspend fun updateMemberAssessmentHistory(assessmentHistory: MemberAssessmentHistoryEntity) =
         memberAssessmentHistoryDao.updateAssessmentHistory(assessmentHistory)
 
-    override suspend fun getLastServiceHistoryTypeAndVisitDate(memberLocalId: Long): Pair<String?, String?>? =
-        memberAssessmentHistoryDao
-            .getLatestMemberAssessmentHistoryByMemberLocalId(memberLocalId)
-            ?.let { Pair(it.serviceProvided, it.visitDate) }
+    override suspend fun getLastServiceHistory(
+        memberLocalId: Long,
+        serviceTypeFor: String,
+    ): MemberAssessmentHistoryEntity? = memberAssessmentHistoryDao.getLatestMemberAssessmentHistoryByMemberLocalIdAndType(memberLocalId, serviceTypeFor)
 
     override suspend fun decrementAssessmentHistoryVisitDate(
         memberId: Long,

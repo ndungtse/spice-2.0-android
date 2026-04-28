@@ -23,14 +23,14 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        app:layout_constraintGuide_percent="0.30" />
+        app:layout_constraintGuide_percent="0.33" />
 
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/endGuideLine"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        app:layout_constraintGuide_percent="0.40" />
+        app:layout_constraintGuide_percent="0.43" />
 
     <!-- Age Label -->
     <TextView
@@ -84,7 +84,7 @@
             android:inputType="number"
             android:maxLength="3"
             android:minWidth="0dp"
-            android:paddingHorizontal="@dimen/_12sdp"
+            android:paddingHorizontal="@dimen/_10sdp"
             android:paddingVertical="0dp"
             tools:ignore="Autofill" />
 
@@ -141,10 +141,11 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:hint="@string/dd_mm_yyyy"
             android:ellipsize="end"
+            android:gravity="center_vertical"
+            android:hint="@string/dd_mm_yyyy"
             android:maxLines="1"
-            android:paddingHorizontal="@dimen/_12sdp"
+            android:paddingHorizontal="@dimen/_10sdp"
             android:paddingVertical="@dimen/_10sdp"
             android:singleLine="true" />
 

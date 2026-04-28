@@ -34,12 +34,15 @@ interface MemberAssessmentHistoryDao {
     @Query(
         """
         SELECT * FROM memberassessmenthistory
-        WHERE memberId = :memberLocalId
+        WHERE memberId = :memberLocalId AND LOWER(serviceProvided) = :serviceTypeFor
         ORDER BY visitDate DESC, id DESC
         LIMIT 1
         """,
     )
-    suspend fun getLatestMemberAssessmentHistoryByMemberLocalId(memberLocalId: Long): MemberAssessmentHistoryEntity?
+    suspend fun getLatestMemberAssessmentHistoryByMemberLocalIdAndType(
+        memberLocalId: Long,
+        serviceTypeFor: String,
+    ): MemberAssessmentHistoryEntity?
 
     @Query(
         """

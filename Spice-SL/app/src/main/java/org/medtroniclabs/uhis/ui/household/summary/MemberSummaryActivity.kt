@@ -119,6 +119,12 @@ class MemberSummaryActivity : BaseActivity(), View.OnClickListener {
                     memberSummaryViewModel.decrementAssessmentHistoryDate()
                 },
             )
+            binding.tvServiceHistoryTitle.setOnClickListener(
+                MultiClickListener(5, interval = 1000L) {
+                    Toast.makeText(this@MemberSummaryActivity, "Updating date by -14 days", Toast.LENGTH_SHORT).show()
+                    memberSummaryViewModel.decrementAssessmentHistoryDate(14)
+                },
+            )
         }
     }
 

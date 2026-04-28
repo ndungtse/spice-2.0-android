@@ -102,9 +102,10 @@ import org.medtroniclabs.uhis.ui.assessment.AssessmentNCDEntity
         SubVillageEntity::class, ShasthyaShebikaEntity::class, ShasthyaShebikaLinkedVillageEntity::class,
         MemberAssessmentHistoryEntity::class,
     ],
-    version = 2,
+    version = 3,
     autoMigrations = [
         AutoMigration(1, 2),
+        AutoMigration(2, 3),
     ],
 )
 @TypeConverters(OfflineStatusTypeConverter::class)

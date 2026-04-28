@@ -48,9 +48,9 @@ class MemberSummaryViewModel @Inject constructor(
         }
     }
 
-    fun decrementAssessmentHistoryDate() =
+    fun decrementAssessmentHistoryDate(noOfDays: Int = 1) =
         viewModelScope.launch(dispatcherIO) {
-            roomHelper.decrementAssessmentHistoryVisitDate(memberId, 1)
+            roomHelper.decrementAssessmentHistoryVisitDate(memberId, noOfDays)
         }
 
     fun isNonProdEnv() = isNonProd
