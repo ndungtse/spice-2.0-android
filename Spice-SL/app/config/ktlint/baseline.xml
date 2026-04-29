@@ -274,7 +274,7 @@
         <error line="95" column="161" source="standard:max-line-length" />
         <error line="100" column="161" source="standard:max-line-length" />
         <error line="101" column="161" source="standard:max-line-length" />
-        <error line="168" column="21" source="standard:property-naming" />
+        <error line="169" column="21" source="standard:property-naming" />
     </file>
     <file name="src/main/java/org/medtroniclabs/uhis/db/entity/BaseEntity.kt">
         <error line="14" column="9" source="standard:property-naming" />

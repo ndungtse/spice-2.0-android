@@ -23,7 +23,8 @@ data class FollowUp(
     var successfulAttempts: Int = 0,
     var unsuccessfulAttempts: Int = 0,
     val type: String,
-    val encounterType: String? = null, // It should not null
+    val encounterType: String? = null, // It should not be null
+    val encounterName: String? = null, // It should not be null
     val encounterDate: String? = null,
     val nextVisitDate: String? = null,
     val referredSiteId: String? = null,

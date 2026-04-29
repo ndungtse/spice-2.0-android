@@ -914,8 +914,10 @@ interface RoomHelper {
 
     suspend fun updateMemberAssessmentHistory(assessmentHistory: MemberAssessmentHistoryEntity)
 
-    /** [Pair.first] = service type ([MemberAssessmentHistoryEntity.serviceProvided]); [Pair.second] = visit date. */
-    suspend fun getLastServiceHistoryTypeAndVisitDate(memberLocalId: Long): Pair<String?, String?>?
+    suspend fun getLastServiceHistory(
+        memberLocalId: Long,
+        serviceTypeFor: String,
+    ): MemberAssessmentHistoryEntity?
 
     suspend fun decrementAssessmentHistoryVisitDate(
         memberId: Long,

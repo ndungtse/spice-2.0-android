@@ -34,12 +34,15 @@ interface MemberAssessmentHistoryDao {
     @Query(
         """
         SELECT * FROM memberassessmenthistory
-        WHERE memberId = :memberLocalId
+        WHERE memberId = :memberLocalId AND LOWER(serviceProvided) = :serviceTypeFor
         ORDER BY visitDate DESC, id DESC
         LIMIT 1
         """,
     )
-    suspend fun getLatestMemberAssessmentHistoryByMemberLocalId(memberLocalId: Long): MemberAssessmentHistoryEntity?
+    suspend fun getLatestMemberAssessmentHistoryByMemberLocalIdAndType(
+        memberLocalId: Long,
+        serviceTypeFor: String,
+    ): MemberAssessmentHistoryEntity?
 
     @Query(
         """
@@ -69,8 +72,8 @@ interface MemberAssessmentHistoryDao {
         FROM memberassessmenthistory AS h
         LEFT JOIN householdmember AS hm ON hm.id = h.memberId
         LEFT JOIN household AS hh ON hh.id = hm.household_id
-        WHERE (:startDate IS NULL OR substr(h.visitDate,1,10) >= :startDate)
-          AND (:endDate IS NULL OR substr(h.visitDate,1,10) <= :endDate)
+        WHERE (:startDate IS NULL OR date(datetime(h.visitDate, 'localtime')) >= :startDate)
+          AND (:endDate IS NULL OR date(datetime(h.visitDate, 'localtime')) <= :endDate)
           AND (:ssIdsSize = 0 OR COALESCE(hm.shasthya_shebika_id, hh.shasthya_shebika_id) IN (:ssIds))
           AND (:subVillageIdsSize = 0 OR COALESCE(hm.sub_village_id, hh.sub_village_id) IN (:subVillageIds))
         """,
@@ -113,10 +116,10 @@ interface MemberAssessmentHistoryDao {
                         FROM MemberAssessmentHistory AS h
                         WHERE h.memberId = lp.householdMemberLocalId
                           AND LOWER(h.serviceProvided) = 'anc'
-                          AND (:startDate IS NULL OR substr(h.visitDate, 1, 10) >= :startDate)
-                          AND (:endDate IS NULL OR substr(h.visitDate, 1, 10) <= :endDate)
-                          AND substr(h.visitDate, 1, 10) >= substr(lp.lastMenstrualPeriod, 1, 10)
-                          AND substr(h.visitDate, 1, 10) <= date(substr(lp.lastMenstrualPeriod, 1, 10), '+4 months')
+                          AND (:startDate IS NULL OR date(datetime(h.visitDate, 'localtime')) >= :startDate)
+                          AND (:endDate IS NULL OR date(datetime(h.visitDate, 'localtime')) <= :endDate)
+                          AND date(datetime(h.visitDate, 'localtime')) >= substr(lp.lastMenstrualPeriod, 1, 10)
+                          AND date(datetime(h.visitDate, 'localtime')) <= date(substr(lp.lastMenstrualPeriod, 1, 10), '+4 months')
                     )
                     THEN 1 ELSE 0
                 END
@@ -128,8 +131,8 @@ interface MemberAssessmentHistoryDao {
                         FROM MemberAssessmentHistory AS h
                         WHERE h.memberId = lp.householdMemberLocalId
                           AND LOWER(h.serviceProvided) = 'anc'
-                          AND (:startDate IS NULL OR substr(h.visitDate, 1, 10) >= :startDate)
-                          AND (:endDate IS NULL OR substr(h.visitDate, 1, 10) <= :endDate)
+                          AND (:startDate IS NULL OR date(datetime(h.visitDate, 'localtime')) >= :startDate)
+                          AND (:endDate IS NULL OR date(datetime(h.visitDate, 'localtime')) <= :endDate)
                     ) >= 3
                     THEN 1 ELSE 0
                 END
