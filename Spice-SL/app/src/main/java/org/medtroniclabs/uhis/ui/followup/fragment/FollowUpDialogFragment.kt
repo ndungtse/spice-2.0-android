@@ -48,7 +48,7 @@ class FollowUpDialogFragment : DialogFragment() {
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?,
-    ): View? {
+    ): View {
         binding = FragmentFollowUpDialogBinding.inflate(inflater, container, false)
         dialog?.window?.setBackgroundDrawableResource(android.R.color.transparent)
         isCancelable = false
@@ -95,8 +95,11 @@ class FollowUpDialogFragment : DialogFragment() {
                 tvLandmarkText.text = details.landmark ?: getString(R.string.hyphen_symbol)
                 tvHHNameText.text = details.householdName ?: getString(R.string.hyphen_symbol)
                 tvMemberIDText.text = details.patientId ?: getString(R.string.hyphen_symbol)
-                tvCallsMadeText.text =
-                    "${details.successfulAttempts}/${viewModel.maxSuccessfulCallLimit}"
+                tvCallsMadeText.text = getString(
+                    R.string.string_slash_string,
+                    CommonUtils.formatCountForCurrentLocale(details.successfulAttempts),
+                    CommonUtils.formatCountForCurrentLocale(viewModel.maxSuccessfulCallLimit),
+                )
                 tvStartDateText.text = convertDateTimeToDate(
                     details.encounterDate,
                     DATE_FORMAT_yyyyMMddHHmmssZZZZZ,

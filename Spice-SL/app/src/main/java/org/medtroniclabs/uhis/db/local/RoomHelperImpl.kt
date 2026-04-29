@@ -511,7 +511,9 @@ class RoomHelperImpl @Inject constructor(
         }
     }
 
-    override suspend fun getAllVillageIds(): List<Long> = metaDataDAO.getVillageIds()
+    override suspend fun getAllSubVillageIds(): List<Long> = metaDataDAO.getSubVillageIds()
+
+    override suspend fun getSubVillages() = metaDataDAO.getSubVillages()
 
     override suspend fun getExaminationQuestionsByWorkFlow(workFlowType: String): ExaminationListItems = examinationsDAO.getExaminationsByType(workFlowType)
 

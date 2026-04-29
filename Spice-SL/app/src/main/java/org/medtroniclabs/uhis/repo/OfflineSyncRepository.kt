@@ -259,7 +259,7 @@ class OfflineSyncRepository @Inject constructor(
             roomHelper.deleteAllRxBuddyFollowUp()
             roomHelper.deleteAllMemberAssessmentHistory()
 
-            val villageIds = roomHelper.getAllVillageIds()
+            val villageIds = roomHelper.getAllSubVillageIds()
             // Fetch Synced Data
             val isInitialDataSuccess = fetchSyncedData(villageIds, null, onProgress)
 

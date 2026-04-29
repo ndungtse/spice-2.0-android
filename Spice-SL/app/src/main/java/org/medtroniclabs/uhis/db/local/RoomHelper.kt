@@ -326,7 +326,9 @@ interface RoomHelper {
         toDate: String = "",
     ): LiveData<List<FollowUpPatientModel>>
 
-    suspend fun getAllVillageIds(): List<Long>
+    suspend fun getAllSubVillageIds(): List<Long>
+
+    suspend fun getSubVillages(): List<SubVillageEntity>
 
     suspend fun deleteAllPregnancyDetails()
 

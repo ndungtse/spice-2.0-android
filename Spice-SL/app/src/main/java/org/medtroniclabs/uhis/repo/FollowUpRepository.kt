@@ -11,10 +11,9 @@ import org.medtroniclabs.uhis.data.offlinesync.model.FollowUpCallStatus
 import org.medtroniclabs.uhis.data.offlinesync.utils.OfflineSyncStatus
 import org.medtroniclabs.uhis.db.entity.FollowUp
 import org.medtroniclabs.uhis.db.entity.FollowUpCall
-import org.medtroniclabs.uhis.db.entity.VillageEntity
+import org.medtroniclabs.uhis.db.entity.SubVillageEntity
 import org.medtroniclabs.uhis.db.local.RoomHelper
 import org.medtroniclabs.uhis.model.followup.FollowUpFilter
-import org.medtroniclabs.uhis.network.ApiHelper
 import org.medtroniclabs.uhis.ui.assessment.referrallogic.utils.ReferralStatus
 import org.medtroniclabs.uhis.ui.followup.FollowUpDefinedParams
 import org.medtroniclabs.uhis.ui.followup.FollowUpDefinedParams.INFORMED
@@ -24,7 +23,6 @@ import java.time.format.DateTimeFormatter
 import javax.inject.Inject
 
 class FollowUpRepository @Inject constructor(
-    private val apiHelper: ApiHelper,
     private val roomHelper: RoomHelper,
 ) {
     fun getFollowUpListLiveData(
@@ -131,7 +129,7 @@ class FollowUpRepository @Inject constructor(
         return Pair(fromDate.format(outputFormat), toDate.format(outputFormat))
     }
 
-    suspend fun getVillageIds(): List<VillageEntity> = roomHelper.getAllVillageEntity()
+    suspend fun getSubVillages(): List<SubVillageEntity> = roomHelper.getSubVillages()
 
     suspend fun getUnSyncedFollowUpCount(): Int = roomHelper.getUnSyncedFollowUpCount()
 
@@ -146,7 +144,7 @@ class FollowUpRepository @Inject constructor(
     ) {
         val followUp = roomHelper.getFollowUpById(followUpId)
         followUp.syncStatus = OfflineSyncStatus.NotSynced
-        followUp.attempts = followUp.attempts + 1
+        followUp.attempts += 1
 
         val lat = SecuredPreference.getDouble(SecuredPreference.EnvironmentKey.CURRENT_LATITUDE.name)
         val lng = SecuredPreference.getDouble(SecuredPreference.EnvironmentKey.CURRENT_LONGITUDE.name)
@@ -185,7 +183,7 @@ class FollowUpRepository @Inject constructor(
             updatePatientStatus(it, id, followUp)
         }
 
-        followUp.successfulAttempts = followUp.successfulAttempts + 1
+        followUp.successfulAttempts += 1
         if (call.patientStatus == INFORMED || call.patientStatus == NOT_INFORMED) {
             if (followUp.successfulAttempts >= informedCallAttempts) {
                 followUp.isCompleted = true
@@ -236,7 +234,7 @@ class FollowUpRepository @Inject constructor(
         call: FollowUpCall,
         maxUnSuccessfulCallLimit: Int,
     ) {
-        followUp.unsuccessfulAttempts = followUp.unsuccessfulAttempts + 1
+        followUp.unsuccessfulAttempts += 1
         if (followUp.unsuccessfulAttempts >= maxUnSuccessfulCallLimit) {
             followUp.isCompleted = true
         }

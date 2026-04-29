@@ -78,7 +78,7 @@ class GetSyncStatusWorker @AssistedInject constructor(
                     // Upload images here
 //                    offlineSyncRepository.uploadAllSignatures()
 
-                    val villageIds = roomHelper.getAllVillageIds()
+                    val villageIds = roomHelper.getAllSubVillageIds()
                     val lastSyncedAt =
                         SecuredPreference.getString(SecuredPreference.EnvironmentKey.SERVER_LAST_SYNCED.name)
                     return if (offlineSyncRepository.fetchSyncedData(villageIds, lastSyncedAt)) {
