@@ -1194,9 +1194,12 @@ object DateUtils {
 
     /**
      * True when [isoDateTimeString] is ISO-8601 with offset (e.g. `2025-12-23T18:30:00+00:00`)
-     * and its calendar day in the system default zone equals today.
+     * and compares whether the [isoDateTimeString] is after threshold days
      */
-    fun isIsoOffsetDateTimeOnLocalCalendarToday(isoDateTimeString: String?): Boolean {
+    fun isIsoOffsetDateTimeOnLocalCalendarAfter(
+        isoDateTimeString: String?,
+        thresholdDays: Long = 1,
+    ): Boolean {
         if (isoDateTimeString.isNullOrBlank()) return false
         return try {
             val visitLocalDate =
@@ -1204,7 +1207,7 @@ object DateUtils {
                     .parse(isoDateTimeString)
                     .atZoneSameInstant(ZoneId.systemDefault())
                     .toLocalDate()
-            visitLocalDate == LocalDate.now(ZoneId.systemDefault())
+            visitLocalDate > LocalDate.now(ZoneId.systemDefault()).minusDays(thresholdDays)
         } catch (_: DateTimeParseException) {
             false
         }

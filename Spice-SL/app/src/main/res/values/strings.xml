@@ -1729,4 +1729,6 @@
     <string name="uncontrolled_bp">Uncontrolled BP</string>
     <string name="uncontrolled_bg">Uncontrolled BG</string>
     <string name="follow_up_visit">Follow up Visit</string>
+    <string name="disabled_account">Disabled Account</string>
+    <string name="account_locked_multiple_attempts">Account locked due to multiple invalid login attempts.</string>
 </resources>

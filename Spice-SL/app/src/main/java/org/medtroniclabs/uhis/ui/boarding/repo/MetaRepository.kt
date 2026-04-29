@@ -35,6 +35,7 @@ import org.medtroniclabs.uhis.db.entity.ConsentForm
 import org.medtroniclabs.uhis.db.entity.FormEntity
 import org.medtroniclabs.uhis.db.entity.HealthFacilityEntity
 import org.medtroniclabs.uhis.db.entity.LinkedVillageEntity
+import org.medtroniclabs.uhis.db.entity.MemberAssessmentHistoryEntity
 import org.medtroniclabs.uhis.db.entity.MentalHealthEntity
 import org.medtroniclabs.uhis.db.entity.MenuEntity
 import org.medtroniclabs.uhis.db.entity.NCDAssessmentClinicalWorkflow
@@ -71,6 +72,7 @@ import org.medtroniclabs.uhis.ui.boarding.ResourceLoadingSyncProgress
 import org.medtroniclabs.uhis.ui.medicalreview.motherneonate.anc.MotherNeonateUtil
 import org.medtroniclabs.uhis.ui.medicalreview.utils.MedicalReviewTypeEnums
 import java.lang.reflect.Type
+import java.util.Locale
 import javax.inject.Inject
 
 class MetaRepository @Inject constructor(
@@ -1006,7 +1008,7 @@ class MetaRepository @Inject constructor(
         pregnancyDetail: PregnancyDetail?,
         selectedHouseholdMemberID: Long,
     ): Boolean {
-        if (checkIfLastServiceProvidedIsToday(selectedHouseholdMemberID, MenuConstants.FP_MENU_ID)) {
+        if (checkIfLastServiceProvidedIsAfter(selectedHouseholdMemberID, MenuConstants.FP_MENU_ID, 15)) {
             return true
         }
         if (pregnancyDetail == null) return false
@@ -1019,7 +1021,7 @@ class MetaRepository @Inject constructor(
         pregnancyDetail: PregnancyDetail?,
         selectedHouseholdMemberID: Long,
     ): Boolean {
-        if (checkIfLastServiceProvidedIsToday(selectedHouseholdMemberID, MenuConstants.PREGNANT_WOMEN_PROFILE)) {
+        if (checkIfLastServiceProvidedIsAfter(selectedHouseholdMemberID, MenuConstants.PREGNANT_WOMEN_PROFILE)) {
             return true
         }
         if (pregnancyDetail == null) return false
@@ -1039,22 +1041,22 @@ class MetaRepository @Inject constructor(
     ): Pair<Boolean, String?> {
         getANCPNCStatus(pregnancyDetail)?.let { workflow ->
             if (workflow == RMNCH.ANC) {
-                return checkIfLastServiceProvidedIsToday(selectedHouseholdMemberID, MenuConstants.ANC) to workflow
+                return checkIfLastServiceProvidedIsAfter(selectedHouseholdMemberID, MenuConstants.ANC, 15) to workflow
             } else if (workflow == RMNCH.PNC) {
-                return checkIfLastServiceProvidedIsToday(selectedHouseholdMemberID, MenuConstants.PNC_MOTHER) to workflow
+                return checkIfLastServiceProvidedIsAfter(selectedHouseholdMemberID, MenuConstants.PNC_MOTHER) to workflow
             }
         }
         return (pregnancyDetail == null) to null
     }
 
     private suspend fun isChildVisitMenuDisable(selectedHouseholdMemberID: Long): Pair<Boolean, String> =
-        checkIfLastServiceProvidedIsToday(selectedHouseholdMemberID, MenuConstants.CHILDHOOD_VISIT) to RMNCH.ChildHoodVisit
+        checkIfLastServiceProvidedIsAfter(selectedHouseholdMemberID, MenuConstants.CHILDHOOD_VISIT, 15) to RMNCH.ChildHoodVisit
 
     private suspend fun isPOMenuDisable(
         pregnancyDetail: PregnancyDetail?,
         selectedHouseholdMemberID: Long,
     ): Boolean {
-        if (checkIfLastServiceProvidedIsToday(selectedHouseholdMemberID, MenuConstants.PREGNANCY_OUTCOME)) {
+        if (checkIfLastServiceProvidedIsAfter(selectedHouseholdMemberID, MenuConstants.PREGNANCY_OUTCOME)) {
             return true
         }
         if (pregnancyDetail == null) return false
@@ -1095,18 +1097,19 @@ class MetaRepository @Inject constructor(
 
     suspend fun getAllVillageIds(): List<Long> = roomHelper.getAllVillageIds()
 
-    suspend fun checkIfLastServiceProvidedIsToday(
+    suspend fun checkIfLastServiceProvidedIsAfter(
         memberLocalId: Long,
         serviceTypeFor: String,
+        thresholdDays: Long = 1,
     ): Boolean {
-        val (serviceType, visitDate) = getLastServiceHistoryTypeAndVisitDate(memberLocalId) ?: return false
-        return serviceType?.equals(serviceTypeFor, ignoreCase = true) == true &&
-            DateUtils.isIsoOffsetDateTimeOnLocalCalendarToday(visitDate)
+        val serviceHistory = getLastServiceHistory(memberLocalId, serviceTypeFor.lowercase(Locale.ENGLISH)) ?: return false
+        return DateUtils.isIsoOffsetDateTimeOnLocalCalendarAfter(serviceHistory.visitDate, thresholdDays)
     }
 
-    /** [Pair.first] = service type; [Pair.second] = visit date. */
-    suspend fun getLastServiceHistoryTypeAndVisitDate(memberLocalId: Long): Pair<String?, String?>? =
-        roomHelper.getLastServiceHistoryTypeAndVisitDate(memberLocalId)
+    suspend fun getLastServiceHistory(
+        memberLocalId: Long,
+        serviceTypeFor: String,
+    ): MemberAssessmentHistoryEntity? = roomHelper.getLastServiceHistory(memberLocalId, serviceTypeFor)
 
     suspend fun getUserHealthFacility(): Resource<ArrayList<HealthFacilityEntity>> =
         try {
