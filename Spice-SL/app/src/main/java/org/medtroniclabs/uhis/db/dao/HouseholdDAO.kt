@@ -111,12 +111,21 @@ interface HouseholdDAO {
             :startDate IS NULL OR
             date(datetime(hh.created_at / 1000, 'unixepoch', 'localtime')) >= :startDate
         )
-          AND (
+        AND (
             :endDate IS NULL OR
             date(datetime(hh.created_at / 1000, 'unixepoch', 'localtime')) <= :endDate
-          )
-          AND (:ssIdsSize = 0 OR hh.shasthya_shebika_id IN (:ssIds))
-          AND (:subVillageIdsSize = 0 OR hh.sub_village_id IN (:subVillageIds))
+        )
+        AND (
+            (:ssIdsSize = 0 AND :subVillageIdsSize = 0)
+            OR (:subVillageIdsSize > 0 AND hh.sub_village_id IN (:subVillageIds))
+            OR ( :ssIdsSize > 0
+                AND hh.sub_village_id IN (
+                    SELECT DISTINCT sslv.subVillageId
+                    FROM ShasthyaShebikaLinkedVillageEntity AS sslv
+                    WHERE sslv.shasthyaShebikaId IN (:ssIds)
+                )
+            )
+        )
         """,
     )
     suspend fun getHouseholdRegisteredCount(
@@ -201,15 +210,26 @@ interface HouseholdDAO {
             conditions += "hh.village_id IN ($placeholders)"
             args.addAll(villageIds)
         }
-        if (shasthyaShebikaIds.isNotEmpty()) {
-            val placeholders = shasthyaShebikaIds.joinToString(",") { "?" }
-            conditions += "hh.shasthya_shebika_id IN ($placeholders)"
-            args.addAll(shasthyaShebikaIds)
-        }
-        if (subVillageIds.isNotEmpty()) {
-            val placeholders = subVillageIds.joinToString(",") { "?" }
-            conditions += "hh.sub_village_id IN ($placeholders)"
-            args.addAll(subVillageIds)
+        if (subVillageIds.isNotEmpty() || shasthyaShebikaIds.isNotEmpty()) {
+            val subVillageFilterConditions = mutableListOf<String>()
+            if (subVillageIds.isNotEmpty()) {
+                val placeholders = subVillageIds.joinToString(",") { "?" }
+                subVillageFilterConditions += "hh.sub_village_id IN ($placeholders)"
+                args.addAll(subVillageIds)
+            }
+            if (shasthyaShebikaIds.isNotEmpty()) {
+                val placeholders = shasthyaShebikaIds.joinToString(",") { "?" }
+                subVillageFilterConditions +=
+                    """
+                    hh.sub_village_id IN (
+                        SELECT DISTINCT sslv.subVillageId
+                        FROM ShasthyaShebikaLinkedVillageEntity AS sslv
+                        WHERE sslv.shasthyaShebikaId IN ($placeholders)
+                    )
+                    """.trimIndent()
+                args.addAll(shasthyaShebikaIds)
+            }
+            conditions += "(${subVillageFilterConditions.joinToString(" OR ")})"
         }
         if (hhIds.isNotEmpty()) {
             val placeholders = hhIds.joinToString(",") { "?" }

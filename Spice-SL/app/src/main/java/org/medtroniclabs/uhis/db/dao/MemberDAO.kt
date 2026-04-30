@@ -326,24 +326,26 @@ interface MemberDAO {
             args += pattern
         }
 
-        // Apply SS filter - for external members, use hhm.shasthya_shebika_id; for regular members, use hh.shasthya_shebika_id
-        if (filterBySs.isNotEmpty()) {
-            conditions += if (isExternalMember) {
-                "hhm.shasthya_shebika_id IN (${filterBySs.joinToString(",") { "?" }})"
-            } else {
-                "hh.shasthya_shebika_id IN (${filterBySs.joinToString(",") { "?" }})"
+        if (filterBySubVillages.isNotEmpty() || filterBySs.isNotEmpty()) {
+            val subVillageColumn = if (isExternalMember) "hhm.sub_village_id" else "hh.sub_village_id"
+            val subVillageFilterConditions = mutableListOf<String>()
+            if (filterBySubVillages.isNotEmpty()) {
+                subVillageFilterConditions += "$subVillageColumn IN (${filterBySubVillages.joinToString(",") { "?" }})"
+                args.addAll(filterBySubVillages)
             }
-            args.addAll(filterBySs)
-        }
-
-        // Apply SubVillage filter - for external members, use hhm.sub_village_id; for regular members, use hh.sub_village_id
-        if (filterBySubVillages.isNotEmpty()) {
-            conditions += if (isExternalMember) {
-                "hhm.sub_village_id IN (${filterBySubVillages.joinToString(",") { "?" }})"
-            } else {
-                "hh.sub_village_id IN (${filterBySubVillages.joinToString(",") { "?" }})"
+            if (filterBySs.isNotEmpty()) {
+                val ssPlaceholders = filterBySs.joinToString(",") { "?" }
+                subVillageFilterConditions +=
+                    """
+                    $subVillageColumn IN (
+                        SELECT DISTINCT sslv.subVillageId
+                        FROM ShasthyaShebikaLinkedVillageEntity AS sslv
+                        WHERE sslv.shasthyaShebikaId IN ($ssPlaceholders)
+                    )
+                    """.trimIndent()
+                args.addAll(filterBySs)
             }
-            args.addAll(filterBySubVillages)
+            conditions += "(${subVillageFilterConditions.joinToString(" OR ")})"
         }
 
         when (staticFilter) {
@@ -474,43 +476,63 @@ interface MemberDAO {
         filterBySubVillages: List<Long> = emptyList(),
     ): ServiceMemberCounts {
         val args = mutableListOf<Any>()
+        val globalArgs = mutableListOf<Any>()
         val globalConditions = mutableListOf<String>()
 
         if (searchInput.isNotBlank()) {
             globalConditions += "(hhm.name LIKE ? OR hhm.phone_number LIKE ?)"
             val pattern = "%${searchInput.trim()}%"
-            args += pattern
-            args += pattern
+            globalArgs += pattern
+            globalArgs += pattern
         }
 
         val globalWhereClause = if (globalConditions.isEmpty()) "" else "WHERE ${globalConditions.joinToString(" AND ")}"
 
-        // For non-external members, SS/SubVillage filters use household columns
-        val householdSsFilter = if (filterBySs.isNotEmpty()) {
-            args.addAll(filterBySs)
-            "AND hh.shasthya_shebika_id IN (${filterBySs.joinToString(",") { "?" }})"
+        val ssPlaceholders = if (filterBySs.isNotEmpty()) filterBySs.joinToString(",") { "?" } else ""
+        val subVillagePlaceholders = if (filterBySubVillages.isNotEmpty()) filterBySubVillages.joinToString(",") { "?" } else ""
+
+        val householdSubVillageFilters = mutableListOf<String>()
+        val householdFilterArgs = mutableListOf<Any>()
+        if (filterBySubVillages.isNotEmpty()) {
+            householdSubVillageFilters += "hh.sub_village_id IN ($subVillagePlaceholders)"
+            householdFilterArgs.addAll(filterBySubVillages)
+        }
+        if (filterBySs.isNotEmpty()) {
+            householdSubVillageFilters +=
+                """
+                hh.sub_village_id IN (
+                    SELECT DISTINCT sslv.subVillageId
+                    FROM ShasthyaShebikaLinkedVillageEntity AS sslv
+                    WHERE sslv.shasthyaShebikaId IN ($ssPlaceholders)
+                )
+                """.trimIndent()
+            householdFilterArgs.addAll(filterBySs)
+        }
+        val householdAreaFilter = if (householdSubVillageFilters.isNotEmpty()) {
+            "AND (${householdSubVillageFilters.joinToString(" OR ")})"
         } else {
             ""
         }
 
-        val householdSvFilter = if (filterBySubVillages.isNotEmpty()) {
-            args.addAll(filterBySubVillages)
-            "AND hh.sub_village_id IN (${filterBySubVillages.joinToString(",") { "?" }})"
-        } else {
-            ""
+        val externalSubVillageFilters = mutableListOf<String>()
+        val externalFilterArgs = mutableListOf<Any>()
+        if (filterBySubVillages.isNotEmpty()) {
+            externalSubVillageFilters += "hhm.sub_village_id IN ($subVillagePlaceholders)"
+            externalFilterArgs.addAll(filterBySubVillages)
         }
-
-        // For external members, SS/SubVillage filters use member columns
-        val externalSsFilter = if (filterBySs.isNotEmpty()) {
-            args.addAll(filterBySs)
-            "AND hhm.shasthya_shebika_id IN (${filterBySs.joinToString(",") { "?" }})"
-        } else {
-            ""
+        if (filterBySs.isNotEmpty()) {
+            externalSubVillageFilters +=
+                """
+                hhm.sub_village_id IN (
+                    SELECT DISTINCT sslv.subVillageId
+                    FROM ShasthyaShebikaLinkedVillageEntity AS sslv
+                    WHERE sslv.shasthyaShebikaId IN ($ssPlaceholders)
+                )
+                """.trimIndent()
+            externalFilterArgs.addAll(filterBySs)
         }
-
-        val externalSvFilter = if (filterBySubVillages.isNotEmpty()) {
-            args.addAll(filterBySubVillages)
-            "AND hhm.sub_village_id IN (${filterBySubVillages.joinToString(",") { "?" }})"
+        val externalAreaFilter = if (externalSubVillageFilters.isNotEmpty()) {
+            "AND (${externalSubVillageFilters.joinToString(" OR ")})"
         } else {
             ""
         }
@@ -520,83 +542,78 @@ interface MemberDAO {
             SELECT
                 SUM(CASE WHEN
                     ${ServiceFilterConditions.HAS_HOUSEHOLD}
-                    $householdSsFilter
-                    $householdSvFilter
+                    $householdAreaFilter
                 THEN 1 ELSE 0 END) AS all_members,
 
                 SUM(CASE WHEN
                     ${ServiceFilterConditions.HAS_HOUSEHOLD}
-                    $householdSsFilter
-                    $householdSvFilter
+                    $householdAreaFilter
                     AND ${ServiceFilterConditions.IS_ACTIVE}
                     AND ${ServiceFilterConditions.FAMILY_PLANNING}
                 THEN 1 ELSE 0 END) AS family_planning,
 
                 SUM(CASE WHEN
                     ${ServiceFilterConditions.HAS_HOUSEHOLD}
-                    $householdSsFilter
-                    $householdSvFilter
+                    $householdAreaFilter
                     AND ${ServiceFilterConditions.IS_ACTIVE}
                     AND ${ServiceFilterConditions.PREGNANT_WOMEN}
                 THEN 1 ELSE 0 END) AS pregnant_women,
 
                 SUM(CASE WHEN
                     ${ServiceFilterConditions.HAS_HOUSEHOLD}
-                    $householdSsFilter
-                    $householdSvFilter
+                    $householdAreaFilter
                     AND ${ServiceFilterConditions.IS_ACTIVE}
                     AND ${ServiceFilterConditions.HIGH_RISK_PREGNANT_WOMEN}
                 THEN 1 ELSE 0 END) AS high_risk_pregnant,
 
                 SUM(CASE WHEN
                     ${ServiceFilterConditions.HAS_HOUSEHOLD}
-                    $householdSsFilter
-                    $householdSvFilter
+                    $householdAreaFilter
                     AND ${ServiceFilterConditions.IS_ACTIVE}
                     AND ${ServiceFilterConditions.POSTNATAL_MOTHERS}
                 THEN 1 ELSE 0 END) AS postnatal_mothers,
 
                 SUM(CASE WHEN
                     ${ServiceFilterConditions.HAS_HOUSEHOLD}
-                    $householdSsFilter
-                    $householdSvFilter
+                    $householdAreaFilter
                     AND ${ServiceFilterConditions.CHILDREN_UNDER_TWO}
                 THEN 1 ELSE 0 END) AS children_under_two,
 
                 SUM(CASE WHEN
-                    ${ServiceFilterConditions.EXTERNAL_MEMBER}
-                    $externalSsFilter
-                    $externalSvFilter
-                THEN 1 ELSE 0 END) AS external_members,
-
-                SUM(CASE WHEN
-                    ${ServiceFilterConditions.EXTERNAL_MEMBER}
-                    $externalSsFilter
-                    $externalSvFilter
-                    AND ${ServiceFilterConditions.IS_ACTIVE}
-                    AND ${ServiceFilterConditions.PREGNANT_WOMEN}
-                THEN 1 ELSE 0 END) AS external_pregnant,
-
-                SUM(CASE WHEN
                     ${ServiceFilterConditions.HAS_HOUSEHOLD}
-                    $householdSsFilter
-                    $householdSvFilter
+                    $householdAreaFilter
                     AND ${ServiceFilterConditions.IS_ACTIVE}
                     AND ${ServiceFilterConditions.EXPECTED_DELIVERIES}
                 THEN 1 ELSE 0 END) AS expected_deliveries,
 
                 SUM(CASE WHEN
                     ${ServiceFilterConditions.HAS_HOUSEHOLD}
-                    $householdSsFilter
-                    $householdSvFilter
+                    $householdAreaFilter
                     AND ${ServiceFilterConditions.IS_ACTIVE}
                     AND ${ServiceFilterConditions.PENDING_DELIVERIES}
-                THEN 1 ELSE 0 END) AS pending_deliveries
+                THEN 1 ELSE 0 END) AS pending_deliveries,
 
+                SUM(CASE WHEN
+                    ${ServiceFilterConditions.EXTERNAL_MEMBER}
+                    $externalAreaFilter
+                THEN 1 ELSE 0 END) AS external_members,
+
+                SUM(CASE WHEN
+                    ${ServiceFilterConditions.EXTERNAL_MEMBER}
+                    $externalAreaFilter
+                    AND ${ServiceFilterConditions.IS_ACTIVE}
+                    AND ${ServiceFilterConditions.PREGNANT_WOMEN}
+                THEN 1 ELSE 0 END) AS external_pregnant
             FROM householdmember AS hhm
             LEFT JOIN Household AS hh ON hh.id = hhm.household_id
             $globalWhereClause
             """.trimIndent()
+
+        // Placeholder order in SELECT is:
+        // household filter x8, external filter x2 then global WHERE args.
+        repeat(8) { args.addAll(householdFilterArgs) }
+        repeat(2) { args.addAll(externalFilterArgs) }
+        args.addAll(globalArgs)
 
         return getAllServiceMemberCountsRaw(SimpleSQLiteQuery(query, args.toTypedArray()))
     }
