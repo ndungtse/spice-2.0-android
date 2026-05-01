@@ -257,8 +257,8 @@ interface HouseholdDAO {
                 hh.name,
                 hh.household_no,
                 ve.name                  AS village_name,
-                ss.name                  AS shasthya_shebika_name,
-                sv.name                  AS sub_village_name,
+                COALESCE(ss.name, '')    AS shasthya_shebika_name,
+                COALESCE(sv.name, '')    AS sub_village_name,
                 memberAgg.last_member_registered_at,
                 assessmentAgg.services,
                 MAX(
@@ -272,10 +272,10 @@ interface HouseholdDAO {
             INNER JOIN VillageEntity AS ve
                 ON ve.id = hh.village_id
 
-            INNER JOIN ShasthyaShebikaEntity AS ss
+            LEFT JOIN ShasthyaShebikaEntity AS ss
                 ON ss.id = hh.shasthya_shebika_id
 
-            INNER JOIN SubVillageEntity AS sv
+            LEFT JOIN SubVillageEntity AS sv
                 ON sv.id = hh.sub_village_id
 
             INNER JOIN (
