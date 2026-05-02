@@ -393,17 +393,16 @@ interface MemberDAO {
             "INNER JOIN Household AS hh ON hh.id = hhm.household_id"
         }
 
-        // LEFT JOIN: household may have null shasthya_shebika_id / sub_village_id; members must still appear
         val ssJoin = if (isExternalMember) {
             "LEFT JOIN ShasthyaShebikaEntity AS ss ON hhm.shasthya_shebika_id = ss.id"
         } else {
-            "LEFT JOIN ShasthyaShebikaEntity AS ss ON ss.id = hh.shasthya_shebika_id"
+            "INNER JOIN ShasthyaShebikaEntity AS ss ON ss.id = hh.shasthya_shebika_id"
         }
 
         val svJoin = if (isExternalMember) {
             "LEFT JOIN SubVillageEntity AS sv ON hhm.sub_village_id = sv.id"
         } else {
-            "LEFT JOIN SubVillageEntity AS sv ON sv.id = hh.sub_village_id"
+            "INNER JOIN SubVillageEntity AS sv ON sv.id = hh.sub_village_id"
         }
 
         val query =
