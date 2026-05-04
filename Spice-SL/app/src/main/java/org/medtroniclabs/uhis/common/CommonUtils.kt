@@ -78,6 +78,7 @@ import java.io.File
 import java.math.RoundingMode
 import java.text.DecimalFormat
 import java.text.DecimalFormatSymbols
+import java.text.NumberFormat
 import java.text.SimpleDateFormat
 import java.time.LocalDate
 import java.time.Period
@@ -2329,6 +2330,16 @@ object CommonUtils {
             formLayout.title
         }
     }
+
+    /**
+     * Formats count w.r.t to current locale.
+     */
+    fun formatCountForCurrentLocale(count: Int): String =
+        if (parseUserLocale() == DefinedParams.BN) {
+            NumberFormat.getIntegerInstance(Locale.forLanguageTag("bn-BD")).format(count)
+        } else {
+            count.toString()
+        }
 }
 
 /**

@@ -29,8 +29,6 @@ import org.medtroniclabs.uhis.ui.externalmember.ExternalMemberRegistrationActivi
 import org.medtroniclabs.uhis.ui.household.MemberSelectionListener
 import org.medtroniclabs.uhis.ui.household.summary.MemberSummaryActivity
 import org.medtroniclabs.uhis.ui.services.viewmodel.ServicesViewModel
-import java.text.NumberFormat
-import java.util.Locale
 import org.medtroniclabs.uhis.common.DefinedParams as CommonDefinedParams
 
 /**
@@ -217,8 +215,8 @@ class ServicesActivity : BaseActivity(), View.OnClickListener, MemberSelectionLi
             val filterCount = filterEntry.value
             dropdownList.add(
                 mapOf(
-                    DefinedParams.CULTURE_VALUE to filter.culturalValue + " ($filterCount)",
-                    DefinedParams.NAME to filter.value + " ($filterCount)",
+                    DefinedParams.CULTURE_VALUE to filter.culturalValue + " (${CommonUtils.formatCountForCurrentLocale(filterCount)})",
+                    DefinedParams.NAME to filter.value + " (${CommonUtils.formatCountForCurrentLocale(filterCount)})",
                     DefinedParams.ID to filter,
                 ),
             )
@@ -254,7 +252,7 @@ class ServicesActivity : BaseActivity(), View.OnClickListener, MemberSelectionLi
             if (count > 0) {
                 binding.llFilter.btnFilter.text = this.getString(
                     R.string.filter_count,
-                    formatIntegerForUserLocale(count),
+                    CommonUtils.formatCountForCurrentLocale(count),
                 )
             } else {
                 binding.llFilter.btnFilter.text = getString(R.string.filter)
@@ -283,16 +281,9 @@ class ServicesActivity : BaseActivity(), View.OnClickListener, MemberSelectionLi
         }
     }
 
-    private fun formatIntegerForUserLocale(value: Int): String =
-        if (CommonUtils.parseUserLocale() == CommonDefinedParams.BN) {
-            NumberFormat.getIntegerInstance(Locale.forLanguageTag("bn-BD")).format(value)
-        } else {
-            value.toString()
-        }
-
     private fun setMembers(membersList: List<HouseholdMemberWithTb>) {
         val size = membersList.size
-        val countStr = formatIntegerForUserLocale(size)
+        val countStr = CommonUtils.formatCountForCurrentLocale(size)
         binding.tvMembersCount.text = resources.getQuantityString(R.plurals.plural_member, size, countStr)
         if (membersList.isNotEmpty()) {
             binding.llFilter.btnFilter.visible()

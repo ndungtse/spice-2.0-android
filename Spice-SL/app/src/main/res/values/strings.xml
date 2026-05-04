@@ -1731,4 +1731,5 @@
     <string name="follow_up_visit">Follow up Visit</string>
     <string name="disabled_account">Disabled Account</string>
     <string name="account_locked_multiple_attempts">Account locked due to multiple invalid login attempts.</string>
+    <string name="string_slash_string" translatable="false">%1$s/%2$s</string>
 </resources>

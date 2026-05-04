@@ -14,7 +14,7 @@ import org.medtroniclabs.uhis.common.SecuredPreference
 import org.medtroniclabs.uhis.data.FollowUpPatientModel
 import org.medtroniclabs.uhis.data.model.ChipViewItemModel
 import org.medtroniclabs.uhis.data.offlinesync.model.FollowUpCallStatus
-import org.medtroniclabs.uhis.db.entity.VillageEntity
+import org.medtroniclabs.uhis.db.entity.SubVillageEntity
 import org.medtroniclabs.uhis.di.IoDispatcher
 import org.medtroniclabs.uhis.model.followup.FollowUpFilter
 import org.medtroniclabs.uhis.network.resource.Resource
@@ -28,7 +28,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class FollowUpViewModel @Inject constructor(
-    @IoDispatcher override var dispatcherIO: CoroutineDispatcher,
+    @param:IoDispatcher override var dispatcherIO: CoroutineDispatcher,
     private val followUpRepository: FollowUpRepository,
 ) : BaseViewModel(dispatcherIO) {
     val callResultHashMap = HashMap<String, Any>()
@@ -36,7 +36,7 @@ class FollowUpViewModel @Inject constructor(
     val unSuccessfulHashMap = HashMap<String, Any>()
     var selectedFollowUpDetail: FollowUpPatientModel? = null
 
-    private val villages = mutableListOf<VillageEntity>()
+    private val villages = mutableListOf<SubVillageEntity>()
     private val filterLiveData = MutableLiveData<FollowUpFilter>()
     val followUpPatientListLiveData: LiveData<List<FollowUpPatientModel>> =
         filterLiveData.switchMap {
@@ -59,7 +59,7 @@ class FollowUpViewModel @Inject constructor(
         }
 
         viewModelScope.launch {
-            villages.addAll(followUpRepository.getVillageIds())
+            villages.addAll(followUpRepository.getSubVillages())
             createNewFollowUpFilter(0)
         }
     }
@@ -126,7 +126,7 @@ class FollowUpViewModel @Inject constructor(
             else -> FU_TYPE_HH_VISIT
         }
 
-    fun getVillages(): List<VillageEntity> = villages
+    fun getVillages(): List<SubVillageEntity> = villages
 
     fun getFilterData(): FollowUpFilter? = filterLiveData.value
 

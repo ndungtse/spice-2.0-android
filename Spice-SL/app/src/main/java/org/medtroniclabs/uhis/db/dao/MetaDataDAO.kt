@@ -121,7 +121,10 @@ interface MetaDataDAO {
     suspend fun getNearestHealthFacility(): List<HealthFacilityEntity>
 
     @Query("SELECT id FROM SubVillageEntity")
-    suspend fun getVillageIds(): List<Long>
+    suspend fun getSubVillageIds(): List<Long>
+
+    @Query("SELECT * FROM SubVillageEntity")
+    suspend fun getSubVillages(): List<SubVillageEntity>
 
     @Query("SELECT * FROM HealthFacilityEntity Where isUserSite =:isUserSite")
     suspend fun getUserHealthFacility(isUserSite: Boolean): List<HealthFacilityEntity>

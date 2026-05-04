@@ -30,7 +30,7 @@ class ResourceLoadingViewModel @Inject constructor(
     private val offlineSyncRepository: OfflineSyncRepository,
     private val connectivityManager: ConnectivityManager,
     private val followUpRepo: NCDFollowUpRepo,
-    @IoDispatcher private val dispatcherIO: CoroutineDispatcher,
+    @param:IoDispatcher private val dispatcherIO: CoroutineDispatcher,
 ) : ViewModel() {
     val oldUserDataSync = MutableLiveData<Resource<List<String>?>>()
     val metaDataCompleteLiveData = MutableLiveData<Resource<Boolean>>()
@@ -140,7 +140,7 @@ class ResourceLoadingViewModel @Inject constructor(
     private suspend fun checkAndProceedVillageChange(): Boolean {
         val prefKey = SecuredPreference.EnvironmentKey.VILLAGE_IDS.name
         val oldVillageIds = SecuredPreference.getLongList(prefKey)
-        val newVillageIds = metaRepository.getAllVillageIds()
+        val newVillageIds = metaRepository.getAllSubVillageIds()
         if (oldVillageIds.isNotEmpty()) {
             val changedVillage = oldVillageIds.subtract(newVillageIds.toSet())
             val newlyAddedVillage = newVillageIds.subtract(oldVillageIds.toSet())

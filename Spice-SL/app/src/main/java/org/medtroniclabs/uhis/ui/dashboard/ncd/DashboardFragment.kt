@@ -11,6 +11,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import org.medtroniclabs.uhis.R
 import org.medtroniclabs.uhis.appextensions.gone
 import org.medtroniclabs.uhis.appextensions.visible
+import org.medtroniclabs.uhis.common.CommonUtils
 import org.medtroniclabs.uhis.common.DateUtils
 import org.medtroniclabs.uhis.common.DateUtils.DATE_FORMAT_yyyyMMddHHmmssZZZZZ
 import org.medtroniclabs.uhis.common.DateUtils.DATE_ddMMyyyy
@@ -122,7 +123,7 @@ class DashboardFragment : BaseFragment(), View.OnClickListener {
     private fun updateFilterButtonLabel(count: Int) {
         binding.llFilter?.btnFilter?.text =
             if (count > 0) {
-                getString(R.string.filter_count, count)
+                getString(R.string.filter_count, CommonUtils.formatCountForCurrentLocale(count))
             } else {
                 getString(R.string.filter)
             }

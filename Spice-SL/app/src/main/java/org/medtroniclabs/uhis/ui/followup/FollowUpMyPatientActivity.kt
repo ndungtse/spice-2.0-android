@@ -43,7 +43,6 @@ import org.medtroniclabs.uhis.ncd.followup.fragment.NCDFollowUpSortDialog
 import org.medtroniclabs.uhis.ncd.followup.viewmodel.NCDFollowUpViewModel
 import org.medtroniclabs.uhis.network.resource.ResourceState
 import org.medtroniclabs.uhis.ui.BaseActivity
-import org.medtroniclabs.uhis.ui.MenuConstants
 import org.medtroniclabs.uhis.ui.followup.adapter.FollowUpPatientListAdapter
 import org.medtroniclabs.uhis.ui.followup.viewmodel.FollowUpViewModel
 import org.medtroniclabs.uhis.ui.phuwalkins.activity.PhuWalkInsActivity
@@ -245,18 +244,16 @@ class FollowUpMyPatientActivity : BaseActivity() {
         }
     }
 
-    private fun getTabScreenName(position: Int): String? {
-        return when (position) {
+    private fun getTabScreenName(position: Int): String? =
+        when (position) {
             0 -> HH_VISIT_TAB
             1 -> REFERRED_TAB
             2 -> COUNTER_REFERRAL_TAB
-            else -> return null
+            else -> null
         }
-    }
 
     private fun initView() {
         with(binding) {
-            val origin = intent.getStringExtra(MenuConstants.MY_PATIENTS_MENU_ID)
             llFilter.btnFilter.safeClickListener {
                 FollowUpFilterBottomSheetDialogFragment
                     .newInstance()
@@ -265,8 +262,8 @@ class FollowUpMyPatientActivity : BaseActivity() {
 
             llExactSearch.etSearchTerm.addTextChangedListener {
                 val search = it?.trim().toString()
-                llExactSearch.btnSearch.isEnabled = !search.isNullOrEmpty()
-                if (search.isNullOrEmpty()) {
+                llExactSearch.btnSearch.isEnabled = search.isNotEmpty()
+                if (search.isEmpty()) {
                     viewModel.updateFollowUpFilter(search = "")
                 }
             }
@@ -300,7 +297,7 @@ class FollowUpMyPatientActivity : BaseActivity() {
             }
 
             if (count > 0) {
-                binding.llFilter.btnFilter.text = this.getString(R.string.filter_count, count)
+                binding.llFilter.btnFilter.text = this.getString(R.string.filter_count, CommonUtils.formatCountForCurrentLocale(count))
             } else {
                 binding.llFilter.btnFilter.text = getString(R.string.filter)
             }
@@ -333,7 +330,7 @@ class FollowUpMyPatientActivity : BaseActivity() {
         for (i in 0 until count) {
             val tabViewChild = tab?.view?.getChildAt(i)
             if (tabViewChild != null && tabViewChild is TextView) {
-                (tabViewChild as TextView).typeface = typeface
+                tabViewChild.typeface = typeface
             }
         }
     }
@@ -396,8 +393,8 @@ class FollowUpMyPatientActivity : BaseActivity() {
 
             llExactSearch.etSearchTerm.addTextChangedListener {
                 val search = it?.trim().toString()
-                llExactSearch.btnSearch.isEnabled = !search.isNullOrEmpty()
-                if (search.isNullOrEmpty()) {
+                llExactSearch.btnSearch.isEnabled = search.isNotEmpty()
+                if (search.isEmpty()) {
                     ncdFollowUpViewModel.searchLiveDataForOffline("")
                 }
             }
@@ -450,7 +447,7 @@ class FollowUpMyPatientActivity : BaseActivity() {
         }
         ncdFollowUpViewModel.sortCount.observe(this) { count ->
             if (count > 0) {
-                binding.llFilter.btnSort.text = this.getString(R.string.sort_count, count)
+                binding.llFilter.btnSort.text = this.getString(R.string.sort_count, CommonUtils.formatCountForCurrentLocale(count))
             } else {
                 binding.llFilter.btnSort.text = getString(R.string.sort)
             }
@@ -502,7 +499,7 @@ class FollowUpMyPatientActivity : BaseActivity() {
         }
         ncdFollowUpViewModel.filterCount.observe(this) { count ->
             if (count > 0) {
-                binding.llFilter.btnFilter.text = this.getString(R.string.filter_count, count)
+                binding.llFilter.btnFilter.text = this.getString(R.string.filter_count, CommonUtils.formatCountForCurrentLocale(count))
             } else {
                 binding.llFilter.btnFilter.text = getString(R.string.filter)
             }

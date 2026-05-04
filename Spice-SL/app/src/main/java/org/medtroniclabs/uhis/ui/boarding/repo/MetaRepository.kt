@@ -1095,7 +1095,7 @@ class MetaRepository @Inject constructor(
             Resource(state = ResourceState.ERROR)
         }
 
-    suspend fun getAllVillageIds(): List<Long> = roomHelper.getAllVillageIds()
+    suspend fun getAllSubVillageIds(): List<Long> = roomHelper.getAllSubVillageIds()
 
     suspend fun checkIfLastServiceProvidedIsAfter(
         memberLocalId: Long,
