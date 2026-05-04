@@ -433,6 +433,43 @@ object AssessmentDefinedParams {
 
     const val YES = "Yes"
     const val NO = "No"
+
+    /** Newborn sex options (pregnancy outcome); ids match saved JSON. */
+    val pregnancyOutcomeNewbornSexOptions: ArrayList<Map<String, Any>> = arrayListOf(
+        mapOf(DefinedParams.ID to "male", DefinedParams.NAME to "Male", DefinedParams.CULTURE_VALUE to "পুরুষ"),
+        mapOf(DefinedParams.ID to "female", DefinedParams.NAME to "Female", DefinedParams.CULTURE_VALUE to "নারী"),
+        mapOf(DefinedParams.ID to "other", DefinedParams.NAME to "Other", DefinedParams.CULTURE_VALUE to "অন্যান্য"),
+    )
+
+    /** Is baby alive options; ids match [YES] / [NO] in saved data. */
+    val pregnancyOutcomeBabyAliveOptions: ArrayList<Map<String, Any>> = arrayListOf(
+        mapOf(DefinedParams.ID to YES, DefinedParams.NAME to YES, DefinedParams.CULTURE_VALUE to "হ্যাঁ"),
+        mapOf(DefinedParams.ID to NO, DefinedParams.NAME to NO, DefinedParams.CULTURE_VALUE to "না"),
+    )
+
+    /**
+     * Resolves a saved option id to display [DefinedParams.NAME] or [DefinedParams.CULTURE_VALUE].
+     */
+    fun pregnancyOutcomeOptionDisplayLabel(
+        options: List<Map<String, Any>>,
+        savedId: String?,
+        translationEnabled: Boolean,
+    ): String? {
+        if (savedId.isNullOrBlank()) return null
+        val idNorm = savedId.trim()
+        options.forEach { opt ->
+            val id = (opt[DefinedParams.ID] as? String)?.trim() ?: return@forEach
+            if (id.equals(idNorm, ignoreCase = true)) {
+                return if (translationEnabled) {
+                    opt[DefinedParams.CULTURE_VALUE] as? String ?: opt[DefinedParams.NAME] as? String
+                } else {
+                    opt[DefinedParams.NAME] as? String
+                }
+            }
+        }
+        return null
+    }
+
     const val NUTRITION_COUNSELLING = "nutritionCounselling"
     const val CARE_DURING_ANTENATAL_PERIOD = "careDuringAntenatalPeriod"
     const val BIRTH_PREPAREDNESS = "birthPreparedness"

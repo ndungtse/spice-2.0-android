@@ -334,7 +334,7 @@ class AssessmentRMNCHFragment :
                 handleAncFieldStatusUpdate(AssessmentDefinedParams.DIASTOLIC)
                 handleAncFieldStatusUpdate(AssessmentDefinedParams.BLOOD_SUGAR_FASTING)
                 handleAncFieldStatusUpdate(AssessmentDefinedParams.BLOOD_SUGAR_RANDOM)
-                val selectedData = map[AssessmentDefinedParams.PREGNANT_WOMAN_EXISTING_ILLNESS] as ArrayList<HashMap<String, Any>>
+                val selectedData = (map[AssessmentDefinedParams.PREGNANT_WOMAN_EXISTING_ILLNESS] as? ArrayList<HashMap<String, Any>>) ?: emptyList()
                 val isNoneSelected = selectedData.any { DefinedParams.None.equals(it[DefinedParams.Value] as? String, true) }
                 if (isNoneSelected) {
                     // If none selected, then hide on treatment

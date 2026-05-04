@@ -250,6 +250,7 @@ object RMNCH {
         isBooleanAnswer: Boolean,
         triple: Triple<String, String, String>,
         context: Context,
+        isTranslationEnabled: Boolean = false,
     ): String {
         if (resultMap.containsKey(workflowName)) {
             val actualMap = resultMap[workflowName]
@@ -262,7 +263,7 @@ object RMNCH {
                         DateUtils.DATE_ddMMyyyy,
                     )
                 } else if (viewType == ViewType.VIEW_TYPE_DIALOG_CHECKBOX) {
-                    return getDangerSignValue(value, triple.third, actualMap)
+                    return getDangerSignValue(value, triple.third, actualMap, isTranslationEnabled)
                 } else {
                     when (value) {
                         is String -> {
@@ -323,22 +324,30 @@ object RMNCH {
         value: Any?,
         hyphenSymbol: String,
         actualMap: Map<*, *>,
+        isTranslationEnabled: Boolean,
     ): String {
         val result = ArrayList<String>()
         if (value is List<*>) {
             value.forEach {
                 if (it is Map<*, *>) {
-                    val key = it[DefinedParams.NAME]
-                    if (key is String) {
-                        if (key.equals(DefinedParams.Other, true)) {
+                    val englishName = it[DefinedParams.NAME] as? String
+                    val displayLabel =
+                        if (isTranslationEnabled) {
+                            (it[DefinedParams.CULTURE_VALUE] as? String)?.trim()?.takeIf { s -> s.isNotEmpty() }
+                                ?: englishName
+                        } else {
+                            englishName
+                        }
+                    if (displayLabel != null) {
+                        if (englishName?.equals(DefinedParams.Other, true) == true) {
                             if (actualMap.containsKey(otherPncNeonateSigns)) {
                                 val otherSignValue = actualMap[otherPncNeonateSigns]
-                                result.add("$key - $otherSignValue")
+                                result.add("$displayLabel - $otherSignValue")
                             } else {
-                                result.add(key)
+                                result.add(displayLabel)
                             }
                         } else {
-                            result.add(key)
+                            result.add(displayLabel)
                         }
                     }
                 }

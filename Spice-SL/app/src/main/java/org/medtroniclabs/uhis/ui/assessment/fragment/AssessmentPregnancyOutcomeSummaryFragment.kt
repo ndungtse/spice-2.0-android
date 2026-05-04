@@ -32,6 +32,7 @@ import org.medtroniclabs.uhis.ui.BaseFragment
 import org.medtroniclabs.uhis.ui.MenuConstants
 import org.medtroniclabs.uhis.ui.assessment.AssessmentCommonUtils
 import org.medtroniclabs.uhis.ui.assessment.AssessmentDefinedParams
+import org.medtroniclabs.uhis.ui.assessment.rmnch.RMNCH
 import org.medtroniclabs.uhis.ui.assessment.viewmodel.AssessmentViewModel
 
 /**
@@ -274,18 +275,28 @@ class AssessmentPregnancyOutcomeSummaryFragment : BaseFragment(), View.OnClickLi
                 // Is baby alive
                 val isBabyAlive = babyData[AssessmentDefinedParams.IS_BABY_ALIVE]
                 if (isBabyAlive != null) {
-                    val displayValue = when (isBabyAlive) {
-                        is Boolean -> if (isBabyAlive) getString(R.string.yes) else getString(R.string.no)
-                        is String -> isBabyAlive
-                        else -> isBabyAlive.toString()
+                    val idForLabel = when (isBabyAlive) {
+                        is Boolean -> if (isBabyAlive) AssessmentDefinedParams.YES else AssessmentDefinedParams.NO
+                        else -> isBabyAlive.toString().trim()
                     }
+                    val displayValue = AssessmentDefinedParams.pregnancyOutcomeOptionDisplayLabel(
+                        AssessmentDefinedParams.pregnancyOutcomeBabyAliveOptions,
+                        idForLabel,
+                        isTranslationEnabled,
+                    ) ?: idForLabel
                     bindSummaryView(getString(R.string.is_baby_alive), displayValue)
                 }
 
                 // Sex
                 val sex = babyData[AssessmentDefinedParams.SEX]
                 if (sex != null) {
-                    bindSummaryView(getString(R.string.sex_label), sex.toString())
+                    val raw = sex.toString().trim()
+                    val displaySex = AssessmentDefinedParams.pregnancyOutcomeOptionDisplayLabel(
+                        AssessmentDefinedParams.pregnancyOutcomeNewbornSexOptions,
+                        raw,
+                        isTranslationEnabled,
+                    ) ?: raw
+                    bindSummaryView(getString(R.string.sex_label), displaySex)
                 }
 
                 // Birth weight - Removed (no longer displayed)
@@ -334,13 +345,24 @@ class AssessmentPregnancyOutcomeSummaryFragment : BaseFragment(), View.OnClickLi
                         }
                     }
 
-                    is String -> item
+                    is String -> neonatalDeathCauseDisplayLabel(item)
                     else -> null
                 }
             }
             return names.joinToString(", ")
         }
+        if (value is String && value.isNotBlank()) {
+            return neonatalDeathCauseDisplayLabel(value)
+        }
         return value?.toString() ?: ""
+    }
+
+    private fun neonatalDeathCauseDisplayLabel(id: String): String {
+        return AssessmentDefinedParams.pregnancyOutcomeOptionDisplayLabel(
+            RMNCH.neonatalDeathCauseOptions,
+            id.trim(),
+            isTranslationEnabled,
+        ) ?: id.trim()
     }
 
     /**

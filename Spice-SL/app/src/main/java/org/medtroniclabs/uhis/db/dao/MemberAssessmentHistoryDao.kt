@@ -73,9 +73,19 @@ interface MemberAssessmentHistoryDao {
         LEFT JOIN householdmember AS hm ON hm.id = h.memberId
         LEFT JOIN household AS hh ON hh.id = hm.household_id
         WHERE (:startDate IS NULL OR date(datetime(h.visitDate, 'localtime')) >= :startDate)
-          AND (:endDate IS NULL OR date(datetime(h.visitDate, 'localtime')) <= :endDate)
-          AND (:ssIdsSize = 0 OR COALESCE(hm.shasthya_shebika_id, hh.shasthya_shebika_id) IN (:ssIds))
-          AND (:subVillageIdsSize = 0 OR COALESCE(hm.sub_village_id, hh.sub_village_id) IN (:subVillageIds))
+        AND (:endDate IS NULL OR date(datetime(h.visitDate, 'localtime')) <= :endDate)
+        AND (
+            (:ssIdsSize = 0 AND :subVillageIdsSize = 0)
+            OR (:subVillageIdsSize > 0 AND COALESCE(hm.sub_village_id, hh.sub_village_id) IN (:subVillageIds))
+            OR (
+                :ssIdsSize > 0
+                AND COALESCE(hm.sub_village_id, hh.sub_village_id) IN (
+                    SELECT DISTINCT sslv.subVillageId
+                    FROM ShasthyaShebikaLinkedVillageEntity AS sslv
+                    WHERE sslv.shasthyaShebikaId IN (:ssIds)
+                )
+            )
+        )
         """,
     )
     suspend fun getDashboardCounts(
@@ -146,10 +156,19 @@ interface MemberAssessmentHistoryDao {
         FROM latest_pregnancy AS lp
         INNER JOIN filtered_members AS fm ON fm.memberId = lp.householdMemberLocalId
         WHERE (lp.dateOfDelivery IS NULL OR lp.dateOfDelivery = '')
-          AND (lp.lastMenstrualPeriod IS NOT NULL AND lp.lastMenstrualPeriod != '')
-          AND (lp.estimatedDeliveryDate IS NULL OR substr(lp.estimatedDeliveryDate, 1, 10) >= date('now', '-45 days'))
-          AND (:ssIdsSize = 0 OR fm.ssId IN (:ssIds))
-          AND (:subVillageIdsSize = 0 OR fm.subVillageId IN (:subVillageIds))
+        AND (lp.lastMenstrualPeriod IS NOT NULL AND lp.lastMenstrualPeriod != '')
+        AND (lp.estimatedDeliveryDate IS NULL OR substr(lp.estimatedDeliveryDate, 1, 10) >= date('now', '-45 days'))
+        AND (
+            (:ssIdsSize = 0 AND :subVillageIdsSize = 0)
+            OR (:subVillageIdsSize > 0 AND fm.subVillageId IN (:subVillageIds))
+            OR ( :ssIdsSize > 0
+                AND fm.subVillageId IN (
+                    SELECT DISTINCT sslv.subVillageId
+                    FROM ShasthyaShebikaLinkedVillageEntity AS sslv
+                    WHERE sslv.shasthyaShebikaId IN (:ssIds)
+                )
+            )
+        )
         """,
     )
     suspend fun getMaternalDashboardCounts(
