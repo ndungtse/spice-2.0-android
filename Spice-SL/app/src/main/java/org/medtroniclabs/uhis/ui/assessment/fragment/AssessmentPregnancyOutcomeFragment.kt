@@ -63,18 +63,9 @@ class AssessmentPregnancyOutcomeFragment :
     // Store original field titles (without status) for fields that have status conditions
     private val originalTitles = HashMap<String, String>()
 
-    // Sex options
-    private val sexOptions: ArrayList<Map<String, Any>> = arrayListOf(
-        mapOf("id" to "male", "name" to "Male", "cultureValue" to "পুরুষ"),
-        mapOf("id" to "female", "name" to "Female", "cultureValue" to "নারী"),
-        mapOf("id" to "other", "name" to "Other", "cultureValue" to "অন্যান্য"),
-    )
+    private val sexOptions = AssessmentDefinedParams.pregnancyOutcomeNewbornSexOptions
 
-    // Baby alive options
-    private val babyAliveOptions: ArrayList<Map<String, Any>> = arrayListOf(
-        mapOf(DefinedParams.ID to AssessmentDefinedParams.YES, DefinedParams.NAME to AssessmentDefinedParams.YES, DefinedParams.CULTURE_VALUE to "হ্যাঁ"),
-        mapOf(DefinedParams.ID to AssessmentDefinedParams.NO, DefinedParams.NAME to AssessmentDefinedParams.NO, DefinedParams.CULTURE_VALUE to "না"),
-    )
+    private val babyAliveOptions = AssessmentDefinedParams.pregnancyOutcomeBabyAliveOptions
 
     override fun onCreateView(
         inflater: LayoutInflater,

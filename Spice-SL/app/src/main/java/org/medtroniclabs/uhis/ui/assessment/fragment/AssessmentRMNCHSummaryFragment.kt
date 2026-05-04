@@ -35,7 +35,6 @@ import org.medtroniclabs.uhis.databinding.FragmentRmnchSummaryBinding
 import org.medtroniclabs.uhis.databinding.InstructionLayoutBinding
 import org.medtroniclabs.uhis.formgeneration.FormSupport.translateTitle
 import org.medtroniclabs.uhis.formgeneration.config.ViewType
-import org.medtroniclabs.uhis.formgeneration.extension.capitalizeFirstChar
 import org.medtroniclabs.uhis.formgeneration.extension.px
 import org.medtroniclabs.uhis.formgeneration.extension.safeClickListener
 import org.medtroniclabs.uhis.formgeneration.model.FormLayout
@@ -751,6 +750,7 @@ class AssessmentRMNCHSummaryFragment : BaseFragment(), View.OnClickListener {
                     getString(R.string.hyphen_symbol),
                 ),
                 requireContext(),
+                isTranslationEnabled,
             ),
         )
         if (pncChildMap.containsKey(AssessmentDefinedParams.ID_CHILD_ILLNESS_TYPE)) {
@@ -768,6 +768,7 @@ class AssessmentRMNCHSummaryFragment : BaseFragment(), View.OnClickListener {
                         getString(R.string.hyphen_symbol),
                     ),
                     requireContext(),
+                    isTranslationEnabled,
                 ),
             )
         }
@@ -788,16 +789,30 @@ class AssessmentRMNCHSummaryFragment : BaseFragment(), View.OnClickListener {
             }
         }
         if (DefinedParams.yes.equals(pncChildMap[AssessmentDefinedParams.ID_CONGENITAL_DEFECT] as String?, true)) {
-            // Congenital defect
+            val congenitalChoiceId = pncChildMap[AssessmentDefinedParams.ID_CONGENITAL_DEFECT]?.toString()
             val congenitalDefectForm =
                 viewModel.formLayoutsLiveData.value
                     ?.data
                     ?.formLayout
                     ?.firstOrNull { it.id.equals(AssessmentDefinedParams.ID_CONGENITAL_DEFECT, true) }
-            congenitalDefectForm?.let {
+            congenitalDefectForm?.let { form ->
+                val option =
+                    form.optionsList?.firstOrNull {
+                        it[DefinedParams.ID]?.toString().equals(congenitalChoiceId, ignoreCase = true)
+                    }
+                val displayValue =
+                    (
+                        (if (isTranslationEnabled) {
+                            option?.get(DefinedParams.CULTURE_VALUE)
+                        } else {
+                            option?.get(DefinedParams.NAME)
+                        }) as? String
+                    )?.takeIf { it.isNotBlank() }
+                        ?: option?.get(DefinedParams.NAME)?.toString()
+                        ?: congenitalChoiceId
                 bindRmnchSummaryView(
-                    congenitalDefectForm.getSummaryTitle(isTranslationEnabled),
-                    pncChildMap[AssessmentDefinedParams.ID_CONGENITAL_DEFECT].toString().capitalizeFirstChar(),
+                    form.getSummaryTitle(isTranslationEnabled),
+                    displayValue,
                 )
             }
         }

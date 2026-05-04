@@ -32,7 +32,7 @@ interface PregnancyDetailDao {
     suspend fun getPregnancyDetailByPatientId(hhmLocalId: Long): PregnancyDetail?
 
     @Query("SELECT id from HouseholdMember where fhir_id =:memberId")
-    suspend fun getHHMLocalID(memberId: String): Long
+    suspend fun getHHMLocalID(memberId: String): Long?
 
     @Query("SELECT id from HouseholdMember where patient_id =:patientId")
     suspend fun getHHMLocalIDByPatientId(patientId: String): Long
@@ -44,12 +44,14 @@ interface PregnancyDetailDao {
     )
 
     @Transaction
-    suspend fun insertOrUpdateFromBE(entity: PregnancyDetail): Long {
+    suspend fun insertOrUpdateFromBE(entity: PregnancyDetail) {
         val hhmLocalId = getHHMLocalID(entity.householdMemberId!!)
-        val neonateLocalId = entity.neonatePatientId?.let { getHHMLocalIDByPatientId(it) }
-        entity.householdMemberLocalId = hhmLocalId
-        entity.neonateHouseholdMemberLocalId = neonateLocalId
-        return savePregnancyDetail(entity)
+        hhmLocalId?.let {
+            val neonateLocalId = entity.neonatePatientId?.let { getHHMLocalIDByPatientId(it) }
+            entity.householdMemberLocalId = hhmLocalId
+            entity.neonateHouseholdMemberLocalId = neonateLocalId
+            savePregnancyDetail(entity)
+        }
     }
 
     @Query("DELETE from PregnancyDetail")
