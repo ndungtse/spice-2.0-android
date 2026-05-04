@@ -215,8 +215,8 @@ class ServicesActivity : BaseActivity(), View.OnClickListener, MemberSelectionLi
             val filterCount = filterEntry.value
             dropdownList.add(
                 mapOf(
-                    DefinedParams.CULTURE_VALUE to filter.culturalValue + " ($filterCount)",
-                    DefinedParams.NAME to filter.value + " ($filterCount)",
+                    DefinedParams.CULTURE_VALUE to filter.culturalValue + " (${CommonUtils.formatCountForCurrentLocale(filterCount)})",
+                    DefinedParams.NAME to filter.value + " (${CommonUtils.formatCountForCurrentLocale(filterCount)})",
                     DefinedParams.ID to filter,
                 ),
             )
