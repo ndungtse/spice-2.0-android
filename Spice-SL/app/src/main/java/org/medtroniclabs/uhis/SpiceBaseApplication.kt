@@ -10,6 +10,11 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.hilt.work.HiltWorkerFactory
 import androidx.work.Configuration
+import com.medtroniclabs.microcoaching.Language
+import com.medtroniclabs.microcoaching.MicroCoachingSDK
+import com.medtroniclabs.microcoaching.ModelDownloadStrategy
+import com.medtroniclabs.microcoaching.ai.model.ModelProvider
+import com.medtroniclabs.microcoaching.domain.decision.CoachingMode
 import dagger.hilt.android.HiltAndroidApp
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.GlobalScope
@@ -21,6 +26,7 @@ import org.medtroniclabs.uhis.app.analytics.model.UserJourneyAnalytics
 import org.medtroniclabs.uhis.app.analytics.utils.AnalyticsDefinedParams
 import org.medtroniclabs.uhis.app.analytics.utils.AnalyticsUtils
 import org.medtroniclabs.uhis.appextensions.isDebug
+import org.medtroniclabs.uhis.common.DefinedParams
 import org.medtroniclabs.uhis.common.SPICE
 import org.medtroniclabs.uhis.common.SecuredPreference
 import org.medtroniclabs.uhis.log.CrashReportingTree
@@ -48,9 +54,67 @@ class SpiceBaseApplication : Application(), Configuration.Provider {
         super.onCreate()
         initTimber()
         initPreference()
+        initCoachingSdk()
         saveApplicationType()
         getUserJourneyAnalytics()
         handleAppForeground()
+    }
+
+    /**
+     * Initialise the MicroCoaching SDK. Mirrors the v1 spice-android pattern.
+     * Must run after [initPreference] so [SecuredPreference] is ready, and on the
+     * Application thread so the SDK singleton is available before any Activity
+     * (including the splash) tries to access it.
+     *
+     * The auth token is read opportunistically here; it may be empty on first
+     * install. [LandingActivity.reinitCoachingSdkWithToken] re-builds the SDK
+     * with the freshly issued JWT after a successful login.
+     */
+    private fun initCoachingSdk() {
+        val modelDir = getExternalFilesDir(null)
+        val existingModel = modelDir
+            ?.listFiles()
+            ?.firstOrNull { it.extension == "task" || it.extension == "litertlm" }
+        val downloadStrategy = if (existingModel != null) {
+            ModelDownloadStrategy.PROVIDED
+        } else {
+            ModelDownloadStrategy.ON_FIRST_USE
+        }
+        val authToken = SecuredPreference.getString(
+            SecuredPreference.EnvironmentKey.TOKEN.name,
+        ) ?: ""
+        MicroCoachingSDK
+            .Builder(this)
+            .language(spiceLanguageToSdkLanguage(SecuredPreference.getCultureName()))
+            .backendUrl(BuildConfig.COACHING_BACKEND_URL)
+            .authToken(authToken)
+            .enableTelemetry(BuildConfig.ENABLE_COACHING_TELEMETRY)
+            .enableChat(true)
+            .enableLearnModule(true)
+            .enableApplyModule(true)
+            .modelDownloadStrategy(downloadStrategy)
+            .modelProviders(listOf(ModelProvider.HuggingFace))
+            .modelPath(existingModel?.absolutePath ?: "")
+            .huggingFaceToken(BuildConfig.HF_TOKEN)
+            .wifiOnlyModelDownload(false)
+            .forceMode(CoachingMode.EDGE)
+            .build()
+        if (BuildConfig.DEBUG) {
+            Timber.i("MicroCoachingSDK health: %s", MicroCoachingSDK.getInstance().checkHealth())
+        }
+    }
+
+    companion object {
+        /**
+         * Map SPICE 2.0's stored culture display name to the SDK's [Language] enum.
+         * SPICE stores "English" or "বাংলা" (Bengali in Bengali) — the SDK enum needs
+         * the language code, so we branch on the Bengali display name.
+         */
+        fun spiceLanguageToSdkLanguage(cultureName: String?): Language =
+            when (cultureName) {
+                DefinedParams.BN_Locale -> Language.BANGLA
+                else -> Language.ENGLISH
+            }
     }
 
     private fun logActivityState(

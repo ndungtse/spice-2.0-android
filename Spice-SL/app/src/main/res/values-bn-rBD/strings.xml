@@ -1662,4 +1662,12 @@
     <string name="follow_up_visit">ফলো-আপ ভিজিট</string>
     <string name="disabled_account">অ্যাকাউন্টটি নিষ্ক্রিয় করা হয়েছে</string>
     <string name="account_locked_multiple_attempts">একাধিকবার ভুল লগইন চেষ্টার কারণে অ্যাকাউন্টটি সাময়িকভাবে লক করা হয়েছে।</string>
+
+    <!-- MicroCoaching SDK — CHW Assistant -->
+    <string name="chw_assistant">সিএইচডব্লিউ সহকারী</string>
+    <string name="coaching_model_download_title">AI মডেল প্রয়োজন</string>
+    <string name="coaching_model_download_message">AI মডেল ডাউনলোড করতে হবে (~৮০০ এমবি)। এখন ডাউনলোড করবেন?</string>
+    <string name="coaching_metered_network_title">মোবাইল ডেটা সতর্কতা</string>
+    <string name="coaching_metered_network_message">আপনি মোবাইল ডেটায় আছেন। প্রায় ৮০০ এমবি ডেটা ব্যবহার হবে। চালিয়ে যাবেন?</string>
+    <string name="coaching_download_started">ডাউনলোড শুরু হয়েছে। মডেল প্রস্তুত হলে চ্যাট খুলবে।</string>
 </resources>

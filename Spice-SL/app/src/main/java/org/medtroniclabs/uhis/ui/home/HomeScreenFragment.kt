@@ -1,19 +1,33 @@
 package org.medtroniclabs.uhis.ui.home
 
 import android.content.Intent
+import android.net.NetworkCapabilities
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.GridLayoutManager
 import com.google.android.flexbox.FlexDirection
 import com.google.android.flexbox.FlexboxLayoutManager
 import com.google.android.flexbox.JustifyContent
+import com.medtroniclabs.microcoaching.MicroCoachingSDK
+import com.medtroniclabs.microcoaching.ui.chat.CoachingChatBottomSheet
+import com.medtroniclabs.microcoaching.ui.coaching.CoachingCardBottomSheet
+import com.medtroniclabs.microcoaching.ui.components.ChatFab
+import com.medtroniclabs.microcoaching.ui.components.CoachingCardBanner
+import com.medtroniclabs.microcoaching.ui.components.LearnFab
+import com.medtroniclabs.microcoaching.ui.flow.CoachingFlowActivity
+import com.medtroniclabs.microcoaching.ui.theme.MicroCoachingTheme
 import dagger.hilt.android.AndroidEntryPoint
 import org.medtroniclabs.uhis.R
 import org.medtroniclabs.uhis.common.CommonUtils
 import org.medtroniclabs.uhis.common.DefinedParams
+import org.medtroniclabs.uhis.common.SecuredPreference
 import org.medtroniclabs.uhis.databinding.FragmentHomeScreenBinding
 import org.medtroniclabs.uhis.db.entity.MenuEntity
 import org.medtroniclabs.uhis.ncd.followup.activity.NCDFollowUpActivity
@@ -31,6 +45,7 @@ import org.medtroniclabs.uhis.ui.household.HouseholdSearchActivity
 import org.medtroniclabs.uhis.ui.landing.viewmodel.LandingViewModel
 import org.medtroniclabs.uhis.ui.peersupervisor.PerformanceMonitoringActivity
 import org.medtroniclabs.uhis.ui.services.ServicesActivity
+import android.net.ConnectivityManager as AndroidConnectivityManager
 
 @AndroidEntryPoint
 class HomeScreenFragment : BaseFragment(), MenuSelectionListener {
@@ -60,6 +75,131 @@ class HomeScreenFragment : BaseFragment(), MenuSelectionListener {
         super.onViewCreated(view, savedInstanceState)
         attachObservers()
         viewModel.getMenus()
+        setupCoachingSurfaces()
+    }
+
+    /**
+     * Wire up the three MicroCoaching SDK overlays on the home screen:
+     *   1. Coaching card banner pinned above the menu grid (UC-2, gap-driven)
+     *   2. Learn & Grow FAB at bottom-left (UC-1, opens onboarding/modules/quiz)
+     *   3. CHW AI chat FAB at bottom-right (opens chat in a bottom sheet)
+     *
+     * The banner subscribes to `MicroCoachingSDK.morningCards`; if the list is
+     * empty the SDK Composable renders nothing so the layout collapses cleanly.
+     * The chat FAB reuses the model-download dialog from Phase 1.2 — we surface
+     * the same prompt before launching the chat sheet if the on-device LLM is
+     * not yet downloaded.
+     */
+    private fun setupCoachingSurfaces() {
+        if (!MicroCoachingSDK.isInitialized()) return
+        val sdk = MicroCoachingSDK.getInstance()
+        val chwId = runCatching { SecuredPreference.getUserId().toString() }.getOrDefault("")
+
+        // Trigger morning-card load — populates `sdk.morningCards` StateFlow.
+        sdk.onHomeScreenShown(chwId)
+
+        // ── Banner ─────────────────────────────────────────────────────────
+        binding.coachingCardBanner.apply {
+            setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
+            setContent {
+                MicroCoachingTheme {
+                    val cards by sdk.morningCards.collectAsState()
+                    val card = cards.firstOrNull()
+                    CoachingCardBanner(
+                        card = card,
+                        onStart = { scenarioId ->
+                            CoachingCardBottomSheet.show(
+                                fm = parentFragmentManager,
+                                scenarioId = scenarioId,
+                                autoSpeak = true,
+                            )
+                        },
+                        onSkip = { /* Phase 4 MVP: dismiss is local-only */ },
+                    )
+                }
+            }
+        }
+
+        // ── Learn FAB (bottom-left) ────────────────────────────────────────
+        binding.learnFab.apply {
+            setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
+            setContent {
+                MicroCoachingTheme {
+                    LearnFab(
+                        onClick = {
+                            CoachingFlowActivity.launchLearn(requireContext(), chwId)
+                        },
+                    )
+                }
+            }
+        }
+
+        // ── Chat FAB (bottom-right) ────────────────────────────────────────
+        binding.chatFab.apply {
+            setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
+            setContent {
+                MicroCoachingTheme {
+                    ChatFab(
+                        onClick = { launchCoachingChatSheet() },
+                    )
+                }
+            }
+        }
+    }
+
+    /**
+     * Open [CoachingChatBottomSheet] if the on-device LLM model is staged.
+     * Otherwise prompt the CHW to download it (~800 MB) — same dialog flow as
+     * Phase 1.2's drawer entry, surfaced from a different entry point.
+     */
+    private fun launchCoachingChatSheet() {
+        if (!MicroCoachingSDK.isInitialized()) return
+        val sdk = MicroCoachingSDK.getInstance()
+        if (sdk.modelManager.isModelPresent()) {
+            CoachingChatBottomSheet.show(parentFragmentManager)
+        } else {
+            showCoachingModelDownloadPrompt()
+        }
+    }
+
+    private fun showCoachingModelDownloadPrompt() {
+        val activity = (activity as? BaseActivity) ?: return
+        activity.showErrorDialogue(
+            title = getString(R.string.coaching_model_download_title),
+            message = getString(R.string.coaching_model_download_message),
+            isNegativeButtonNeed = true,
+            positiveButtonName = getString(R.string.yes),
+            cancelBtnName = getString(R.string.no),
+        ) { isPositive ->
+            if (!isPositive) return@showErrorDialogue
+            if (isOnMeteredNetwork()) {
+                activity.showErrorDialogue(
+                    title = getString(R.string.coaching_metered_network_title),
+                    message = getString(R.string.coaching_metered_network_message),
+                    isNegativeButtonNeed = true,
+                    positiveButtonName = getString(R.string.yes),
+                    cancelBtnName = getString(R.string.no),
+                ) { metered -> if (metered) triggerCoachingModelDownload() }
+            } else {
+                triggerCoachingModelDownload()
+            }
+        }
+    }
+
+    private fun triggerCoachingModelDownload() {
+        MicroCoachingSDK.getInstance().modelManager.triggerDownload()
+        Toast
+            .makeText(
+                requireContext(),
+                getString(R.string.coaching_download_started),
+                Toast.LENGTH_LONG,
+            ).show()
+    }
+
+    private fun isOnMeteredNetwork(): Boolean {
+        val cm = requireContext().getSystemService(AndroidConnectivityManager::class.java) ?: return false
+        val caps = cm.getNetworkCapabilities(cm.activeNetwork) ?: return false
+        return !caps.hasCapability(NetworkCapabilities.NET_CAPABILITY_NOT_METERED)
     }
 
     override fun onResume() {

@@ -3,6 +3,7 @@ package org.medtroniclabs.uhis.ui.landing
 import android.content.Context
 import android.content.Intent
 import android.content.pm.ActivityInfo
+import android.net.NetworkCapabilities
 import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
@@ -31,8 +32,13 @@ import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkInfo
 import androidx.work.WorkManager
 import com.google.android.material.navigation.NavigationView
+import com.medtroniclabs.microcoaching.MicroCoachingSDK
+import com.medtroniclabs.microcoaching.ModelDownloadStrategy
+import com.medtroniclabs.microcoaching.ai.model.ModelProvider
+import com.medtroniclabs.microcoaching.domain.decision.CoachingMode
 import org.medtroniclabs.uhis.BuildConfig
 import org.medtroniclabs.uhis.R
+import org.medtroniclabs.uhis.SpiceBaseApplication
 import org.medtroniclabs.uhis.app.analytics.model.UserDetail
 import org.medtroniclabs.uhis.app.analytics.upload.UploadWorker
 import org.medtroniclabs.uhis.app.analytics.utils.AnalyticsDefinedParams
@@ -76,6 +82,7 @@ import org.medtroniclabs.uhis.ui.ChooseSiteDialogueFragment
 import org.medtroniclabs.uhis.ui.MenuConstants
 import org.medtroniclabs.uhis.ui.PrivacyPolicyFragment
 import org.medtroniclabs.uhis.ui.boarding.LoginActivity
+import org.medtroniclabs.uhis.ui.coaching.CoachingAssistantActivity
 import org.medtroniclabs.uhis.ui.home.HomeScreenFragment
 import org.medtroniclabs.uhis.ui.landing.adapter.PeerSupervisorNotificationAdapter
 import org.medtroniclabs.uhis.ui.landing.viewmodel.LandingViewModel
@@ -88,6 +95,7 @@ import org.medtroniclabs.uhis.ui.patientTransfer.adapter.NCDInformationMessageAd
 import org.medtroniclabs.uhis.ui.patientTransfer.dialog.NCDPatientDetailDialogue
 import java.util.UUID
 import java.util.concurrent.TimeUnit
+import android.net.ConnectivityManager as AndroidConnectivityManager
 
 class LandingActivity :
     BaseActivity(),
@@ -169,8 +177,122 @@ class LandingActivity :
         UserDetail.getAppVersion(BuildConfig.VERSION_NAME)
         attachObserver()
 
+        // Re-build the MicroCoaching SDK with the freshly issued JWT (it was
+        // initialised with an empty token in SpiceBaseApplication.onCreate before login).
+        reinitCoachingSdkWithToken()
+
         // Deeplink for directly goes to Search patient
         patientSearchDeepLink()
+    }
+
+    /**
+     * Re-build the MicroCoaching SDK so its [authToken], language, and (potentially)
+     * model path reflect the post-login state. Called from [onCreate] after auth is
+     * confirmed. No-op if the token is still missing or the SDK was not initialised
+     * in the Application class.
+     */
+    private fun reinitCoachingSdkWithToken() {
+        val token = SecuredPreference.getString(SecuredPreference.EnvironmentKey.TOKEN.name)
+        if (token.isNullOrEmpty() || !MicroCoachingSDK.isInitialized()) return
+        val modelDir = getExternalFilesDir(null)
+        val existingModel = modelDir
+            ?.listFiles()
+            ?.firstOrNull { it.extension == "task" || it.extension == "litertlm" }
+        val downloadStrategy = if (existingModel != null) {
+            ModelDownloadStrategy.PROVIDED
+        } else {
+            ModelDownloadStrategy.ON_FIRST_USE
+        }
+        MicroCoachingSDK
+            .Builder(applicationContext)
+            .language(SpiceBaseApplication.spiceLanguageToSdkLanguage(SecuredPreference.getCultureName()))
+            .backendUrl(BuildConfig.COACHING_BACKEND_URL)
+            .authToken(token)
+            .enableTelemetry(BuildConfig.ENABLE_COACHING_TELEMETRY)
+            .enableChat(true)
+            .enableLearnModule(true)
+            .enableApplyModule(true)
+            .modelDownloadStrategy(downloadStrategy)
+            .modelProviders(listOf(ModelProvider.HuggingFace))
+            .modelPath(existingModel?.absolutePath ?: "")
+            .huggingFaceToken(BuildConfig.HF_TOKEN)
+            .wifiOnlyModelDownload(false)
+            .forceMode(CoachingMode.EDGE)
+            .build()
+        MicroCoachingSDK.getInstance().syncCoordinator.schedulePeriodic()
+        // Drawer item is `visible="false"` in XML — reveal it now that the SDK has a token.
+        binding.navView.menu
+            .findItem(R.id.chwAssistant)
+            ?.isVisible = true
+    }
+
+    /**
+     * Drawer-tap handler for "CHW Assistant". If the on-device LLM model is already
+     * staged, launch [CoachingAssistantActivity] directly. Otherwise prompt the CHW to
+     * download (~800 MB) — with a second confirmation if currently on metered (mobile)
+     * data — then fire the SDK download and surface a Snackbar so the user knows the
+     * chat will open once the model finishes downloading.
+     */
+    private fun launchCoachingAssistant() {
+        if (!MicroCoachingSDK.isInitialized()) return
+        val sdk = MicroCoachingSDK.getInstance()
+        if (sdk.modelManager.isModelPresent()) {
+            CoachingAssistantActivity.launch(this)
+        } else {
+            showCoachingModelDownloadPrompt()
+        }
+    }
+
+    private fun showCoachingModelDownloadPrompt() {
+        showErrorDialogue(
+            title = getString(R.string.coaching_model_download_title),
+            message = getString(R.string.coaching_model_download_message),
+            isNegativeButtonNeed = true,
+            positiveButtonName = getString(R.string.yes),
+            cancelBtnName = getString(R.string.no),
+        ) { isPositive ->
+            if (!isPositive) return@showErrorDialogue
+            if (isOnMeteredNetwork()) {
+                showCoachingMeteredNetworkWarning()
+            } else {
+                triggerCoachingModelDownload()
+            }
+        }
+    }
+
+    private fun showCoachingMeteredNetworkWarning() {
+        showErrorDialogue(
+            title = getString(R.string.coaching_metered_network_title),
+            message = getString(R.string.coaching_metered_network_message),
+            isNegativeButtonNeed = true,
+            positiveButtonName = getString(R.string.yes),
+            cancelBtnName = getString(R.string.no),
+        ) { isPositive ->
+            if (isPositive) triggerCoachingModelDownload()
+        }
+    }
+
+    private fun triggerCoachingModelDownload() {
+        MicroCoachingSDK.getInstance().modelManager.triggerDownload()
+        Toast.makeText(this, getString(R.string.coaching_download_started), Toast.LENGTH_LONG).show()
+    }
+
+    private fun isOnMeteredNetwork(): Boolean {
+        val cm = getSystemService(AndroidConnectivityManager::class.java) ?: return false
+        val caps = cm.getNetworkCapabilities(cm.activeNetwork) ?: return false
+        return !caps.hasCapability(NetworkCapabilities.NET_CAPABILITY_NOT_METERED)
+    }
+
+    /**
+     * Forward connectivity-restored events to the MicroCoaching SDK so it can flush
+     * pending telemetry spans and trigger an immediate sync. Idempotent on the SDK
+     * side: safe to call on every [onResume].
+     */
+    private fun notifyCoachingSdkOnConnectivityRestored() {
+        if (!MicroCoachingSDK.isInitialized()) return
+        if (connectivityManager.isNetworkAvailable()) {
+            MicroCoachingSDK.getInstance().onConnectivityRestored()
+        }
     }
 
     private fun syncScreeningAndAssessment() {
@@ -767,6 +889,12 @@ class LandingActivity :
                 launchSupportDialogFragment()
                 return true
             }
+
+            R.id.chwAssistant -> {
+                binding.drawerLayout.closeDrawer(GravityCompat.START)
+                launchCoachingAssistant()
+                return true
+            }
         }
         selectNavigationMenu(item)
         displayScreen(item.itemId)
@@ -1015,6 +1143,7 @@ class LandingActivity :
     override fun onResume() {
         super.onResume()
         doRefreshForDataUpdate()
+        notifyCoachingSdkOnConnectivityRestored()
     }
 
     private fun checkBGSyncStatusForNCD() {

@@ -1732,4 +1732,12 @@
     <string name="disabled_account">Disabled Account</string>
     <string name="account_locked_multiple_attempts">Account locked due to multiple invalid login attempts.</string>
     <string name="string_slash_string" translatable="false">%1$s/%2$s</string>
+
+    <!-- MicroCoaching SDK — CHW Assistant -->
+    <string name="chw_assistant">CHW Assistant</string>
+    <string name="coaching_model_download_title">AI Model Required</string>
+    <string name="coaching_model_download_message">The AI model needs to be downloaded (~800 MB). Download now?</string>
+    <string name="coaching_metered_network_title">Mobile Data Warning</string>
+    <string name="coaching_metered_network_message">You are on mobile data. About 800 MB will be used. Continue?</string>
+    <string name="coaching_download_started">Download started. The chat will open once the model is ready.</string>
 </resources>
