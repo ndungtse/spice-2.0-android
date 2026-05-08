@@ -25,6 +25,14 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
+            <!-- MicroCoaching SDK — UC-2 morning coaching card banner. -->
+            <androidx.compose.ui.platform.ComposeView
+                android:id="@+id/coachingCardBanner"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/_8sdp"
+                app:layout_constraintTop_toTopOf="parent" />
+
             <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/labelTitle"
                 android:layout_width="match_parent"
@@ -36,7 +44,7 @@
                 android:textColor="@color/navy_blue"
                 android:textSize="@dimen/_15ssp"
                 android:visibility="gone"
-                app:layout_constraintTop_toBottomOf="parent" />
+                app:layout_constraintTop_toBottomOf="@+id/coachingCardBanner" />
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/rvActivitiesList"
@@ -45,11 +53,30 @@
                 android:layout_marginHorizontal="@dimen/_4sdp"
                 android:layout_marginTop="@dimen/_8sdp"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:layout_constraintTop_toBottomOf="@+id/coachingCardBanner" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
     </androidx.core.widget.NestedScrollView>
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+    <!-- MicroCoaching SDK — UC-1 Learn & Grow FAB (bottom-left). -->
+    <androidx.compose.ui.platform.ComposeView
+        android:id="@+id/learnFab"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/_24sdp"
+        android:layout_marginBottom="@dimen/_24sdp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
 
+    <!-- MicroCoaching SDK — CHW AI Chat FAB (bottom-right). -->
+    <androidx.compose.ui.platform.ComposeView
+        android:id="@+id/chatFab"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="@dimen/_24sdp"
+        android:layout_marginBottom="@dimen/_24sdp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
