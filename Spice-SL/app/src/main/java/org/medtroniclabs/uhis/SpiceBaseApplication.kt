@@ -97,7 +97,7 @@ class SpiceBaseApplication : Application(), Configuration.Provider {
             .modelPath(existingModel?.absolutePath ?: "")
             .huggingFaceToken(BuildConfig.HF_TOKEN)
             .wifiOnlyModelDownload(false)
-            .forceMode(CoachingMode.EDGE)
+            .forceMode(CoachingMode.ONLINE)
             .build()
         if (BuildConfig.DEBUG) {
             Timber.i("MicroCoachingSDK health: %s", MicroCoachingSDK.getInstance().checkHealth())

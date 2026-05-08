@@ -241,7 +241,7 @@ dependencies {
     implementation(project(":analytics"))
 
     // MicroCoaching SDK (sourced from mavenLocal — see ../micro-coaching-android-sdk)
-    implementation("com.medtroniclabs.microcoaching:sdk-android:0.2.0-SNAPSHOT")
+    implementation("com.medtroniclabs.microcoaching:sdk-android:0.2.2-SNAPSHOT")
 
     // Provide Lifecycle lint to avoid detector crashes
     // lintChecks("androidx.lifecycle:lifecycle-runtime-lint:2.8.6")
