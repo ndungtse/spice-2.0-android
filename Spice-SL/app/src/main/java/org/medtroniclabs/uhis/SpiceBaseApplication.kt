@@ -110,11 +110,17 @@ class SpiceBaseApplication : Application(), Configuration.Provider {
          * SPICE stores "English" or "বাংলা" (Bengali in Bengali) — the SDK enum needs
          * the language code, so we branch on the Bengali display name.
          */
-        fun spiceLanguageToSdkLanguage(cultureName: String?): Language =
-            when (cultureName) {
-                DefinedParams.BN_Locale -> Language.BANGLA
-                else -> Language.ENGLISH
+        fun spiceLanguageToSdkLanguage(cultureName: String?): Language {
+            // cultureName may be the bare "বাংলা" or the full "বাংলা (Bangla)" display string —
+            // use contains (case-insensitive) to match either form, consistent with CommonUtils.
+            val resolvedLanguage = if (cultureName?.contains(DefinedParams.BN_Locale, ignoreCase = true) == true) {
+                Language.BANGLA
+            } else {
+                Language.ENGLISH
             }
+            Timber.i("spiceLanguageToSdkLanguage: resolved $cultureName to $resolvedLanguage")
+            return resolvedLanguage
+        }
     }
 
     private fun logActivityState(
