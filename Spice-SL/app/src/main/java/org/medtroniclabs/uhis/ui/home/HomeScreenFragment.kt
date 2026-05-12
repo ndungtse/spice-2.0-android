@@ -7,9 +7,19 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.ViewCompositionStrategy
+import androidx.compose.ui.unit.dp
 import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.GridLayoutManager
 import com.google.android.flexbox.FlexDirection
@@ -17,9 +27,7 @@ import com.google.android.flexbox.FlexboxLayoutManager
 import com.google.android.flexbox.JustifyContent
 import com.medtroniclabs.microcoaching.MicroCoachingSDK
 import com.medtroniclabs.microcoaching.ui.chat.CoachingChatBottomSheet
-import com.medtroniclabs.microcoaching.ui.coaching.CoachingCardBottomSheet
 import com.medtroniclabs.microcoaching.ui.components.ChatFab
-import com.medtroniclabs.microcoaching.ui.components.CoachingCardBanner
 import com.medtroniclabs.microcoaching.ui.components.LearnFab
 import com.medtroniclabs.microcoaching.ui.flow.CoachingFlowActivity
 import com.medtroniclabs.microcoaching.ui.theme.MicroCoachingTheme
@@ -84,8 +92,11 @@ class HomeScreenFragment : BaseFragment(), MenuSelectionListener {
      *   2. Learn & Grow FAB at bottom-left (UC-1, opens onboarding/modules/quiz)
      *   3. CHW AI chat FAB at bottom-right (opens chat in a bottom sheet)
      *
-     * The banner subscribes to `MicroCoachingSDK.morningCards`; if the list is
-     * empty the SDK Composable renders nothing so the layout collapses cleanly.
+     * The banner subscribes to `MicroCoachingSDK.morningModules` (v3 morning
+     * routine source). When the list is empty the banner Composable renders
+     * nothing so the layout collapses cleanly. Tapping the banner opens the
+     * v3 Learn flow on the gap-prioritised top module.
+     *
      * The chat FAB reuses the model-download dialog from Phase 1.2 — we surface
      * the same prompt before launching the chat sheet if the on-device LLM is
      * not yet downloaded.
@@ -95,27 +106,42 @@ class HomeScreenFragment : BaseFragment(), MenuSelectionListener {
         val sdk = MicroCoachingSDK.getInstance()
         val chwId = runCatching { SecuredPreference.getUserId().toString() }.getOrDefault("")
 
-        // Trigger morning-card load — populates `sdk.morningCards` StateFlow.
+        // Trigger morning-module load — populates `sdk.morningModules` StateFlow
+        // via TriggerEvaluator with gap-prioritised ranking.
         sdk.onHomeScreenShown(chwId)
 
-        // ── Banner ─────────────────────────────────────────────────────────
+        // ── Morning module banner ──────────────────────────────────────────
         binding.coachingCardBanner.apply {
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
             setContent {
                 MicroCoachingTheme {
-                    val cards by sdk.morningCards.collectAsState()
-                    val card = cards.firstOrNull()
-                    CoachingCardBanner(
-                        card = card,
-                        onStart = { scenarioId ->
-                            CoachingCardBottomSheet.show(
-                                fm = parentFragmentManager,
-                                scenarioId = scenarioId,
-                                autoSpeak = true,
-                            )
-                        },
-                        onSkip = { /* Phase 4 MVP: dismiss is local-only */ },
-                    )
+                    val modules by sdk.morningModules.collectAsState()
+                    val top = modules.firstOrNull()
+                    if (top != null) {
+                        Card(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(horizontal = 16.dp, vertical = 8.dp)
+                                .clickable {
+                                    CoachingFlowActivity.launchLearn(requireContext(), chwId)
+                                },
+                            elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
+                        ) {
+                            Column(modifier = Modifier.padding(16.dp)) {
+                                Text(
+                                    text = top.titleBn,
+                                    style = MaterialTheme.typography.titleMedium,
+                                )
+                                top.descriptionBn?.let { desc ->
+                                    Text(
+                                        text = desc,
+                                        style = MaterialTheme.typography.bodyMedium,
+                                        modifier = Modifier.padding(top = 4.dp),
+                                    )
+                                }
+                            }
+                        }
+                    }
                 }
             }
         }
