@@ -7,16 +7,12 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.compose.ui.unit.dp
@@ -25,11 +21,13 @@ import androidx.recyclerview.widget.GridLayoutManager
 import com.google.android.flexbox.FlexDirection
 import com.google.android.flexbox.FlexboxLayoutManager
 import com.google.android.flexbox.JustifyContent
+import com.medtroniclabs.microcoaching.Language
 import com.medtroniclabs.microcoaching.MicroCoachingSDK
 import com.medtroniclabs.microcoaching.ui.chat.CoachingChatBottomSheet
 import com.medtroniclabs.microcoaching.ui.components.ChatFab
-import com.medtroniclabs.microcoaching.ui.components.LearnFab
+import com.medtroniclabs.microcoaching.ui.components.LearnCard
 import com.medtroniclabs.microcoaching.ui.flow.CoachingFlowActivity
+import com.medtroniclabs.microcoaching.ui.learn.modules.bottomsheet.QuickLearnBottomSheet
 import com.medtroniclabs.microcoaching.ui.theme.MicroCoachingTheme
 import dagger.hilt.android.AndroidEntryPoint
 import org.medtroniclabs.uhis.R
@@ -61,6 +59,9 @@ class HomeScreenFragment : BaseFragment(), MenuSelectionListener {
 
     private val viewModel: LandingViewModel by activityViewModels()
 
+    private val chwId: String
+        get() = runCatching { SecuredPreference.getUserId().toString() }.getOrDefault("")
+
     companion object {
         const val TAG = "HomeScreenFragment"
 
@@ -87,75 +88,50 @@ class HomeScreenFragment : BaseFragment(), MenuSelectionListener {
     }
 
     /**
-     * Wire up the three MicroCoaching SDK overlays on the home screen:
-     *   1. Coaching card banner pinned above the menu grid (UC-2, gap-driven)
-     *   2. Learn & Grow FAB at bottom-left (UC-1, opens onboarding/modules/quiz)
-     *   3. CHW AI chat FAB at bottom-right (opens chat in a bottom sheet)
+     * Wire up the MicroCoaching SDK surfaces on the home screen:
+     *   1. LearnCard banner pinned above the menu grid — shows the gap-prioritised
+     *      morning module with Start / Skip actions.
+     *   2. CHW AI chat FAB at bottom-right (opens chat in a bottom sheet).
      *
-     * The banner subscribes to `MicroCoachingSDK.morningModules` (v3 morning
-     * routine source). When the list is empty the banner Composable renders
-     * nothing so the layout collapses cleanly. Tapping the banner opens the
-     * v3 Learn flow on the gap-prioritised top module.
-     *
-     * The chat FAB reuses the model-download dialog from Phase 1.2 — we surface
-     * the same prompt before launching the chat sheet if the on-device LLM is
-     * not yet downloaded.
+     * The banner collapses to zero height when `morningModules` is empty.
+     * Tapping Start opens the v3 Learn flow; tapping Skip dismisses the card
+     * for the current session.
      */
     private fun setupCoachingSurfaces() {
         if (!MicroCoachingSDK.isInitialized()) return
         val sdk = MicroCoachingSDK.getInstance()
-        val chwId = runCatching { SecuredPreference.getUserId().toString() }.getOrDefault("")
 
-        // Trigger morning-module load — populates `sdk.morningModules` StateFlow
-        // via TriggerEvaluator with gap-prioritised ranking.
         sdk.onHomeScreenShown(chwId)
 
-        // ── Morning module banner ──────────────────────────────────────────
+        // ── LearnCard banner (above grid) ─────────────────────────────────
         binding.coachingCardBanner.apply {
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
             setContent {
                 MicroCoachingTheme {
                     val modules by sdk.morningModules.collectAsState()
                     val top = modules.firstOrNull()
-                    if (top != null) {
-                        Card(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(horizontal = 16.dp, vertical = 8.dp)
-                                .clickable {
-                                    CoachingFlowActivity.launchLearn(requireContext(), chwId)
-                                },
-                            elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
-                        ) {
-                            Column(modifier = Modifier.padding(16.dp)) {
-                                Text(
-                                    text = top.titleBn,
-                                    style = MaterialTheme.typography.titleMedium,
-                                )
-                                top.descriptionBn?.let { desc ->
-                                    Text(
-                                        text = desc,
-                                        style = MaterialTheme.typography.bodyMedium,
-                                        modifier = Modifier.padding(top = 4.dp),
-                                    )
-                                }
-                            }
+                    var dismissed by remember { mutableStateOf(false) }
+                    if (top != null && !dismissed) {
+                        val title = if (sdk.config.language == Language.ENGLISH) {
+                            top.titleEn ?: top.titleBn
+                        } else {
+                            top.titleBn
                         }
+                        LearnCard(
+                            moduleTitle = title,
+                            questionCount = top.questionCount,
+                            estimatedMinutes = top.estimatedMinutes,
+                            onStart = {
+                                if (top.moduleType == "refresher") {
+                                    QuickLearnBottomSheet.show(parentFragmentManager, chwId)
+                                } else {
+                                    CoachingFlowActivity.launchLearn(requireContext(), chwId)
+                                }
+                            },
+                            onSkip = { dismissed = true },
+                            modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
+                        )
                     }
-                }
-            }
-        }
-
-        // ── Learn FAB (bottom-left) ────────────────────────────────────────
-        binding.learnFab.apply {
-            setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
-            setContent {
-                MicroCoachingTheme {
-                    LearnFab(
-                        onClick = {
-                            CoachingFlowActivity.launchLearn(requireContext(), chwId)
-                        },
-                    )
                 }
             }
         }
@@ -265,7 +241,19 @@ class HomeScreenFragment : BaseFragment(), MenuSelectionListener {
             val layoutManager = GridLayoutManager(context, 2)
             binding.rvActivitiesList.layoutManager = layoutManager
         }
-        binding.rvActivitiesList.adapter = DashboardMenuItemsAdapter(menuEntity, this)
+        val items = if (MicroCoachingSDK.isInitialized() &&
+            menuEntity.none { it.menuId.equals(MenuConstants.COACHING_MENU_ID, ignoreCase = true) }
+        ) {
+            menuEntity + MenuEntity(
+                id = -1L,
+                menuId = MenuConstants.COACHING_MENU_ID,
+                name = "Coaching",
+                displayOrder = menuEntity.size,
+            )
+        } else {
+            menuEntity
+        }
+        binding.rvActivitiesList.adapter = DashboardMenuItemsAdapter(items, this)
     }
 
     override fun onMenuSelected(
@@ -394,6 +382,12 @@ class HomeScreenFragment : BaseFragment(), MenuSelectionListener {
 
             MenuConstants.SERVICE_RECIPIENT -> {
                 startActivity(Intent(requireContext(), ServicesActivity::class.java))
+            }
+
+            MenuConstants.COACHING_MENU_ID -> {
+                if (MicroCoachingSDK.isInitialized()) {
+                    CoachingFlowActivity.launchLearn(requireContext(), chwId)
+                }
             }
         }
     }

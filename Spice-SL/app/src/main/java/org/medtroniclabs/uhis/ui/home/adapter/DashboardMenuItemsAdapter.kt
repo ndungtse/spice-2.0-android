@@ -290,6 +290,11 @@ class DashboardMenuItemsAdapter(
                 R.drawable.ic_hiv,
             )
 
+            MenuConstants.COACHING_MENU_ID -> ContextCompat.getDrawable(
+                context,
+                R.drawable.ic_coaching,
+            )
+
             else -> null
         }
 

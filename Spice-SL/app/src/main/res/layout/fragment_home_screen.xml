@@ -61,16 +61,6 @@
 
     </androidx.core.widget.NestedScrollView>
 
-    <!-- MicroCoaching SDK — UC-1 Learn & Grow FAB (bottom-left). -->
-    <androidx.compose.ui.platform.ComposeView
-        android:id="@+id/learnFab"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/_16sdp"
-        android:layout_marginBottom="@dimen/_16sdp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
-
     <!-- MicroCoaching SDK — CHW AI Chat FAB (bottom-right). -->
     <androidx.compose.ui.platform.ComposeView
         android:id="@+id/chatFab"
