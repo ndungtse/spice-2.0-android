@@ -8,7 +8,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.compose.foundation.layout.padding
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -26,8 +25,9 @@ import com.medtroniclabs.microcoaching.MicroCoachingSDK
 import com.medtroniclabs.microcoaching.ui.chat.CoachingChatBottomSheet
 import com.medtroniclabs.microcoaching.ui.components.ChatFab
 import com.medtroniclabs.microcoaching.ui.components.LearnCard
+import com.medtroniclabs.microcoaching.ui.components.MorningCard
 import com.medtroniclabs.microcoaching.ui.flow.CoachingFlowActivity
-import com.medtroniclabs.microcoaching.ui.learn.modules.bottomsheet.QuickLearnBottomSheet
+import com.medtroniclabs.microcoaching.ui.learn.modules.bottomsheet.RefresherBottomSheet
 import com.medtroniclabs.microcoaching.ui.theme.MicroCoachingTheme
 import dagger.hilt.android.AndroidEntryPoint
 import org.medtroniclabs.uhis.R
@@ -103,13 +103,15 @@ class HomeScreenFragment : BaseFragment(), MenuSelectionListener {
 
         sdk.onHomeScreenShown(chwId)
 
-        // ── LearnCard banner (above grid) ─────────────────────────────────
+        // ── MorningCard banner (above grid) ───────────────────────────────
+        // Uses MorningCard (W6) for all modules — shows card count + quiz count.
+        // Start always launches the full lesson → quiz flow (cards-first per decision doc).
+        // Legacy LearnCard kept as fallback for modules without card content.
         binding.coachingCardBanner.apply {
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
             setContent {
                 MicroCoachingTheme {
-                    val modules by sdk.morningModules.collectAsState()
-                    val top = modules.firstOrNull()
+                    val top = sdk.getSelectedMorningModule()
                     var dismissed by remember { mutableStateOf(false) }
                     if (top != null && !dismissed) {
                         val title = if (sdk.config.language == Language.ENGLISH) {
@@ -117,20 +119,43 @@ class HomeScreenFragment : BaseFragment(), MenuSelectionListener {
                         } else {
                             top.titleBn
                         }
-                        LearnCard(
-                            moduleTitle = title,
-                            questionCount = top.questionCount,
-                            estimatedMinutes = top.estimatedMinutes,
-                            onStart = {
-                                if (top.moduleType == "refresher") {
-                                    QuickLearnBottomSheet.show(parentFragmentManager, chwId)
-                                } else {
-                                    CoachingFlowActivity.launchLearn(requireContext(), chwId)
-                                }
-                            },
-                            onSkip = { dismissed = true },
-                            modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
-                        )
+                        val hasCards = top.cardCount > 0
+                        if (hasCards) {
+                            // Cards-first: show lesson cards then 1 question in the sheet.
+                            MorningCard(
+                                moduleTitle = title,
+                                cardCount = top.cardCount,
+                                questionCount = top.questionCount,
+                                estimatedMinutes = top.estimatedMinutes,
+                                onStart = {
+                                    RefresherBottomSheet.show(
+                                        parentFragmentManager,
+                                        chwId,
+                                        fromHomeScreen = true,
+                                        entryMode = RefresherBottomSheet.EntryMode.CARDS_FIRST,
+                                    )
+                                },
+                                onSkip = { dismissed = true },
+                                modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
+                            )
+                        } else {
+                            // No cards — quiz-only refresher.
+                            LearnCard(
+                                moduleTitle = title,
+                                questionCount = top.questionCount,
+                                estimatedMinutes = top.estimatedMinutes,
+                                onStart = {
+                                    RefresherBottomSheet.show(
+                                        parentFragmentManager,
+                                        chwId,
+                                        fromHomeScreen = true,
+                                        entryMode = RefresherBottomSheet.EntryMode.QUESTION_FIRST,
+                                    )
+                                },
+                                onSkip = { dismissed = true },
+                                modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
+                            )
+                        }
                     }
                 }
             }
