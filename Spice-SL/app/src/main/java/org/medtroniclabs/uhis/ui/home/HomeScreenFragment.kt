@@ -8,6 +8,8 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.compose.foundation.layout.padding
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -16,6 +18,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.compose.ui.unit.dp
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.recyclerview.widget.GridLayoutManager
 import com.google.android.flexbox.FlexDirection
 import com.google.android.flexbox.FlexboxLayoutManager
@@ -27,6 +30,7 @@ import com.medtroniclabs.microcoaching.ui.components.ChatFab
 import com.medtroniclabs.microcoaching.ui.components.LearnCard
 import com.medtroniclabs.microcoaching.ui.components.MorningCard
 import com.medtroniclabs.microcoaching.ui.flow.CoachingFlowActivity
+import com.medtroniclabs.microcoaching.ui.learn.modules.QuickLearnViewModel
 import com.medtroniclabs.microcoaching.ui.learn.modules.bottomsheet.RefresherBottomSheet
 import com.medtroniclabs.microcoaching.ui.theme.MicroCoachingTheme
 import dagger.hilt.android.AndroidEntryPoint
@@ -112,47 +116,68 @@ class HomeScreenFragment : BaseFragment(), MenuSelectionListener {
             setContent {
                 MicroCoachingTheme {
                     val top = sdk.getSelectedMorningModule()
-                    var dismissed by remember { mutableStateOf(false) }
+                    // sdkDismissed is set when the CHW completes or skips from the sheet;
+                    // resets on each onHomeScreenShown call (new session / re-open).
+                    val sdkDismissed by sdk.morningRefresherDismissed.collectAsState()
+                    // Local dismissed handles the session-only skip (tap Skip on the card).
+                    var localDismissed by remember { mutableStateOf(false) }
+
+                    val dismissed = sdkDismissed || localDismissed
+
+                    // QuickLearnViewModel provides the wrong-question count for the label.
+                    val morningVm: QuickLearnViewModel = viewModel(
+                        factory = QuickLearnViewModel.factory(
+                            androidx.compose.ui.platform.LocalContext.current.applicationContext,
+                            chwId,
+                        ),
+                    )
+                    val wrongCount by morningVm.wrongQuestionCount.collectAsState()
+
+                    // Populate wrongQuestionCount for the label whenever the top module changes.
+                    LaunchedEffect(top?.moduleId) {
+                        morningVm.computeWrongQuestionCount()
+                    }
+
                     if (top != null && !dismissed) {
                         val title = if (sdk.config.language == Language.ENGLISH) {
                             top.titleEn ?: top.titleBn
                         } else {
                             top.titleBn
                         }
+                        // Effective question count: wrong answers if any; total otherwise.
+                        val effectiveQuestionCount = if (wrongCount > 0) wrongCount else top.questionCount
                         val hasCards = top.cardCount > 0
+
+                        val onSkip: () -> Unit = {
+                            localDismissed = true
+                            sdk.dismissMorningRefresher()
+                        }
+                        val onStart: () -> Unit = {
+                            RefresherBottomSheet.show(
+                                parentFragmentManager,
+                                chwId,
+                                fromHomeScreen = true,
+                                entryMode = RefresherBottomSheet.EntryMode.QUESTION_FIRST,
+                            )
+                        }
+
                         if (hasCards) {
-                            // Cards-first: show lesson cards then 1 question in the sheet.
                             MorningCard(
                                 moduleTitle = title,
                                 cardCount = top.cardCount,
-                                questionCount = top.questionCount,
+                                questionCount = effectiveQuestionCount,
                                 estimatedMinutes = top.estimatedMinutes,
-                                onStart = {
-                                    RefresherBottomSheet.show(
-                                        parentFragmentManager,
-                                        chwId,
-                                        fromHomeScreen = true,
-                                        entryMode = RefresherBottomSheet.EntryMode.CARDS_FIRST,
-                                    )
-                                },
-                                onSkip = { dismissed = true },
+                                onStart = onStart,
+                                onSkip = onSkip,
                                 modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
                             )
                         } else {
-                            // No cards — quiz-only refresher.
                             LearnCard(
                                 moduleTitle = title,
-                                questionCount = top.questionCount,
+                                questionCount = effectiveQuestionCount,
                                 estimatedMinutes = top.estimatedMinutes,
-                                onStart = {
-                                    RefresherBottomSheet.show(
-                                        parentFragmentManager,
-                                        chwId,
-                                        fromHomeScreen = true,
-                                        entryMode = RefresherBottomSheet.EntryMode.QUESTION_FIRST,
-                                    )
-                                },
-                                onSkip = { dismissed = true },
+                                onStart = onStart,
+                                onSkip = onSkip,
                                 modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
                             )
                         }
@@ -176,7 +201,7 @@ class HomeScreenFragment : BaseFragment(), MenuSelectionListener {
 
     /**
      * Open [CoachingChatBottomSheet] if the on-device LLM model is staged.
-     * Otherwise prompt the CHW to download it (~800 MB) — same dialog flow as
+     * Otherwise, prompt the CHW to download it (~800 MB) — same dialog flow as
      * Phase 1.2's drawer entry, surfaced from a different entry point.
      */
     private fun launchCoachingChatSheet() {
@@ -269,10 +294,12 @@ class HomeScreenFragment : BaseFragment(), MenuSelectionListener {
         val items = if (MicroCoachingSDK.isInitialized() &&
             menuEntity.none { it.menuId.equals(MenuConstants.COACHING_MENU_ID, ignoreCase = true) }
         ) {
+            val isBangla = MicroCoachingSDK.getInstance().config.language == Language.BANGLA
             menuEntity + MenuEntity(
                 id = -1L,
                 menuId = MenuConstants.COACHING_MENU_ID,
                 name = "Coaching",
+                displayValue = if (isBangla) "কোচিং" else null,
                 displayOrder = menuEntity.size,
             )
         } else {
