@@ -6,7 +6,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -240,12 +239,12 @@ class HomeScreenFragment : BaseFragment(), MenuSelectionListener {
 
     private fun triggerCoachingModelDownload() {
         MicroCoachingSDK.getInstance().modelManager.triggerDownload()
-        Toast
-            .makeText(
-                requireContext(),
-                getString(R.string.coaching_download_started),
-                Toast.LENGTH_LONG,
-            ).show()
+        // Open the chat sheet immediately so the CHW lands on a screen that
+        // shows live download progress — replaces the earlier Toast which was
+        // confusing because tapping the FAB again landed on the chat sheet
+        // *before* it had observed the in-flight ModelState (see
+        // ChatViewModel.currentModelNotReadyState for the race fix).
+        CoachingChatBottomSheet.show(parentFragmentManager)
     }
 
     private fun isOnMeteredNetwork(): Boolean {
