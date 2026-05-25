@@ -4,17 +4,25 @@ import android.content.Intent
 import android.os.Bundle
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.viewModels
+import androidx.lifecycle.lifecycleScope
+import com.medtroniclabs.microcoaching.MicroCoachingSDK
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import org.medtroniclabs.uhis.R
 import org.medtroniclabs.uhis.app.analytics.model.UserDetail
 import org.medtroniclabs.uhis.app.analytics.utils.AnalyticsDefinedParams
 import org.medtroniclabs.uhis.appextensions.startBackgroundOfflineSync
 import org.medtroniclabs.uhis.common.CommonUtils
 import org.medtroniclabs.uhis.common.DefinedParams
+import org.medtroniclabs.uhis.common.SecuredPreference
 import org.medtroniclabs.uhis.common.SpiceLocationManager
 import org.medtroniclabs.uhis.databinding.ActivityAssessmentBinding
+import org.medtroniclabs.uhis.db.dao.MetaDataDAO
+import org.medtroniclabs.uhis.db.entity.AssessmentEntity
 import org.medtroniclabs.uhis.formgeneration.extension.capitalizeFirstChar
 import org.medtroniclabs.uhis.mappingkey.Screening
+import org.medtroniclabs.uhis.microcoaching.toSdkAssessmentMap
 import org.medtroniclabs.uhis.network.resource.ResourceState
 import org.medtroniclabs.uhis.ui.BaseActivity
 import org.medtroniclabs.uhis.ui.MenuConstants
@@ -58,11 +66,21 @@ import org.medtroniclabs.uhis.ui.household.HouseholdDefinedParams
 import org.medtroniclabs.uhis.ui.household.summary.HouseholdSummaryActivity
 import org.medtroniclabs.uhis.ui.landing.LandingActivity
 import org.medtroniclabs.uhis.ui.services.ServicesActivity
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class AssessmentActivity : BaseActivity() {
     private lateinit var binding: ActivityAssessmentBinding
     private val viewModel: AssessmentViewModel by viewModels()
+
+    /**
+     * Used by [notifyMicroCoachingSDK] to resolve `villageId → chiefdomId`
+     * (SPICE's equivalent of the backend's `upazila_id`). Field injection
+     * matches the `@Inject lateinit var` pattern already used by
+     * [AssessmentViewModel.connectivityManager].
+     */
+    @Inject
+    lateinit var metaDataDAO: MetaDataDAO
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -565,7 +583,8 @@ class AssessmentActivity : BaseActivity() {
 
                 ResourceState.SUCCESS -> {
                     hideLoading()
-                    resource.data?.let {
+                    resource.data?.let { (_, assessmentEntity) ->
+                        notifyMicroCoachingSDK(assessmentEntity)
                         loadSummaryFragment()
                     }
                 }
@@ -779,5 +798,68 @@ class AssessmentActivity : BaseActivity() {
     override fun onResume() {
         super.onResume()
         getCurrentLocation()
+    }
+
+    /**
+     * Hand the just-submitted assessment off to the MicroCoaching SDK so it
+     * can emit the `clinical_observed` family events (`spice_action_observed`,
+     * conditional `risk_flag_observed`) plus the stub `card_shown` row.
+     *
+     * Surfaces three pieces of real SPICE data the SDK uses to compute the
+     * three-axis referral correctness (`correctReferral`,
+     * `correctReferralLocation`, `correctReferralType`):
+     *
+     *  - `viewModel.referralStatus` — the system-prescribed referral
+     *    classification computed by `ReferralResultGenerator`. Set inside
+     *    `AssessmentViewModel.saveAssessment` before `assessmentSaveLiveData`
+     *    posts SUCCESS, so it's reliably available here.
+     *  - `viewModel.referralReason` — the system-prescribed reasons /
+     *    facility-type tokens. Also set before SUCCESS.
+     *  - `chiefdomId` resolved via `MetaDataDAO.getVillageByID(...)` — the
+     *    SPICE equivalent of the backend's geographic `upazila_id`.
+     *
+     * Without these, the SDK falls back to a `risk_level`-based heuristic.
+     *
+     * `encounterId` is intentionally left blank — `AssessmentActivity`'s
+     * Intent extras carry MEMBER_ID and HOUSEHOLD_ID but not a visit id, and
+     * the SDK accepts blank (writes null `patient_visit_id` on the wire).
+     * TEAM-CONFIRM: revisit once SPICE exposes the encounter / visit id at
+     * assessment-submit time.
+     *
+     * The SDK wraps event recording in `runCatching`, so the host flow is
+     * never blocked by telemetry failures.
+     */
+    private fun notifyMicroCoachingSDK(assessmentEntity: AssessmentEntity) {
+        if (!MicroCoachingSDK.isInitialized()) return
+        val chwId = runCatching { SecuredPreference.getUserId().toString() }
+            .getOrDefault("")
+        if (chwId.isBlank()) return
+
+        // Snapshot mutable VM fields now (they may be reset by a subsequent
+        // submission before the IO coroutine resumes).
+        val systemReferralStatus = viewModel.referralStatus
+        val systemReferralReasons = viewModel.referralReason
+
+        lifecycleScope.launch(Dispatchers.IO) {
+            val upazilaId = runCatching {
+                // SPICE hierarchy: village → chiefdom → district. The closest
+                // match for the backend's `upazila_id` is `chiefdomId`
+                // (one administrative level above village).
+                assessmentEntity.villageId
+                    .toLongOrNull()
+                    ?.let { metaDataDAO.getVillageByID(it).chiefdomId }
+                    ?.toString()
+            }.getOrNull()
+
+            MicroCoachingSDK.getInstance().onAssessmentSubmitted(
+                encounterId = "",
+                patientId = assessmentEntity.patientId.orEmpty(),
+                assessmentData = assessmentEntity.toSdkAssessmentMap(
+                    systemReferralStatus = systemReferralStatus,
+                    systemReferralReasons = systemReferralReasons,
+                    upazilaId = upazilaId,
+                ),
+            )
+        }
     }
 }
