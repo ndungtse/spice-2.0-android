@@ -2,10 +2,11 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
-    <!-- MicroCoaching SDK declares minSdk 24 (mediapipe-genai needs API 24). SPICE 2.0 ships
-         to devices as old as API 23. Override is safe: the SDK gates mediapipe behind a
-         runtime API check — see ModelManager / EdgeInference. -->
-    <uses-sdk tools:overrideLibrary="com.medtroniclabs.microcoaching,com.google.mediapipe.tasks.genai" />
+    <!-- MicroCoaching SDK + :sdk-android-sherpa are minSdk 23 (matching this app).
+         The SDK declares its own tools:overrideLibrary for com.google.mediapipe.tasks.genai
+         in its manifest, so no override is needed here. Listed defensively in case a
+         future SDK version raises its minSdk again. -->
+    <uses-sdk tools:overrideLibrary="com.google.mediapipe.tasks.genai" />
 
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.INTERNET" />

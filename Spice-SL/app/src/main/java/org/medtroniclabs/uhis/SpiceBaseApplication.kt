@@ -15,6 +15,7 @@ import com.medtroniclabs.microcoaching.MicroCoachingSDK
 import com.medtroniclabs.microcoaching.ModelDownloadStrategy
 import com.medtroniclabs.microcoaching.ai.model.ModelProvider
 import com.medtroniclabs.microcoaching.domain.decision.CoachingMode
+import com.medtroniclabs.microcoaching.sherpa.SherpaOnnxStt
 import dagger.hilt.android.HiltAndroidApp
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.GlobalScope
@@ -93,6 +94,7 @@ class SpiceBaseApplication : Application(), Configuration.Provider {
             .enableLearnModule(true)
             .enableApplyModule(true)
             .enableVoice(true)
+            .offlineSttEngineFactory(SherpaOnnxStt.factory)
             .modelDownloadStrategy(downloadStrategy)
             .modelProviders(listOf(ModelProvider.HuggingFace))
             .modelPath(existingModel?.absolutePath ?: "")
