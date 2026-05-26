@@ -212,6 +212,7 @@ class LandingActivity :
             .enableChat(true)
             .enableLearnModule(true)
             .enableApplyModule(true)
+            .enableVoice(true)
             .modelDownloadStrategy(downloadStrategy)
             .modelProviders(listOf(ModelProvider.HuggingFace))
             .modelPath(existingModel?.absolutePath ?: "")
