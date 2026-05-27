@@ -1736,8 +1736,8 @@
     <!-- MicroCoaching SDK — CHW Assistant -->
     <string name="chw_assistant">CHW Assistant</string>
     <string name="coaching_model_download_title">AI Model Required</string>
-    <string name="coaching_model_download_message">The AI model needs to be downloaded (~800 MB). Download now?</string>
+    <string name="coaching_model_download_message">The AI model needs to be downloaded (~600 MB). Download now?</string>
     <string name="coaching_metered_network_title">Mobile Data Warning</string>
-    <string name="coaching_metered_network_message">You are on mobile data. About 800 MB will be used. Continue?</string>
+    <string name="coaching_metered_network_message">You are on mobile data. About 600 MB will be used. Continue?</string>
     <string name="coaching_download_started">Download started. The chat will open once the model is ready.</string>
 </resources>

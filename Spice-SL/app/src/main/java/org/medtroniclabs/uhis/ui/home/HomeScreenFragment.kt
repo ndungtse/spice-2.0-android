@@ -200,7 +200,7 @@ class HomeScreenFragment : BaseFragment(), MenuSelectionListener {
 
     /**
      * Open [CoachingChatBottomSheet] if the on-device LLM model is staged.
-     * Otherwise, prompt the CHW to download it (~800 MB) — same dialog flow as
+     * Otherwise, prompt the CHW to download it (~600 MB) — same dialog flow as
      * Phase 1.2's drawer entry, surfaced from a different entry point.
      */
     private fun launchCoachingChatSheet() {

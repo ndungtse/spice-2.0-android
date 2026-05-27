@@ -232,7 +232,7 @@ class LandingActivity :
     /**
      * Drawer-tap handler for "CHW Assistant". If the on-device LLM model is already
      * staged, launch [CoachingAssistantActivity] directly. Otherwise prompt the CHW to
-     * download (~800 MB) — with a second confirmation if currently on metered (mobile)
+     * download (~600 MB) — with a second confirmation if currently on metered (mobile)
      * data — then fire the SDK download and surface a Snackbar so the user knows the
      * chat will open once the model finishes downloading.
      */
