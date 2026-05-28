@@ -239,7 +239,9 @@ class LandingActivity :
     private fun launchCoachingAssistant() {
         if (!MicroCoachingSDK.isInitialized()) return
         val sdk = MicroCoachingSDK.getInstance()
-        if (sdk.modelManager.isModelPresent()) {
+        // Low-end devices (< 3 GB RAM) run the chat in retrieval-only mode —
+        // no AI model is required, so skip the download prompt entirely.
+        if (sdk.isLowEndDevice || sdk.modelManager.isModelPresent()) {
             CoachingAssistantActivity.launch(this)
         } else {
             showCoachingModelDownloadPrompt()
