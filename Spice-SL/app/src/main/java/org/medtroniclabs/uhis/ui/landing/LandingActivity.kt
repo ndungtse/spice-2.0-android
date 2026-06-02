@@ -98,6 +98,8 @@ import java.util.UUID
 import java.util.concurrent.TimeUnit
 import android.net.ConnectivityManager as AndroidConnectivityManager
 
+private const val LANDING_TAG = "LandingActivity"
+
 class LandingActivity :
     BaseActivity(),
     NavigationView.OnNavigationItemSelectedListener,
@@ -248,43 +250,49 @@ class LandingActivity :
         }
     }
 
+    /**
+     * Single-dialog model-download confirmation. The previous two-dialog flow
+     * (general prompt → metered warning → trigger) was the failure surface in
+     * a QA report — the second dialog's positive callback was being dropped
+     * on some devices, leaving the user on the landing screen with no
+     * feedback. The metered-network hint is now baked into the message
+     * string so the user gives a single explicit yes.
+     */
     private fun showCoachingModelDownloadPrompt() {
+        val metered = isOnMeteredNetwork()
+        val messageRes = if (metered) {
+            R.string.coaching_model_download_message_metered
+        } else {
+            R.string.coaching_model_download_message
+        }
         showErrorDialogue(
             title = getString(R.string.coaching_model_download_title),
-            message = getString(R.string.coaching_model_download_message),
+            message = getString(messageRes),
             isNegativeButtonNeed = true,
             positiveButtonName = getString(R.string.yes),
             cancelBtnName = getString(R.string.no),
         ) { isPositive ->
-            if (!isPositive) return@showErrorDialogue
-            if (isOnMeteredNetwork()) {
-                showCoachingMeteredNetworkWarning()
-            } else {
-                triggerCoachingModelDownload()
-            }
-        }
-    }
-
-    private fun showCoachingMeteredNetworkWarning() {
-        showErrorDialogue(
-            title = getString(R.string.coaching_metered_network_title),
-            message = getString(R.string.coaching_metered_network_message),
-            isNegativeButtonNeed = true,
-            positiveButtonName = getString(R.string.yes),
-            cancelBtnName = getString(R.string.no),
-        ) { isPositive ->
+            Log.i(LANDING_TAG, "ModelDownloadPrompt dismissed — positive=$isPositive metered=$metered")
             if (isPositive) triggerCoachingModelDownload()
         }
     }
 
     private fun triggerCoachingModelDownload() {
-        MicroCoachingSDK.getInstance().modelManager.triggerDownload()
+        Log.i(LANDING_TAG, "triggerCoachingModelDownload — calling modelManager.triggerDownload()")
+        runCatching { MicroCoachingSDK.getInstance().modelManager.triggerDownload() }
+            .onFailure { Log.e(LANDING_TAG, "modelManager.triggerDownload threw", it) }
         Toast.makeText(this, getString(R.string.coaching_download_started), Toast.LENGTH_LONG).show()
     }
 
+    /**
+     * Default to `true` (assume metered) when the connectivity manager or the
+     * active network is null — a transient null read shouldn't bypass the
+     * user's consent step on the rare race where we check right at network
+     * handoff.
+     */
     private fun isOnMeteredNetwork(): Boolean {
-        val cm = getSystemService(AndroidConnectivityManager::class.java) ?: return false
-        val caps = cm.getNetworkCapabilities(cm.activeNetwork) ?: return false
+        val cm = getSystemService(AndroidConnectivityManager::class.java) ?: return true
+        val caps = cm.getNetworkCapabilities(cm.activeNetwork) ?: return true
         return !caps.hasCapability(NetworkCapabilities.NET_CAPABILITY_NOT_METERED)
     }
 

@@ -3,9 +3,11 @@ package org.medtroniclabs.uhis.ui.home
 import android.content.Intent
 import android.net.NetworkCapabilities
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -215,43 +217,63 @@ class HomeScreenFragment : BaseFragment(), MenuSelectionListener {
         }
     }
 
+    /**
+     * Single-dialog model-download confirmation. The previous two-dialog flow
+     * (general prompt → metered warning → trigger) was the failure surface in
+     * a QA report — the second dialog's positive callback was being dropped on
+     * some devices, leaving the user on the home screen with no feedback. The
+     * metered-network hint is now baked into the message string so the user
+     * gives a single explicit yes.
+     */
     private fun showCoachingModelDownloadPrompt() {
         val activity = (activity as? BaseActivity) ?: return
+        val metered = isOnMeteredNetwork()
+        val messageRes = if (metered) {
+            R.string.coaching_model_download_message_metered
+        } else {
+            R.string.coaching_model_download_message
+        }
         activity.showErrorDialogue(
             title = getString(R.string.coaching_model_download_title),
-            message = getString(R.string.coaching_model_download_message),
+            message = getString(messageRes),
             isNegativeButtonNeed = true,
             positiveButtonName = getString(R.string.yes),
             cancelBtnName = getString(R.string.no),
         ) { isPositive ->
-            if (!isPositive) return@showErrorDialogue
-            if (isOnMeteredNetwork()) {
-                activity.showErrorDialogue(
-                    title = getString(R.string.coaching_metered_network_title),
-                    message = getString(R.string.coaching_metered_network_message),
-                    isNegativeButtonNeed = true,
-                    positiveButtonName = getString(R.string.yes),
-                    cancelBtnName = getString(R.string.no),
-                ) { metered -> if (metered) triggerCoachingModelDownload() }
-            } else {
-                triggerCoachingModelDownload()
-            }
+            Log.i(TAG, "ModelDownloadPrompt dismissed — positive=$isPositive metered=$metered")
+            if (isPositive) triggerCoachingModelDownload()
         }
     }
 
     private fun triggerCoachingModelDownload() {
-        MicroCoachingSDK.getInstance().modelManager.triggerDownload()
+        Log.i(TAG, "triggerCoachingModelDownload — calling modelManager.triggerDownload()")
+        runCatching { MicroCoachingSDK.getInstance().modelManager.triggerDownload() }
+            .onFailure { Log.e(TAG, "modelManager.triggerDownload threw", it) }
+        // Always-on user feedback — even if the chat sheet fails to open
+        // (rare illegal-state edge case), the toast confirms the trigger ran.
+        Toast
+            .makeText(
+                requireContext(),
+                getString(R.string.coaching_download_started),
+                Toast.LENGTH_LONG,
+            ).show()
         // Open the chat sheet immediately so the CHW lands on a screen that
-        // shows live download progress — replaces the earlier Toast which was
-        // confusing because tapping the FAB again landed on the chat sheet
-        // *before* it had observed the in-flight ModelState (see
-        // ChatViewModel.currentModelNotReadyState for the race fix).
-        CoachingChatBottomSheet.show(parentFragmentManager)
+        // shows live download progress — see ChatViewModel.currentModelNotReadyState
+        // for the race-fix that keeps the freshly-opened sheet in sync with the
+        // in-flight ModelState.
+        runCatching { CoachingChatBottomSheet.show(parentFragmentManager) }
+            .onFailure { Log.e(TAG, "CoachingChatBottomSheet.show threw", it) }
     }
 
+    /**
+     * Default to `true` (assume metered) when the connectivity manager or the
+     * active network is null — a transient null read shouldn't bypass the
+     * user's consent step on the rare race where we check right at network
+     * handoff.
+     */
     private fun isOnMeteredNetwork(): Boolean {
-        val cm = requireContext().getSystemService(AndroidConnectivityManager::class.java) ?: return false
-        val caps = cm.getNetworkCapabilities(cm.activeNetwork) ?: return false
+        val cm = requireContext().getSystemService(AndroidConnectivityManager::class.java) ?: return true
+        val caps = cm.getNetworkCapabilities(cm.activeNetwork) ?: return true
         return !caps.hasCapability(NetworkCapabilities.NET_CAPABILITY_NOT_METERED)
     }
 
