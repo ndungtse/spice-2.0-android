@@ -58,5 +58,9 @@ Thumbs.db
 /captures
 .externalNativeBuild
 
-temp_auto_push.bat
-temp_interactive_push.bat
+
+.env
+.env.local
+.env.*.local
+.env.production
+.env.development
