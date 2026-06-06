@@ -207,6 +207,9 @@ class AssessmentRepository @Inject constructor(
                     DefinedParams.id to healthFacilityEntity.fhirId.toString(),
                     DefinedParams.isDefault to healthFacilityEntity.isDefault,
                     DefinedParams.phoneNumber to (healthFacilityEntity.phoneNumber ?: ""),
+                    // Facility tier — captured at PHU selection for the
+                    // MicroCoaching wrong_facility_tier gap (may be "" pre-resync).
+                    AssessmentDefinedParams.PICKED_FACILITY_TYPE to (healthFacilityEntity.type ?: ""),
                 ),
             )
         }

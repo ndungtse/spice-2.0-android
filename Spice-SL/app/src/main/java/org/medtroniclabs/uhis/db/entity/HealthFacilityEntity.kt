@@ -15,4 +15,8 @@ data class HealthFacilityEntity(
     val isDefault: Boolean = false,
     val isUserSite: Boolean = false,
     val phoneNumber: String? = null,
+    // Facility tier from the metadata API (HealthFacility.type). Used by the
+    // MicroCoaching SDK's wrong_facility_tier gap. Nullable: older rows / older
+    // syncs leave it null until the next metadata sync repopulates it.
+    val type: String? = null,
 )

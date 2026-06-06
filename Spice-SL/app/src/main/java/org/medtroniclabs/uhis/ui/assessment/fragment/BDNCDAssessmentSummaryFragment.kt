@@ -271,10 +271,20 @@ class BDNCDAssessmentSummaryFragment : BaseFragment() {
                         val selectedId = it[DefinedParams.id] as String?
                         if (selectedId != DefaultID) {
                             viewModel.otherAssessmentDetails[ReferredPHUSiteID] = selectedId.toString()
+                            // Capture the picked facility's tier for the MicroCoaching
+                            // wrong_facility_tier gap. Blank (e.g. pre-resync, type
+                            // not yet populated) → don't store a useless value.
+                            val pickedTier = it[AssessmentDefinedParams.PICKED_FACILITY_TYPE] as? String
+                            if (!pickedTier.isNullOrBlank()) {
+                                viewModel.otherAssessmentDetails[AssessmentDefinedParams.PICKED_FACILITY_TYPE] = pickedTier
+                            } else {
+                                viewModel.otherAssessmentDetails.remove(AssessmentDefinedParams.PICKED_FACILITY_TYPE)
+                            }
                         } else {
                             if (viewModel.otherAssessmentDetails.containsKey(ReferredPHUSiteID)) {
                                 viewModel.otherAssessmentDetails.remove(ReferredPHUSiteID)
                             }
+                            viewModel.otherAssessmentDetails.remove(AssessmentDefinedParams.PICKED_FACILITY_TYPE)
                         }
                     }
                 }
