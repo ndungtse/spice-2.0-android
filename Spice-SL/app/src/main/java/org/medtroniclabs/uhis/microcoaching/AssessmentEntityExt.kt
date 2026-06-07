@@ -1,6 +1,7 @@
 package org.medtroniclabs.uhis.microcoaching
 
 import android.util.Log
+import org.json.JSONArray
 import org.json.JSONObject
 import org.medtroniclabs.uhis.db.entity.AssessmentEntity
 import org.medtroniclabs.uhis.ui.assessment.AssessmentDefinedParams
@@ -146,4 +147,134 @@ private fun extractPickedFacilityTierFromDetails(detailsJson: String?): String? 
         Log.w(TAG, "Failed to parse assessmentDetails for pickedFacilityType: ${e.message}")
         null
     }
+}
+
+// ---------------------------------------------------------------------------
+// Compliance state for `spice_referral_compliance` gaps (onReferralSubmitted)
+// ---------------------------------------------------------------------------
+
+/**
+ * Build the `{recommended, actual}` compliance state the SDK's
+ * `SpiceReferralComplianceEvaluator` resolves (DETECTION_RULE_SCHEMA.md;
+ * docs/gaps/COMPLIANCE_TEST_SPEC.md §2). Pass this to
+ * [com.medtroniclabs.microcoaching.MicroCoachingSDK.onReferralSubmitted].
+ *
+ * **`recommended.*` — rich (rule-engine output), fully assembled here:**
+ *  - `isReferred`, `referralStatus`, `referredReason` (list)
+ *  - `referralFacilityType` — recommended tier, resolved recursively from
+ *    `assessmentDetails` (it's nested under the workflow key)
+ *  - `assessmentDetails` — the **whole** parsed assessment JSON, so nested
+ *    paths resolve, e.g.
+ *    `recommended.assessmentDetails.anc.summary.highRiskPregnantWoman.URGENT`,
+ *    `…pncMother.motherRisks.{URGENT,NON_URGENT}`, `…gapsInAnc`.
+ *
+ * **`actual.*` — thin (this is the SPICE data limit, be aware):**
+ *  - `didRefer` = `true` — this hook fires *because* the CHW committed a
+ *    referral, so by construction they referred. (A "missed referral" — referral
+ *    recommended but never made — is an absence to detect at visit close, not
+ *    here.)
+ *  - `referredSiteId` — best-effort from `otherDetails` (the picked PHU id).
+ *  - `destinationTier` — the picked facility's tier (from `HealthFacilityEntity.type`,
+ *    captured at the PHU picker). Compared against `recommended.referralFacilityType`
+ *    by the `referral_location_*` gaps (`mismatch_eq`). **Must be in the same
+ *    vocabulary** as the recommended tier (`"Upazila Health Complex"` /
+ *    `"Community Clinic"`) — see COMPLIANCE_TEST_SPEC.md vocab caveat.
+ *
+ * **Deliberately absent** (SPICE does not capture them, so the matching
+ * operators stay inert — see GAP_CATALOG.md §3/§5):
+ *  - `actual.referralReasons` (CHW reasons — only free-text in medical review)
+ *  - `actual.isUrgent` (no urgency input)
+ *
+ * Net: the `recommended` branch makes every gap's precondition gate correctly
+ * (so a gap self-scopes to its assessment). `referral_location_*` (tier) gaps can
+ * now fire via `destinationTier`; reason/urgency mismatch branches stay inert.
+ *
+ * The flat [toSdkAssessmentMap] keys are folded in too so the SDK has the same
+ * telemetry context (patient/village/upazila).
+ */
+fun AssessmentEntity.toComplianceState(
+    systemReferralStatus: String? = null,
+    systemReferralReasons: List<String>? = null,
+    upazilaId: String? = null,
+): Map<String, Any> =
+    buildMap {
+        putAll(toSdkAssessmentMap(systemReferralStatus, systemReferralReasons, upazilaId))
+        put("recommended", buildRecommendedBranch())
+        put("actual", buildActualBranch())
+    }.also { map ->
+        @Suppress("UNCHECKED_CAST")
+        Log.d(
+            TAG,
+            "toComplianceState — recommendedKeys=${(map["recommended"] as? Map<String, Any?>)?.keys} " +
+                "actualKeys=${(map["actual"] as? Map<String, Any?>)?.keys}",
+        )
+    }
+
+private fun AssessmentEntity.buildRecommendedBranch(): Map<String, Any?> =
+    buildMap {
+        put("isReferred", isReferred)
+        put("referralStatus", referralStatus.name)
+        referredReason?.let { put("referredReason", it) }
+        val details = jsonToMap(assessmentDetails)
+        details?.let { put("assessmentDetails", it) }
+        (findInTree(details, AssessmentDefinedParams.REFERRAL_FACILITY_TYPE) as? String)
+            ?.let { put("referralFacilityType", it) }
+    }
+
+private fun AssessmentEntity.buildActualBranch(): Map<String, Any?> =
+    buildMap {
+        // This hook fires on referral commit → the CHW referred.
+        put("didRefer", true)
+        val other = jsonToMap(otherDetails)
+        (other?.get(AssessmentDefinedParams.ReferredPHUSiteID) as? String)
+            ?.let { put("referredSiteId", it) }
+        // Picked facility's tier — compared against recommended.referralFacilityType
+        // by the referral_location_* gaps (mismatch_eq). Must be in the same
+        // vocabulary as the recommended tier ("Upazila Health Complex" /
+        // "Community Clinic"); see COMPLIANCE_TEST_SPEC.md for the vocab caveat.
+        (other?.get(AssessmentDefinedParams.PICKED_FACILITY_TYPE) as? String)
+            ?.let { put("destinationTier", it) }
+    }
+
+/** Recursive JSON-string → Map/List tree; null on blank/parse error. */
+private fun jsonToMap(jsonString: String?): Map<String, Any?>? {
+    if (jsonString.isNullOrBlank()) return null
+    return try {
+        jsonObjectToMap(JSONObject(jsonString))
+    } catch (e: Exception) {
+        Log.w(TAG, "Failed to parse JSON to map: ${e.message}")
+        null
+    }
+}
+
+private fun jsonObjectToMap(obj: JSONObject): Map<String, Any?> =
+    buildMap {
+        val keys = obj.keys()
+        while (keys.hasNext()) {
+            val key = keys.next()
+            put(key, jsonValue(obj.get(key)))
+        }
+    }
+
+private fun jsonValue(value: Any?): Any? =
+    when (value) {
+        is JSONObject -> jsonObjectToMap(value)
+        is JSONArray -> (0 until value.length()).map { jsonValue(value.get(it)) }
+        JSONObject.NULL -> null
+        else -> value
+    }
+
+/** Depth-first search for [targetKey] anywhere in a parsed Map/List tree. */
+private fun findInTree(
+    node: Any?,
+    targetKey: String,
+): Any? {
+    when (node) {
+        is Map<*, *> -> {
+            node[targetKey]?.let { return it }
+            for (v in node.values) findInTree(v, targetKey)?.let { return it }
+        }
+        is List<*> -> for (item in node) findInTree(item, targetKey)?.let { return it }
+    }
+    return null
 }

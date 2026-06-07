@@ -22,6 +22,7 @@ import org.medtroniclabs.uhis.db.dao.MetaDataDAO
 import org.medtroniclabs.uhis.db.entity.AssessmentEntity
 import org.medtroniclabs.uhis.formgeneration.extension.capitalizeFirstChar
 import org.medtroniclabs.uhis.mappingkey.Screening
+import org.medtroniclabs.uhis.microcoaching.toComplianceState
 import org.medtroniclabs.uhis.microcoaching.toSdkAssessmentMap
 import org.medtroniclabs.uhis.network.resource.ResourceState
 import org.medtroniclabs.uhis.ui.BaseActivity
@@ -599,6 +600,16 @@ class AssessmentActivity : BaseActivity() {
             when (resource.state) {
                 ResourceState.SUCCESS -> {
                     hideLoading()
+                    // Referral committed on the summary screen (PHU pick + "Done").
+                    // Fire the SDK referral hook for community assessments — the
+                    // ones with a referral picker. Compliance gaps evaluate here
+                    // (the `actual.*` side now exists), not at assessment-submit.
+                    // Fired before finishSuccessFlow() so lifecycleScope is alive.
+                    if (!CommonUtils.isNonCommunity()) {
+                        viewModel.assessmentSaveLiveData.value?.data?.second?.let { entity ->
+                            notifyMicroCoachingSDK(entity, asReferral = true)
+                        }
+                    }
                     finishSuccessFlow()
                     if (!CommonUtils.isNonCommunity()) {
                         startBackgroundOfflineSync()
@@ -829,7 +840,10 @@ class AssessmentActivity : BaseActivity() {
      * The SDK wraps event recording in `runCatching`, so the host flow is
      * never blocked by telemetry failures.
      */
-    private fun notifyMicroCoachingSDK(assessmentEntity: AssessmentEntity) {
+    private fun notifyMicroCoachingSDK(
+        assessmentEntity: AssessmentEntity,
+        asReferral: Boolean = false,
+    ) {
         if (!MicroCoachingSDK.isInitialized()) return
         val chwId = runCatching { SecuredPreference.getUserId().toString() }
             .getOrDefault("")
@@ -851,15 +865,32 @@ class AssessmentActivity : BaseActivity() {
                     ?.toString()
             }.getOrNull()
 
-            MicroCoachingSDK.getInstance().onAssessmentSubmitted(
-                encounterId = "",
-                patientId = assessmentEntity.patientId.orEmpty(),
-                assessmentData = assessmentEntity.toSdkAssessmentMap(
-                    systemReferralStatus = systemReferralStatus,
-                    systemReferralReasons = systemReferralReasons,
-                    upazilaId = upazilaId,
-                ),
-            )
+            val sdk = MicroCoachingSDK.getInstance()
+            if (asReferral) {
+                // The CHW's committed referral (picked PHU). This is where
+                // spice_referral_compliance gaps are evaluated — the `actual.*`
+                // side only exists once the pick is confirmed. Pass the full
+                // {recommended, actual} compliance state.
+                sdk.onReferralSubmitted(
+                    encounterId = "",
+                    patientId = assessmentEntity.patientId.orEmpty(),
+                    referralData = assessmentEntity.toComplianceState(
+                        systemReferralStatus = systemReferralStatus,
+                        systemReferralReasons = systemReferralReasons,
+                        upazilaId = upazilaId,
+                    ),
+                )
+            } else {
+                sdk.onAssessmentSubmitted(
+                    encounterId = "",
+                    patientId = assessmentEntity.patientId.orEmpty(),
+                    assessmentData = assessmentEntity.toSdkAssessmentMap(
+                        systemReferralStatus = systemReferralStatus,
+                        systemReferralReasons = systemReferralReasons,
+                        upazilaId = upazilaId,
+                    ),
+                )
+            }
         }
     }
 }

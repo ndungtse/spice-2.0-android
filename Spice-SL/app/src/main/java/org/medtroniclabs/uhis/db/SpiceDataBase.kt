@@ -102,10 +102,13 @@ import org.medtroniclabs.uhis.ui.assessment.AssessmentNCDEntity
         SubVillageEntity::class, ShasthyaShebikaEntity::class, ShasthyaShebikaLinkedVillageEntity::class,
         MemberAssessmentHistoryEntity::class,
     ],
-    version = 3,
+    version = 4,
     autoMigrations = [
         AutoMigration(1, 2),
         AutoMigration(2, 3),
+        // v4: nullable HealthFacilityEntity.type (facility tier) for the
+        // MicroCoaching compliance location gaps. Nullable add → auto-migratable.
+        AutoMigration(3, 4),
     ],
 )
 @TypeConverters(OfflineStatusTypeConverter::class)
@@ -166,11 +169,11 @@ abstract class SpiceDataBase : RoomDatabase() {
         private const val DATABASE_NAME = "SpiceDataBase"
 
         @Volatile
-        private var INSTANCE: SpiceDataBase? = null
+        private var instance: SpiceDataBase? = null
 
         fun getInstance(context: Context): SpiceDataBase =
-            INSTANCE ?: synchronized(this) {
-                INSTANCE ?: buildDatabase(context).also { INSTANCE = it }
+            instance ?: synchronized(this) {
+                instance ?: buildDatabase(context).also { instance = it }
             }
 
         private fun buildDatabase(context: Context): SpiceDataBase {
