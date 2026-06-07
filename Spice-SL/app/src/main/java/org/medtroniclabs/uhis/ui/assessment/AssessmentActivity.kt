@@ -599,18 +599,6 @@ class AssessmentActivity : BaseActivity() {
             when (resource.state) {
                 ResourceState.SUCCESS -> {
                     hideLoading()
-                    // BD NCD only: the PHU pick is committed here (summary "Done"),
-                    // so `otherDetails` now carries the picked facility. Fire the
-                    // SDK referral hook with the updated entity so the
-                    // wrong_facility_tier gap can compare picked vs expected.
-                    // Guard keeps ICCM/RMNCH/TB/FP (which share this observer) on
-                    // their single assessment-save notify. Fired before
-                    // finishSuccessFlow() so lifecycleScope is still active.
-                    if (viewModel.menuId == MenuConstants.NCD_MENU_ID && !CommonUtils.isNonCommunity()) {
-                        viewModel.assessmentSaveLiveData.value?.data?.second?.let { entity ->
-                            notifyMicroCoachingSDK(entity, asReferral = true)
-                        }
-                    }
                     finishSuccessFlow()
                     if (!CommonUtils.isNonCommunity()) {
                         startBackgroundOfflineSync()
@@ -841,10 +829,7 @@ class AssessmentActivity : BaseActivity() {
      * The SDK wraps event recording in `runCatching`, so the host flow is
      * never blocked by telemetry failures.
      */
-    private fun notifyMicroCoachingSDK(
-        assessmentEntity: AssessmentEntity,
-        asReferral: Boolean = false,
-    ) {
+    private fun notifyMicroCoachingSDK(assessmentEntity: AssessmentEntity) {
         if (!MicroCoachingSDK.isInitialized()) return
         val chwId = runCatching { SecuredPreference.getUserId().toString() }
             .getOrDefault("")
@@ -866,28 +851,15 @@ class AssessmentActivity : BaseActivity() {
                     ?.toString()
             }.getOrNull()
 
-            val data = assessmentEntity.toSdkAssessmentMap(
-                systemReferralStatus = systemReferralStatus,
-                systemReferralReasons = systemReferralReasons,
-                upazilaId = upazilaId,
+            MicroCoachingSDK.getInstance().onAssessmentSubmitted(
+                encounterId = "",
+                patientId = assessmentEntity.patientId.orEmpty(),
+                assessmentData = assessmentEntity.toSdkAssessmentMap(
+                    systemReferralStatus = systemReferralStatus,
+                    systemReferralReasons = systemReferralReasons,
+                    upazilaId = upazilaId,
+                ),
             )
-            val sdk = MicroCoachingSDK.getInstance()
-            if (asReferral) {
-                // The CHW's actual referral (picked PHU) — the `actual` side of
-                // the wrong_facility_tier comparison. Fired from the summary
-                // commit, once otherDetails carries the picked facility.
-                sdk.onReferralSubmitted(
-                    encounterId = "",
-                    patientId = assessmentEntity.patientId.orEmpty(),
-                    referralData = data,
-                )
-            } else {
-                sdk.onAssessmentSubmitted(
-                    encounterId = "",
-                    patientId = assessmentEntity.patientId.orEmpty(),
-                    assessmentData = data,
-                )
-            }
         }
     }
 }

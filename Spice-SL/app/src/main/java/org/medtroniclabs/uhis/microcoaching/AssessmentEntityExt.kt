@@ -1,7 +1,6 @@
 package org.medtroniclabs.uhis.microcoaching
 
 import android.util.Log
-import org.json.JSONArray
 import org.json.JSONObject
 import org.medtroniclabs.uhis.db.entity.AssessmentEntity
 import org.medtroniclabs.uhis.ui.assessment.AssessmentDefinedParams
@@ -35,21 +34,20 @@ private const val TAG = "AssessmentEntityExt"
  *                              caller resolves via
  *                              `MetaDataDAO.getVillageByID(villageId).chiefdomId`.
  *
- * Additionally surfaces the facility-tier keys the SDK's `wrong_facility_tier`
- * gap compares:
+ * Additionally surfaces two facility-tier keys out of the `assessmentDetails`
+ * JSON column when present:
  *
  *  - `referralFacilityType` (or `childReferralFacilityType` on paeds) — the
  *    *expected* tier (`"Upazila Health Complex"` / `"Community Clinic"`)
- *    written by `ReferralResultGenerator`. Lives nested under the workflow key
- *    in `assessmentDetails`, so it's resolved recursively.
- *  - `picked_facility_type` + `referred_site_id` — the *actual* facility the
- *    CHW picked on the BD NCD summary screen (`etPhuChange`), captured into the
- *    `otherDetails` JSON column. The tier comes from `HealthFacilityEntity.type`
- *    (synced from the metadata API).
+ *    written by `ReferralResultGenerator` during assessment processing.
+ *  - `picked_facility_type` — the tier of the facility the CHW actually
+ *    picked at the referral picker. **Currently not written by SPICE** —
+ *    see [docs/gaps/GAPS_TEST.md §F.2] in the SDK repo for the wiring TODO.
+ *    The parser here is in place so that once SPICE writes the key into
+ *    `assessmentDetails` (or directly into the map), the SDK's
+ *    `wrong_facility_tier` rule fires without further SDK changes.
  *
- * The expected tier is read from `assessmentDetails`; the picked tier/site id
- * from `otherDetails`. The SDK's `wrong_facility_tier` evaluator compares the
- * expected vs picked tier (normalising both via its `TierNormalizer`).
+ * The SDK's `wrong_facility_tier` gap evaluator compares these two values.
  *
  * When the optional arguments are supplied, the SDK's `ReferralRulesStub`
  * switches from its risk-level fallback to a real three-axis comparison
@@ -76,17 +74,17 @@ fun AssessmentEntity.toSdkAssessmentMap(
         systemReferralStatus?.let { put("system_referral_status", it) }
         systemReferralReasons?.let { put("system_referral_reasons", it.joinToString(",")) }
 
-        // System-prescribed facility tier (the *expected* tier). Written by
-        // ReferralResultGenerator into `assessmentDetails`, nested under the
-        // workflow key (e.g. "ncd") — resolve it recursively, not top-level.
+        // System-prescribed facility tier. Lives inside `assessmentDetails`
+        // (a JSON-string column SPICE owns) — we parse just the two keys the
+        // SDK's `wrong_facility_tier` evaluator needs.
         extractFacilityTierFromDetails(assessmentDetails)?.let { (key, value) ->
             put(key, value)
         }
-        // Picked facility (the CHW's *actual* choice) lives in `otherDetails` —
-        // the PHU selected on the summary screen. Forward its tier
-        // (`picked_facility_type`) and site id (`referred_site_id`).
-        extractPickedReferralFromOtherDetails(otherDetails).forEach { (key, value) ->
-            put(key, value)
+        // Picked facility tier (Path A). When the referral picker captures
+        // the tier and writes `pickedFacilityType` into `assessmentDetails`,
+        // forward it under the SDK's expected key `picked_facility_type`.
+        extractPickedFacilityTierFromDetails(assessmentDetails)?.let { value ->
+            put("picked_facility_type", value)
         }
     }.also { map ->
         // Debug log so the SDK-side test plan can verify what SPICE actually
@@ -96,21 +94,23 @@ fun AssessmentEntity.toSdkAssessmentMap(
     }
 
 /**
- * Resolve the system-prescribed (expected) facility tier from the
- * `assessmentDetails` JSON, or null if absent. `ReferralResultGenerator` writes
- * `referralFacilityType` (paeds: `childReferralFacilityType`) into the workflow
- * sub-map (e.g. `{"ncd": { "referralFacilityType": "Upazila Health Complex" }}`),
- * so we search **recursively** — a top-level lookup would miss it.
+ * Parse the `assessmentDetails` JSON column and return the facility-tier
+ * pair the SDK reads, or null if not present (e.g. non-NCD assessments,
+ * or assessments that didn't trigger referral).
  */
 private fun extractFacilityTierFromDetails(detailsJson: String?): Pair<String, String>? {
     if (detailsJson.isNullOrBlank()) return null
     return try {
-        val root = JSONObject(detailsJson)
-        (findValueByKey(root, AssessmentDefinedParams.REFERRAL_FACILITY_TYPE) as? String)
-            ?.let { return AssessmentDefinedParams.REFERRAL_FACILITY_TYPE to it }
-        (findValueByKey(root, AssessmentDefinedParams.ID_CHILD_REFERRAL_FACILITY_TYPE) as? String)
-            ?.let { return AssessmentDefinedParams.ID_CHILD_REFERRAL_FACILITY_TYPE to it }
-        null
+        val obj = JSONObject(detailsJson)
+        when {
+            obj.has(AssessmentDefinedParams.REFERRAL_FACILITY_TYPE) ->
+                AssessmentDefinedParams.REFERRAL_FACILITY_TYPE to
+                    obj.getString(AssessmentDefinedParams.REFERRAL_FACILITY_TYPE)
+            obj.has(AssessmentDefinedParams.ID_CHILD_REFERRAL_FACILITY_TYPE) ->
+                AssessmentDefinedParams.ID_CHILD_REFERRAL_FACILITY_TYPE to
+                    obj.getString(AssessmentDefinedParams.ID_CHILD_REFERRAL_FACILITY_TYPE)
+            else -> null
+        }
     } catch (e: Exception) {
         Log.w(TAG, "Failed to parse assessmentDetails for facility tier: ${e.message}")
         null
@@ -118,61 +118,32 @@ private fun extractFacilityTierFromDetails(detailsJson: String?): Pair<String, S
 }
 
 /**
- * Parse the *picked* referral out of the `otherDetails` JSON column (the
- * serialised `otherAssessmentDetails` map). The BD NCD summary screen captures
- * the CHW's chosen PHU there:
- *  - `pickedFacilityType` → forwarded as `picked_facility_type` (the actual tier)
- *  - `referredSiteId`     → forwarded as `referred_site_id` (the facility id)
+ * Parse the `assessmentDetails` JSON column for the *picked* facility tier
+ * (Path A). Returns the tier string ("Upazila Health Complex" / "Community
+ * Clinic") or null when the key isn't present.
  *
- * Returns an empty map when neither is present (non-referring pathways, or the
- * tier not yet synced). Both keys are top-level in `otherDetails`.
+ * **TODO (SPICE-side)**: write `pickedFacilityType` into `assessmentDetails`
+ * when the CHW confirms a facility at the referral picker. See
+ * [docs/gaps/GAPS_TEST.md §F.2] in the SDK repo for the wiring proposal
+ * (capture tier in `ReferPatientViewModel.referToSelectedTier`, propagate
+ * through `ReferPatientRepository`, inject into the assessment map before
+ * `AssessmentViewModel.getAssessmentDetails` serialises). Until that's
+ * done, this returns null and the SDK's `wrong_facility_tier` rule skips
+ * with a diagnostic log.
  */
-private fun extractPickedReferralFromOtherDetails(otherDetailsJson: String?): Map<String, String> {
-    if (otherDetailsJson.isNullOrBlank()) return emptyMap()
+private const val KEY_PICKED_FACILITY_TYPE = "pickedFacilityType"
+
+private fun extractPickedFacilityTierFromDetails(detailsJson: String?): String? {
+    if (detailsJson.isNullOrBlank()) return null
     return try {
-        val obj = JSONObject(otherDetailsJson)
-        buildMap {
-            obj
-                .optString(KEY_PICKED_FACILITY_TYPE)
-                .takeIf { it.isNotBlank() }
-                ?.let { put("picked_facility_type", it) }
-            obj
-                .optString(AssessmentDefinedParams.ReferredPHUSiteID)
-                .takeIf { it.isNotBlank() }
-                ?.let { put("referred_site_id", it) }
+        val obj = JSONObject(detailsJson)
+        if (obj.has(KEY_PICKED_FACILITY_TYPE)) {
+            obj.getString(KEY_PICKED_FACILITY_TYPE)
+        } else {
+            null
         }
     } catch (e: Exception) {
-        Log.w(TAG, "Failed to parse otherDetails for picked referral: ${e.message}")
-        emptyMap()
+        Log.w(TAG, "Failed to parse assessmentDetails for pickedFacilityType: ${e.message}")
+        null
     }
-}
-
-private const val KEY_PICKED_FACILITY_TYPE = AssessmentDefinedParams.PICKED_FACILITY_TYPE
-
-/**
- * Depth-first search for [targetKey] anywhere in a parsed JSON tree. Mirrors
- * `AssessmentCommonUtils.findValueByKey` — kept local so this SDK-facing ext
- * has no UI-layer dependency.
- */
-private fun findValueByKey(
-    node: Any?,
-    targetKey: String,
-): Any? {
-    when (node) {
-        is JSONObject -> {
-            val keys = node.keys()
-            while (keys.hasNext()) {
-                val key = keys.next()
-                val value = node.get(key)
-                if (key == targetKey) return value
-                findValueByKey(value, targetKey)?.let { return it }
-            }
-        }
-        is JSONArray -> {
-            for (i in 0 until node.length()) {
-                findValueByKey(node.get(i), targetKey)?.let { return it }
-            }
-        }
-    }
-    return null
 }
