@@ -5,12 +5,15 @@ import android.graphics.drawable.Drawable
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
+import com.medtroniclabs.microcoaching.ui.components.CoachingGridTile
 import org.medtroniclabs.uhis.R
 import org.medtroniclabs.uhis.common.CommonUtils
 import org.medtroniclabs.uhis.common.DefinedParams
 import org.medtroniclabs.uhis.databinding.RowActivitiesBinding
+import org.medtroniclabs.uhis.databinding.RowCoachingTileBinding
 import org.medtroniclabs.uhis.db.entity.MenuEntity
 import org.medtroniclabs.uhis.formgeneration.extension.safeClickListener
 import org.medtroniclabs.uhis.ui.MenuConstants
@@ -21,29 +24,66 @@ class DashboardMenuItemsAdapter(
     private val roleBasedActivitiesList: List<MenuEntity>,
     private val listener: MenuSelectionListener,
 ) :
-    RecyclerView.Adapter<DashboardMenuItemsAdapter.ActivitiesViewHolder>() {
+    RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+    /** Default menu tile (icon + title), inflated from `row_activities`. */
     class ActivitiesViewHolder(val binding: RowActivitiesBinding) :
         RecyclerView.ViewHolder(binding.root) {
         val context: Context = binding.root.context
     }
 
+    /**
+     * Coaching tile — the whole tile (and its skipped-refresher badge) is owned
+     * by the MicroCoaching SDK's [CoachingGridTile] Composable, so the host just
+     * forwards the click.
+     */
+    class CoachingViewHolder(val binding: RowCoachingTileBinding) :
+        RecyclerView.ViewHolder(binding.root)
+
+    override fun getItemViewType(position: Int): Int =
+        if (roleBasedActivitiesList[position]
+                .menuId
+                .equals(MenuConstants.COACHING_MENU_ID, ignoreCase = true)
+        ) {
+            VIEW_TYPE_COACHING
+        } else {
+            VIEW_TYPE_DEFAULT
+        }
+
     override fun onCreateViewHolder(
         parent: ViewGroup,
         viewType: Int,
-    ): ActivitiesViewHolder =
-        ActivitiesViewHolder(
-            RowActivitiesBinding.inflate(
-                LayoutInflater.from(parent.context),
-                parent,
-                false,
-            ),
-        )
+    ): RecyclerView.ViewHolder {
+        val inflater = LayoutInflater.from(parent.context)
+        return if (viewType == VIEW_TYPE_COACHING) {
+            CoachingViewHolder(RowCoachingTileBinding.inflate(inflater, parent, false)).also {
+                it.binding.coachingTileComposeView.setViewCompositionStrategy(
+                    ViewCompositionStrategy.DisposeOnDetachedFromWindowOrReleasedFromPool,
+                )
+            }
+        } else {
+            ActivitiesViewHolder(RowActivitiesBinding.inflate(inflater, parent, false))
+        }
+    }
 
     override fun onBindViewHolder(
-        holder: ActivitiesViewHolder,
+        holder: RecyclerView.ViewHolder,
         position: Int,
     ) {
         val model = roleBasedActivitiesList[position]
+        when (holder) {
+            is CoachingViewHolder -> holder.binding.coachingTileComposeView.setContent {
+                CoachingGridTile(
+                    onClick = { listener.onMenuSelected(model.menuId, model.subModule) },
+                )
+            }
+            is ActivitiesViewHolder -> bindActivityTile(holder, model)
+        }
+    }
+
+    private fun bindActivityTile(
+        holder: ActivitiesViewHolder,
+        model: MenuEntity,
+    ) {
         holder.binding.tvTitle.text = if (CommonUtils.parseUserLocale() == DefinedParams.EN) {
             model.name
         } else {
@@ -290,13 +330,16 @@ class DashboardMenuItemsAdapter(
                 R.drawable.ic_hiv,
             )
 
-            MenuConstants.COACHING_MENU_ID -> ContextCompat.getDrawable(
-                context,
-                R.drawable.ic_coaching,
-            )
+            // COACHING_MENU_ID is rendered by the SDK CoachingGridTile (own
+            // view type) — no host drawable needed.
 
             else -> null
         }
 
     override fun getItemCount(): Int = roleBasedActivitiesList.size
+
+    companion object {
+        private const val VIEW_TYPE_DEFAULT = 0
+        private const val VIEW_TYPE_COACHING = 1
+    }
 }

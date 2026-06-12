@@ -107,6 +107,9 @@ class HomeScreenFragment : BaseFragment(), MenuSelectionListener {
         val sdk = MicroCoachingSDK.getInstance()
 
         sdk.onHomeScreenShown(chwId)
+        // The Coaching grid tile + its skipped-refresher badge are rendered by the
+        // SDK's CoachingGridTile (see DashboardMenuItemsAdapter) — no host badge
+        // wiring needed; the tile observes the count internally.
 
         // ── MorningCard banner (above grid) ───────────────────────────────
         // Uses MorningCard (W6) for all modules — shows card count + quiz count.
@@ -151,6 +154,8 @@ class HomeScreenFragment : BaseFragment(), MenuSelectionListener {
 
                         val onSkip: () -> Unit = {
                             localDismissed = true
+                            // Count this as a skipped refresher → Coaching tile badge.
+                            sdk.markRefresherSkipped(top.moduleFamilyId)
                             sdk.dismissMorningRefresher()
                         }
                         val onStart: () -> Unit = {
