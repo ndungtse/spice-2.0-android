@@ -35,6 +35,7 @@ import org.medtroniclabs.uhis.log.CrashReportingTree
 import timber.log.Timber
 import java.util.UUID
 import javax.inject.Inject
+import org.medtroniclabs.uhis.microcoaching.UhisCoachingColors
 
 const val ACTIVITY_LIFECYCLE = "ActivityLifeCycle"
 const val FRAGMENT_LIFECYCLE = "FragmentLifecycle"
@@ -101,6 +102,7 @@ class SpiceBaseApplication : Application(), Configuration.Provider {
             .huggingFaceToken(BuildConfig.HF_TOKEN)
             .wifiOnlyModelDownload(false)
             .forceMode(CoachingMode.ONLINE)
+            .theme(UhisCoachingColors)
             .build()
         if (BuildConfig.DEBUG) {
             Timber.i("MicroCoachingSDK health: %s", MicroCoachingSDK.getInstance().checkHealth())

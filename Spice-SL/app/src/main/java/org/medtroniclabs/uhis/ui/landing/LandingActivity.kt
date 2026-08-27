@@ -42,6 +42,7 @@ import com.google.android.play.core.install.model.AppUpdateType
 import com.google.android.play.core.install.model.UpdateAvailability
 import com.google.android.play.core.ktx.requestAppUpdateInfo
 import com.medtroniclabs.microcoaching.MicroCoachingSDK
+import org.medtroniclabs.uhis.microcoaching.UhisCoachingColors
 import com.medtroniclabs.microcoaching.ModelDownloadStrategy
 import com.medtroniclabs.microcoaching.ai.model.ModelProvider
 import com.medtroniclabs.microcoaching.domain.decision.CoachingMode
@@ -1160,6 +1161,10 @@ class LandingActivity :
             .huggingFaceToken(BuildConfig.HF_TOKEN)
             .wifiOnlyModelDownload(false)
             .forceMode(CoachingMode.EDGE)
+            // Must be repeated here: this rebuild replaces the whole config, so any
+            // builder value the Application set and this method omits silently reverts
+            // to the SDK default.
+            .theme(UhisCoachingColors)
             .build()
     }
 
